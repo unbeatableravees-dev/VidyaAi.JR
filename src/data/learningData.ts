@@ -1,0 +1,415 @@
+import { Category, PracticeActivity, VideoItem, BadgeItem, QuizQuestion, LessonStep } from '../types';
+
+export const ALL_CATEGORIES: Category[] = [
+  {
+    id: 'numbers',
+    name: 'Numbers',
+    iconType: 'numbers',
+    bgColor: '#ede9fe', // soft lavender/purple
+    textColor: '#6d28d9',
+    arrowBg: '#8b5cf6',
+    count: '24 lessons',
+  },
+  {
+    id: 'alphabets',
+    name: 'Alphabets',
+    iconType: 'alphabets',
+    bgColor: '#dcfce7', // soft light green
+    textColor: '#15803d',
+    arrowBg: '#22c55e',
+    count: '26 lessons',
+  },
+  {
+    id: 'story-time',
+    name: 'Story Time',
+    iconType: 'story-time',
+    bgColor: '#fce7f3', // soft pink
+    textColor: '#be185d',
+    arrowBg: '#ec4899',
+    count: '18 stories',
+  },
+  {
+    id: 'rhymes',
+    name: 'Rhymes',
+    iconType: 'rhymes',
+    bgColor: '#fae8ff', // soft lavender pink
+    textColor: '#a21caf',
+    arrowBg: '#d946ef',
+    count: '32 rhymes',
+  },
+  {
+    id: 'science',
+    name: 'Science',
+    iconType: 'science',
+    bgColor: '#cffafe', // soft cyan
+    textColor: '#0e7490',
+    arrowBg: '#06b6d4',
+    count: '15 experiments',
+  },
+  {
+    id: 'knowledge',
+    name: 'Knowledge',
+    iconType: 'knowledge',
+    bgColor: '#fef3c7', // soft warm yellow
+    textColor: '#b45309',
+    arrowBg: '#f59e0b',
+    count: '40 topics',
+  },
+  {
+    id: 'history',
+    name: 'History',
+    iconType: 'history',
+    bgColor: '#ffedd5', // soft peach
+    textColor: '#c2410c',
+    arrowBg: '#f97316',
+    count: '12 tales',
+  },
+  {
+    id: 'manners',
+    name: 'Manners',
+    iconType: 'manners',
+    bgColor: '#ffe4e6', // soft coral pink
+    textColor: '#be123c',
+    arrowBg: '#f43f5e',
+    count: '16 habits',
+  },
+  {
+    id: 'english',
+    name: 'English',
+    iconType: 'english',
+    bgColor: '#ecfccb', // soft lime
+    textColor: '#4d7c0f',
+    arrowBg: '#84cc16',
+    count: '28 lessons',
+  },
+  {
+    id: 'mathematics',
+    name: 'Mathematics',
+    iconType: 'mathematics',
+    bgColor: '#e0e7ff', // soft periwinkle
+    textColor: '#4338ca',
+    arrowBg: '#6366f1',
+    count: '35 lessons',
+  },
+  {
+    id: 'hindi',
+    name: 'Hindi',
+    hindiName: 'हिन्दी',
+    iconType: 'hindi',
+    bgColor: '#d1fae5', // soft emerald
+    textColor: '#047857',
+    arrowBg: '#10b981',
+    count: '22 lessons',
+  },
+  {
+    id: 'children-stories',
+    name: 'Children Stories',
+    iconType: 'children-stories',
+    bgColor: '#fce7f3', // soft rose
+    textColor: '#be185d',
+    arrowBg: '#ec4899',
+    count: '25 stories',
+  },
+  {
+    id: 'art-craft',
+    name: 'Art & Craft',
+    iconType: 'art-craft',
+    bgColor: '#fef9c3', // soft pastel yellow
+    textColor: '#a16207',
+    arrowBg: '#eab308',
+    count: '19 crafts',
+  },
+];
+
+export const PRACTICE_ACTIVITIES: PracticeActivity[] = [
+  {
+    id: 'p-alphabets',
+    title: 'Alphabets',
+    iconType: 'p-alphabets',
+    bgColor: '#a78bfa',
+    badgeColor: '#7c3aed',
+  },
+  {
+    id: 'p-numbers',
+    title: 'Numbers',
+    iconType: 'p-numbers',
+    bgColor: '#2dd4bf',
+    badgeColor: '#0f766e',
+  },
+  {
+    id: 'p-shape-tracing',
+    title: 'Shape Tracing',
+    iconType: 'p-shapes',
+    bgColor: '#fb923c',
+    badgeColor: '#c2410c',
+  },
+  {
+    id: 'p-pattern-play',
+    title: 'Pattern Play',
+    iconType: 'p-pattern',
+    bgColor: '#38bdf8',
+    badgeColor: '#0369a1',
+  },
+  {
+    id: 'p-colour-shapes',
+    title: 'Colour the Shapes',
+    iconType: 'p-colour',
+    bgColor: '#f87171',
+    badgeColor: '#b91c1c',
+  },
+  {
+    id: 'p-match-pop',
+    title: 'Match & Pop',
+    iconType: 'p-pop',
+    bgColor: '#c084fc',
+    badgeColor: '#7e22ce',
+  },
+];
+
+export const FEATURED_VIDEOS: VideoItem[] = [
+  {
+    id: 'v1',
+    title: "Toto Discovers The Elephant's Super Trunk",
+    duration: '4:32',
+    category: 'Animals',
+    isLocked: true,
+    thumbnail: 'elephant',
+  },
+  {
+    id: 'v2',
+    title: 'Train Kisne Banaya?',
+    duration: '5:18',
+    category: 'Science & Invention',
+    isLocked: true,
+    thumbnail: 'train',
+  },
+  {
+    id: 'v3',
+    title: "Krishna's Mountain Adventure",
+    duration: '6:21',
+    category: 'Mythology',
+    isLocked: true,
+    thumbnail: 'krishna',
+  },
+  {
+    id: 'v4',
+    title: 'Mor Ka Choti Chidiya',
+    duration: '4:45',
+    category: 'Stories',
+    isLocked: true,
+    thumbnail: 'peacock',
+  },
+  {
+    id: 'v5',
+    title: 'Little Detectives Subtraction ka Raaz',
+    duration: '5:12',
+    category: 'Math',
+    isLocked: true,
+    thumbnail: 'detective',
+  },
+];
+
+export const EARNED_BADGES: BadgeItem[] = [
+  {
+    id: 'b1',
+    name: 'Quick Learner',
+    icon: 'rocket',
+    color: '#3b82f6',
+  },
+  {
+    id: 'b2',
+    name: 'Math Star',
+    icon: 'math-star',
+    color: '#f97316',
+  },
+  {
+    id: 'b3',
+    name: 'Problem Solver',
+    icon: 'lightbulb',
+    color: '#22c55e',
+  },
+  {
+    id: 'b4',
+    name: 'Consistent Learner',
+    icon: 'book',
+    color: '#a855f7',
+  },
+  {
+    id: 'b5',
+    name: 'Knowledge Champ',
+    icon: 'crown',
+    color: '#ec4899',
+  },
+  {
+    id: 'b6',
+    name: 'More Badges Coming Soon',
+    icon: 'lock',
+    color: '#94a3b8',
+    isLocked: true,
+  },
+];
+
+export const LESSON_STEPS: LessonStep[] = [
+  {
+    id: 1,
+    title: "Addition – Let's Add 2 and 3",
+    duration: '8:12',
+    isCompleted: true,
+    isActive: true,
+    isLocked: false,
+    thumbnail: 'addition',
+  },
+  {
+    id: 2,
+    title: 'Subtraction – Take Away',
+    duration: '7:48',
+    isCompleted: false,
+    isActive: false,
+    isLocked: true,
+    thumbnail: 'subtraction',
+  },
+  {
+    id: 3,
+    title: 'Shapes Around Us',
+    duration: '6:34',
+    isCompleted: false,
+    isActive: false,
+    isLocked: true,
+    thumbnail: 'shapes',
+  },
+  {
+    id: 4,
+    title: 'Numbers in Daily Life',
+    duration: '7:20',
+    isCompleted: false,
+    isActive: false,
+    isLocked: true,
+    thumbnail: 'numbers',
+  },
+  {
+    id: 5,
+    title: "Let's Practice",
+    duration: '5:52',
+    isCompleted: false,
+    isActive: false,
+    isLocked: true,
+    thumbnail: 'practice',
+  },
+];
+
+export const RECOMMENDED_LESSONS = [
+  {
+    id: 'rec1',
+    title: "Addition – Let's Add 2 and 3",
+    tag: 'Math',
+    tagBg: '#ede9fe',
+    tagColor: '#7c3aed',
+    duration: '8 min',
+    thumbnail: 'addition',
+  },
+  {
+    id: 'rec2',
+    title: 'Shapes Around Us',
+    tag: 'Math',
+    tagBg: '#cffafe',
+    tagColor: '#0891b2',
+    duration: '6 min',
+    thumbnail: 'shapes',
+  },
+  {
+    id: 'rec3',
+    title: 'Numbers in Daily Life',
+    tag: 'Math',
+    tagBg: '#dcfce7',
+    tagColor: '#16a34a',
+    duration: '7 min',
+    thumbnail: 'train',
+  },
+  {
+    id: 'rec4',
+    title: "Toto Discovers the Elephant's Super Trunk",
+    tag: 'Animals',
+    tagBg: '#fae8ff',
+    tagColor: '#c026d3',
+    duration: '5 min',
+    thumbnail: 'elephant',
+  },
+];
+
+export const QUIZ_QUESTIONS: QuizQuestion[] = [
+  {
+    id: 1,
+    question: 'How many stars do you see? Count them!',
+    visualType: 'stars',
+    numA: 2,
+    numB: 2,
+    options: [
+      { key: 'A', value: 3 },
+      { key: 'B', value: 4 },
+      { key: 'C', value: 5 },
+      { key: 'D', value: 2 },
+    ],
+    correctAnswer: 'B',
+    explanation: '2 + 2 = 4',
+  },
+  {
+    id: 2,
+    question: 'What is 2 + 3?',
+    visualType: 'apples',
+    numA: 2,
+    numB: 3,
+    options: [
+      { key: 'A', value: 3 },
+      { key: 'B', value: 4 },
+      { key: 'C', value: 5 },
+      { key: 'D', value: 6 },
+    ],
+    correctAnswer: 'C',
+    explanation: '2 + 3 = 5',
+  },
+  {
+    id: 3,
+    question: 'What is 1 + 4?',
+    visualType: 'apples',
+    numA: 1,
+    numB: 4,
+    options: [
+      { key: 'A', value: 4 },
+      { key: 'B', value: 5 },
+      { key: 'C', value: 6 },
+      { key: 'D', value: 3 },
+    ],
+    correctAnswer: 'B',
+    explanation: '1 + 4 = 5',
+  },
+  {
+    id: 4,
+    question: 'What is 3 + 3?',
+    visualType: 'shapes',
+    numA: 3,
+    numB: 3,
+    options: [
+      { key: 'A', value: 5 },
+      { key: 'B', value: 7 },
+      { key: 'C', value: 6 },
+      { key: 'D', value: 4 },
+    ],
+    correctAnswer: 'C',
+    explanation: '3 + 3 = 6',
+  },
+  {
+    id: 5,
+    question: 'What is 4 + 2?',
+    visualType: 'apples',
+    numA: 4,
+    numB: 2,
+    options: [
+      { key: 'A', value: 6 },
+      { key: 'B', value: 5 },
+      { key: 'C', value: 7 },
+      { key: 'D', value: 8 },
+    ],
+    correctAnswer: 'A',
+    explanation: '4 + 2 = 6',
+  },
+];
