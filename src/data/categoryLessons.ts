@@ -1,0 +1,669 @@
+export interface LessonItem {
+  id: string;
+  title: string;
+  hindiTitle?: string;
+  duration: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Fun Activity';
+  thumbnailEmoji: string;
+  description: string;
+  isCompleted?: boolean;
+}
+
+export interface CategoryDetailData {
+  id: string;
+  title: string;
+  tagline: string;
+  bannerColor: string;
+  gradient: string;
+  accentColor: string;
+  funFact: string;
+  lessons: LessonItem[];
+  practiceActivities: {
+    title: string;
+    type: string;
+    icon: string;
+    description: string;
+  }[];
+}
+
+export const CATEGORY_DETAILS: Record<string, CategoryDetailData> = {
+  numbers: {
+    id: 'numbers',
+    title: 'Numbers & Counting',
+    tagline: 'Count, play and discover magical numbers from 1 to 100!',
+    bannerColor: '#8b5cf6',
+    gradient: 'from-purple-500 via-indigo-500 to-purple-700',
+    accentColor: '#7c3aed',
+    funFact: 'Did you know? The number 0 was invented in India by ancient mathematician Aryabhata!',
+    lessons: [
+      {
+        id: 'num-1',
+        title: 'Counting 1 to 10 with Jungle Friends',
+        duration: '6:15',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🦁',
+        description: 'Meet playful jungle animals and count them one by one with funny sounds!',
+        isCompleted: true,
+      },
+      {
+        id: 'num-2',
+        title: 'Number Train: Spot the Missing Number',
+        duration: '7:40',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🚂',
+        description: 'Chug along with the train and fill in missing numbered carriages!',
+      },
+      {
+        id: 'num-3',
+        title: 'Big vs Small: Comparing Numbers',
+        duration: '8:05',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🐊',
+        description: 'Mr. Crocodile only eats the bigger number! Learn greater than and less than.',
+      },
+      {
+        id: 'num-4',
+        title: 'Tens & Ones with Colorful Beads',
+        duration: '9:20',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '📿',
+        description: 'Bundle ten beads to make a necklace and explore place value easily.',
+      },
+      {
+        id: 'num-5',
+        title: 'Even and Odd Number Dance Party',
+        duration: '5:50',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🕺',
+        description: 'Pair up numbers to dance! If one is left alone, it is an odd number!',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Count the Balloons', type: 'Game', icon: '🎈', description: 'Pop the exact number of balloons shown!' },
+      { title: 'Number Tracing', type: 'Trace', icon: '✏️', description: 'Trace glowing numbers 1 through 9.' },
+      { title: 'Speedy Number Match', type: 'Quiz', icon: '⚡', description: 'Match digits with dot cards in 60s!' },
+    ],
+  },
+
+  alphabets: {
+    id: 'alphabets',
+    title: 'Alphabets & Phonics',
+    tagline: 'Master A to Z with cheerful songs and letter adventures!',
+    bannerColor: '#22c55e',
+    gradient: 'from-emerald-500 via-green-500 to-teal-600',
+    accentColor: '#16a34a',
+    funFact: 'The word "Alphabet" comes from the first two Greek letters: Alpha and Beta!',
+    lessons: [
+      {
+        id: 'alpha-1',
+        title: 'The ABC Phonics Safari',
+        duration: '8:45',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🔤',
+        description: 'A says /a/ as in Apple, B says /b/ as in Bear! Sing along with animal friends.',
+        isCompleted: true,
+      },
+      {
+        id: 'alpha-2',
+        title: 'Capital Letters vs Small Letters Match',
+        duration: '6:30',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '👑',
+        description: 'Help Mama letters find their baby letters across the bridge!',
+      },
+      {
+        id: 'alpha-3',
+        title: 'Magic Vowels: A, E, I, O, U',
+        duration: '7:15',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '⭐',
+        description: 'The five magical vowels give voice to every single word in English!',
+      },
+      {
+        id: 'alpha-4',
+        title: 'First Word Builders: 3-Letter Words',
+        duration: '9:00',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🐱',
+        description: 'Blend sounds together: C-A-T makes Cat, B-A-T makes Bat!',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Letter Bubble Pop', type: 'Game', icon: '🫧', description: 'Pop the bubble containing the spoken sound!' },
+      { title: 'Alphabet Maze', type: 'Puzzle', icon: '🧩', description: 'Connect letters A through Z in order.' },
+    ],
+  },
+
+  'story-time': {
+    id: 'story-time',
+    title: 'Story Time Fairytales',
+    tagline: 'Magical animated stories with morals and wonderful wisdom.',
+    bannerColor: '#ec4899',
+    gradient: 'from-pink-500 via-rose-500 to-purple-600',
+    accentColor: '#db2777',
+    funFact: 'Stories help your brain create colorful cinema movies right inside your imagination!',
+    lessons: [
+      {
+        id: 'st-1',
+        title: 'The Thirsty Crow & The Pebbles',
+        duration: '6:45',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🦅',
+        description: 'How a clever crow dropped stones into a jug to drink refreshing water.',
+        isCompleted: true,
+      },
+      {
+        id: 'st-2',
+        title: 'The Lion and The Clever Rabbit',
+        duration: '8:10',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🐇',
+        description: 'Panchatantra classic: Brains win over raw physical power every single time.',
+      },
+      {
+        id: 'st-3',
+        title: 'The Magic Paintbrush of Maya',
+        duration: '10:20',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🖌️',
+        description: 'Whatever Maya painted came to real life! How she helped the village.',
+      },
+      {
+        id: 'st-4',
+        title: 'The Honest Woodcutter & River Fairy',
+        duration: '7:55',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🪓',
+        description: 'Honesty brings true happiness and magical rewards.',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Story Sequencing', type: 'Game', icon: '📖', description: 'Arrange story scenes in chronological order!' },
+      { title: 'Character Voice Match', type: 'Fun', icon: '🎭', description: 'Match character voices to the right animal.' },
+    ],
+  },
+
+  rhymes: {
+    id: 'rhymes',
+    title: 'Musical Rhymes & Songs',
+    tagline: 'Sing, clap, dance and memorize catchy musical tunes!',
+    bannerColor: '#d946ef',
+    gradient: 'from-fuchsia-500 via-pink-500 to-indigo-600',
+    accentColor: '#c026d3',
+    funFact: 'Music activates both the left and right halves of your brain at the exact same time!',
+    lessons: [
+      {
+        id: 'rh-1',
+        title: 'Twinkle Twinkle Little Star (3D Magic)',
+        duration: '4:20',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '✨',
+        description: 'Fly across galaxies with little baby star in a sparkling space journey.',
+        isCompleted: true,
+      },
+      {
+        id: 'rh-2',
+        title: 'Lakdi Ki Kathi, Kathi Pe Ghoda',
+        duration: '5:15',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🐴',
+        description: 'The beloved timeless musical ride through the bazaar with Ghode ki Dum!',
+      },
+      {
+        id: 'rh-3',
+        title: 'Wheels on the Bus Go Round & Round',
+        duration: '6:00',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🚌',
+        description: 'Wipers swish, horn goes beep beep, and babies bounce with joy!',
+      },
+      {
+        id: 'rh-4',
+        title: 'Chanda Mama Door Ke',
+        duration: '4:50',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🌙',
+        description: 'Sweet bedtime rhyme eating tasty katori malai on the silver moon.',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Rhythm Drum Tap', type: 'Game', icon: '🥁', description: 'Tap along with the beat to score musical stars!' },
+      { title: 'Rhyming Word Pairs', type: 'Puzzle', icon: '🎵', description: 'Find words that sound like Star and Car.' },
+    ],
+  },
+
+  science: {
+    id: 'science',
+    title: 'Science & Experiments',
+    tagline: 'Curious kids explore nature, physics, senses and wonders!',
+    bannerColor: '#06b6d4',
+    gradient: 'from-cyan-500 via-sky-500 to-blue-600',
+    accentColor: '#0891b2',
+    funFact: 'Water expands when it freezes into ice, which is why ice cubes float in your glass!',
+    lessons: [
+      {
+        id: 'sci-1',
+        title: 'Our 5 Super Senses: Eyes, Ears, Nose & More',
+        duration: '7:30',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '👃',
+        description: 'Discover how we taste yummy ice cream, smell flowers, and hear bird songs!',
+        isCompleted: true,
+      },
+      {
+        id: 'sci-2',
+        title: 'Sink or Float? The Bathtub Mystery',
+        duration: '6:50',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🚢',
+        description: 'Why does a giant steel ship float while a tiny heavy pebble sinks?',
+      },
+      {
+        id: 'sci-3',
+        title: 'How a Tiny Seed Becomes a Giant Tree',
+        duration: '8:40',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🌱',
+        description: 'Sunlight, soil and water: Watch time-lapse growth of a mango tree!',
+      },
+      {
+        id: 'sci-4',
+        title: 'The Secret of Rainbows & Sunlight',
+        duration: '7:10',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🌈',
+        description: 'White sunlight is secretly made of 7 rainbow colors: VIBGYOR!',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Virtual Float Lab', type: 'Lab', icon: '🧪', description: 'Drop objects into water and guess if they float!' },
+      { title: 'Mix Rainbow Colors', type: 'Game', icon: '🎨', description: 'Mix Red + Blue to discover Purple.' },
+    ],
+  },
+
+  knowledge: {
+    id: 'knowledge',
+    title: 'General Knowledge & World',
+    tagline: 'Discover planets, animals, our great country and wonders.',
+    bannerColor: '#f59e0b',
+    gradient: 'from-amber-500 via-yellow-500 to-orange-600',
+    accentColor: '#d97706',
+    funFact: 'Honey bees communicate with each other by doing a special wiggle dance!',
+    lessons: [
+      {
+        id: 'kn-1',
+        title: 'Journey Through Our Solar System',
+        duration: '9:15',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🪐',
+        description: 'Visit fiery Mercury, beautiful Saturn rings, and red planet Mars!',
+        isCompleted: true,
+      },
+      {
+        id: 'kn-2',
+        title: 'Community Helpers Who Keep Us Safe',
+        duration: '7:20',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🚒',
+        description: 'Say hello to Doctors, Firefighters, Police officers and Farmers!',
+      },
+      {
+        id: 'kn-3',
+        title: 'Incredible Animal Homes & Habitats',
+        duration: '8:30',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🪺',
+        description: 'From beaver dams and bird nests to honeycombs and bear caves.',
+      },
+      {
+        id: 'kn-4',
+        title: 'Traffic Signs & Road Safety Rules',
+        duration: '6:10',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🚦',
+        description: 'Red means STOP, Yellow means GET READY, Green means GO GO GO!',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Planet Matcher', type: 'Game', icon: '🚀', description: 'Match each planet to its unique orbit!' },
+      { title: 'Who Am I? Quiz', type: 'Quiz', icon: '🕵️', description: 'Guess the helper from their tools.' },
+    ],
+  },
+
+  history: {
+    id: 'history',
+    title: 'History & Great Forts',
+    tagline: 'Travel back in time to legendary kings, queens and monuments.',
+    bannerColor: '#f97316',
+    gradient: 'from-orange-500 via-amber-600 to-red-600',
+    accentColor: '#ea580c',
+    funFact: 'The Great Wall of China is longer than 21,000 kilometers!',
+    lessons: [
+      {
+        id: 'hist-1',
+        title: 'The Golden Age of King Ashoka',
+        duration: '8:10',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🦁',
+        description: 'How the Ashoka Lion Pillar became the pride symbol of India.',
+      },
+      {
+        id: 'hist-2',
+        title: 'Secrets of the Magnificent Taj Mahal',
+        duration: '7:45',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🕌',
+        description: 'Built with pure white marble that changes color at sunrise and sunset.',
+      },
+      {
+        id: 'hist-3',
+        title: 'Brave Rani Lakshmibai of Jhansi',
+        duration: '9:00',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '⚔️',
+        description: 'The fearless queen who fought courageously on horseback.',
+      },
+      {
+        id: 'hist-4',
+        title: 'Life in Ancient Harappa & Indus Valley',
+        duration: '8:30',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🏺',
+        description: 'Discover the world’s first planned cities with brick baths and toy carts!',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Build a Royal Fort', type: 'Puzzle', icon: '🏰', description: 'Assemble ancient towers, gates and flags!' },
+    ],
+  },
+
+  manners: {
+    id: 'manners',
+    title: 'Good Manners & Golden Habits',
+    tagline: 'Learn empathy, magic words, politeness and sweet kindness.',
+    bannerColor: '#f43f5e',
+    gradient: 'from-rose-500 via-pink-600 to-red-500',
+    accentColor: '#e11d48',
+    funFact: 'A gentle smile is the only language that everyone in the whole world understands!',
+    lessons: [
+      {
+        id: 'man-1',
+        title: 'The 3 Magic Words: Please, Sorry, Thank You',
+        duration: '5:40',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🪄',
+        description: 'When and how to use magical words that turn frowns into big smiles!',
+        isCompleted: true,
+      },
+      {
+        id: 'man-2',
+        title: 'Table Manners: Eating Like a Little Prince/Princess',
+        duration: '6:15',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🍽️',
+        description: 'Chewing with mouth closed, using napkins, and waiting your turn.',
+      },
+      {
+        id: 'man-3',
+        title: 'Sharing Toys & Playground Kindness',
+        duration: '7:00',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🤝',
+        description: 'How taking turns makes playing twice as joyful for everyone.',
+      },
+      {
+        id: 'man-4',
+        title: 'Green Habits: Clean Hands & No Littering',
+        duration: '5:50',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🧼',
+        description: 'Washing germs away for 20 seconds and putting trash in dustbins.',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Kindness Wheel', type: 'Game', icon: '🎡', description: 'Spin the wheel for your daily good deed mission!' },
+    ],
+  },
+
+  english: {
+    id: 'english',
+    title: 'English Fun & Grammar',
+    tagline: 'Build vocabulary, sentences, and joyful speaking confidence!',
+    bannerColor: '#84cc16',
+    gradient: 'from-lime-500 via-emerald-500 to-teal-600',
+    accentColor: '#65a30d',
+    funFact: 'The sentence "The quick brown fox jumps over the lazy dog" contains every letter of the alphabet!',
+    lessons: [
+      {
+        id: 'eng-1',
+        title: 'Action Words: Run, Jump, Sing, Laugh',
+        duration: '6:30',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🏃',
+        description: 'Learn Verbs through funny character actions and dance moves!',
+        isCompleted: true,
+      },
+      {
+        id: 'eng-2',
+        title: 'Opposite Words: Hot & Cold, Big & Small',
+        duration: '7:10',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '❄️',
+        description: 'Fun animations contrasting night and day, happy and sad.',
+      },
+      {
+        id: 'eng-3',
+        title: 'Sight Words for Speed Reading',
+        duration: '8:00',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '👀',
+        description: 'Read words like THE, AND, YOU, IS, ARE instantly on sight!',
+      },
+      {
+        id: 'eng-4',
+        title: 'Making My First Full Sentences',
+        duration: '7:50',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '📝',
+        description: 'Put puzzle words together: "This is a blue car."',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Word Scramble', type: 'Game', icon: '🔡', description: 'Rearrange mixed letters to spell words!' },
+    ],
+  },
+
+  mathematics: {
+    id: 'mathematics',
+    title: 'Mathematics Adventures',
+    tagline: 'Addition, subtraction, geometry and playful math puzzles!',
+    bannerColor: '#6366f1',
+    gradient: 'from-indigo-500 via-blue-600 to-purple-600',
+    accentColor: '#4f46e5',
+    funFact: 'A pizza slice is naturally shaped like a sector of a circle!',
+    lessons: [
+      {
+        id: 'math-1',
+        title: "Addition – Let's Add 2 and 3",
+        duration: '8:12',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🍎',
+        description: 'Learn how to add two numbers using shiny red apples and friendly objects.',
+        isCompleted: true,
+      },
+      {
+        id: 'math-2',
+        title: 'Subtraction Safari: Taking Away',
+        duration: '7:48',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🍌',
+        description: 'Five bananas on a tree, monkey takes two away. How many remain?',
+      },
+      {
+        id: 'math-3',
+        title: 'Shapes Around Us: Circle, Square, Triangle',
+        duration: '6:34',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🔺',
+        description: 'Spot geometric shapes hidden in everyday objects like clocks and windows.',
+      },
+      {
+        id: 'math-4',
+        title: 'Telling Time on the Clock Face',
+        duration: '8:25',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '⏰',
+        description: 'Hour hand and minute hand: Know when it is playtime or snack time!',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Fruit Math Cart', type: 'Game', icon: '🛒', description: 'Drop the right count of fruits to balance the scale!' },
+      { title: 'Shape Detective', type: 'Game', icon: '🔍', description: 'Find 5 triangles hidden in the playground.' },
+    ],
+  },
+
+  hindi: {
+    id: 'hindi',
+    title: 'हिन्दी सीखो (Hindi Learning)',
+    tagline: 'स्वर, व्यंजन, शब्द और प्यारे बालगीत सीखें आसानी से!',
+    bannerColor: '#10b981',
+    gradient: 'from-emerald-500 via-teal-600 to-green-600',
+    accentColor: '#059669',
+    funFact: 'हिन्दी भाषा देवनागरी लिपि में लिखी जाती है जो पूरी दुनिया में सबसे वैज्ञानिक लिपियों में से एक है!',
+    lessons: [
+      {
+        id: 'hin-1',
+        title: 'स्वर ज्ञान: अ से अनार, आ से आम',
+        duration: '7:20',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🥭',
+        description: 'अ, आ, इ, ई, उ, ऊ, ऋ, ए, ऐ, ओ, औ, अं, अः को सुंदर चित्रों के साथ बोलें।',
+        isCompleted: true,
+      },
+      {
+        id: 'hin-2',
+        title: 'व्यंजन यात्रा: क से कबूतर, ख से खरगोश',
+        duration: '8:50',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🕊️',
+        description: 'क वर्ग, च वर्ग, ट वर्ग के सभी अक्षरों को मजेदार कहानियों से समझें।',
+      },
+      {
+        id: 'hin-3',
+        title: 'दो अक्षर वाले सरल शब्द (घर, जल, फल, रथ)',
+        duration: '6:40',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🏡',
+        description: 'घ + र = घर! बिना मात्रा वाले दो अक्षरों को जोड़कर पढ़ना सीखें।',
+      },
+      {
+        id: 'hin-4',
+        title: 'हिन्दी गिनती: १ से १० (एक, दो, तीन)',
+        duration: '6:10',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🔟',
+        description: 'एक, दो, तीन, चार, पांच... उंगलियों पर नाचते नंबरों के साथ खेलें!',
+      },
+    ],
+    practiceActivities: [
+      { title: 'अक्षर मिलान (Letter Match)', type: 'Game', icon: '🎯', description: 'चित्र को सही पहले अक्षर से मिलाएं!' },
+      { title: 'शब्द बनाओ', type: 'Puzzle', icon: '🧩', description: 'सही अक्षरों को जोड़कर शब्द बनाएं।' },
+    ],
+  },
+
+  'children-stories': {
+    id: 'children-stories',
+    title: 'Panchatantra & Folk Tales',
+    tagline: 'Akbar-Birbal, Tenali Raman, and timeless bed-time morals.',
+    bannerColor: '#ec4899',
+    gradient: 'from-pink-500 via-rose-500 to-purple-600',
+    accentColor: '#db2777',
+    funFact: 'The Panchatantra stories are over 2,200 years old and have been translated into 50+ languages!',
+    lessons: [
+      {
+        id: 'cs-1',
+        title: 'Birbal Ki Khichdi: The Power of Hope',
+        duration: '9:40',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🍲',
+        description: 'How clever Birbal taught Emperor Akbar an unforgettable lesson of justice.',
+        isCompleted: true,
+      },
+      {
+        id: 'cs-2',
+        title: 'Tenali Raman and The Thieves',
+        duration: '8:15',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '💰',
+        description: 'How witty Tenali trick thieves into watering his entire vegetable garden for free!',
+      },
+      {
+        id: 'cs-3',
+        title: 'The Monkey and The Crocodile',
+        duration: '7:50',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🐊',
+        description: 'Sweet berries on the rose-apple tree and the quick thinking of a smart monkey.',
+      },
+      {
+        id: 'cs-4',
+        title: 'The Blue Jackal: Truth Always Shines',
+        duration: '7:10',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🐺',
+        description: 'A jackal falls into blue dye and pretends to be king of the jungle!',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Moral Matcher', type: 'Quiz', icon: '💡', description: 'Which moral belongs to which story?' },
+    ],
+  },
+
+  'art-craft': {
+    id: 'art-craft',
+    title: 'Creative Art & Origami Craft',
+    tagline: 'Paint, fold paper, sculpt clay and unleash your inner artist!',
+    bannerColor: '#eab308',
+    gradient: 'from-yellow-500 via-amber-500 to-orange-500',
+    accentColor: '#ca8a04',
+    funFact: 'Origami comes from two Japanese words: "Ori" (folding) and "Kami" (paper)!',
+    lessons: [
+      {
+        id: 'art-1',
+        title: 'Color Mixing Magic: Secondary Colors',
+        duration: '6:50',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🎨',
+        description: 'Watch Red and Yellow turn into fiery Orange right before your eyes!',
+        isCompleted: true,
+      },
+      {
+        id: 'art-2',
+        title: 'Origami Jumping Frog & Paper Boat',
+        duration: '8:30',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🐸',
+        description: 'Grab a square sheet of paper and fold a frog that actually jumps!',
+      },
+      {
+        id: 'art-3',
+        title: 'Fingerprint Art: Cute Bugs & Garden',
+        duration: '7:15',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🐞',
+        description: 'Dip your thumb in paint and turn fingerprints into ladybugs and caterpillars.',
+      },
+      {
+        id: 'art-4',
+        title: 'Clay Modeling: Funny Cartoon Animals',
+        duration: '9:05',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🧸',
+        description: 'Roll colored dough into balls and coils to shape an adorable teddy bear.',
+      },
+    ],
+    practiceActivities: [
+      { title: 'Digital Canvas Paint', type: 'Tool', icon: '🖌️', description: 'Doodle on the screen with glitter brushes!' },
+    ],
+  },
+};

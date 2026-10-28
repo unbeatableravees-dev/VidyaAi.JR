@@ -17,12 +17,14 @@ import { QuizCelebrationIllustration, HexBadge } from '../illustrations/Illustra
 import { sound } from '../../utils/audio';
 
 interface QuizResultsScreenProps {
+  userName: string;
   onContinueLearning: () => void;
   onRetakeQuiz: () => void;
   onSelectLesson: (lessonId: string) => void;
 }
 
 export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
+  userName,
   onContinueLearning,
   onRetakeQuiz,
   onSelectLesson,
@@ -47,7 +49,7 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#bae6fd] via-[#7dd3fc] to-[#67e8f9] shadow-lg border border-white/70 min-h-[190px] flex items-center justify-between px-10 py-6">
         <div className="relative z-10 max-w-md space-y-2">
           <h1 className="text-2xl lg:text-3xl font-black text-[#0f2e5a] tracking-tight leading-snug">
-            Awesome, Aarav!<br />You completed the Quiz!
+            Awesome, {userName}!<br />You completed the Quiz!
           </h1>
           <p className="text-slate-600 text-xs sm:text-sm font-semibold">
             You're doing great! Keep learning and collect more stars!
@@ -214,7 +216,7 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
         </div>
       </div>
 
-      {/* Middle Banner Card: "Well done! You've completed this lesson..." */}
+      {/* Middle Banner Card */}
       <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-2xl bg-amber-400 flex items-center justify-center text-white shadow-sm shrink-0">
@@ -283,8 +285,8 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
                   <div className="w-full h-full bg-[#064e3b] border-4 border-[#78350f] flex items-center justify-around px-3">
                     <span className="text-white text-xs font-black">2+3=5</span>
                     <div className="flex gap-1">
-                      <AppleSvg size={22} />
-                      <AppleSvg size={22} />
+                      <span className="text-xl">🍎</span>
+                      <span className="text-xl">🍎</span>
                     </div>
                   </div>
                 )}
