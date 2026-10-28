@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
-import { Sparkles, ArrowRight, Star, Heart } from 'lucide-react';
+import { Sparkles, ArrowRight, Star, Heart, Check } from 'lucide-react';
 import { sound } from '../../utils/audio';
 
 interface WelcomeScreenProps {
@@ -9,13 +9,18 @@ interface WelcomeScreenProps {
 }
 
 const AVATARS = [
-  { id: 'boy-aarav', name: 'Aarav', emoji: '👦', shirtColor: '#2563eb', label: 'Cool Aarav' },
-  { id: 'girl-ananya', name: 'Ananya', emoji: '👧', shirtColor: '#ec4899', label: 'Sweet Ananya' },
-  { id: 'boy-kabir', name: 'Kabir', emoji: '🧒', shirtColor: '#f59e0b', label: 'Explorer Kabir' },
-  { id: 'girl-meera', name: 'Meera', emoji: '👧', shirtColor: '#10b981', label: 'Clever Meera' },
+  { id: 'boy-aarav', name: 'Aarav', emoji: '👦', desc: 'Curious Learner', bg: 'from-blue-400 to-indigo-500' },
+  { id: 'girl-ananya', name: 'Ananya', emoji: '👧', desc: 'Math Superstar', bg: 'from-pink-400 to-rose-500' },
+  { id: 'boy-kabir', name: 'Kabir', emoji: '🧒', desc: 'Story Explorer', bg: 'from-amber-400 to-orange-500' },
+  { id: 'girl-meera', name: 'Meera', emoji: '👧', desc: 'Creative Artist', bg: 'from-emerald-400 to-teal-500' },
 ];
 
-const GRADES = ['Nursery / KG', 'Grade 1', 'Grade 2', 'Grade 3'];
+const GRADES = [
+  { id: 'Kindergarten', label: 'Kindergarten', age: 'Ages 3-5', icon: '🐣' },
+  { id: 'Grade 1', label: 'Grade 1', age: 'Ages 5-6', icon: '🎒' },
+  { id: 'Grade 2', label: 'Grade 2', age: 'Ages 6-7', icon: '⭐' },
+  { id: 'Grade 3', label: 'Grade 3', age: 'Ages 7-8', icon: '🚀' },
+];
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onNameSubmit,
@@ -35,8 +40,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
     }
 
     sound.playSuccess();
-    sound.speakText(`Welcome to Vidya AI Junior, ${cleanName}! Let's make learning fun!`);
-
     try {
       confetti({
         particleCount: 100,
@@ -49,28 +52,28 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 
     setTimeout(() => {
       onNameSubmit(cleanName, selectedAvatar, selectedGrade);
-    }, 600);
+    }, 450);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#12439a] via-[#1d4ed8] to-[#0ea5e9] flex items-center justify-center p-4 relative overflow-hidden select-none">
-      {/* Floating Animated Background Blobs & Sparkles */}
-      <div className="absolute top-10 left-12 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-float pointer-events-none" />
-      <div className="absolute bottom-12 right-16 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-float-slow pointer-events-none" />
-      <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-amber-300/20 rounded-full blur-2xl animate-pulse-glow pointer-events-none" />
+    <div className="min-h-screen bg-gradient-to-br from-[#0c2e6b] via-[#14479e] to-[#0284c7] flex items-center justify-center p-4 md:p-8 relative overflow-hidden select-none">
+      {/* Animated Floating Background Elements */}
+      <div className="absolute top-10 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-float pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-cyan-300/20 rounded-full blur-3xl animate-float-slow pointer-events-none" />
+      <div className="absolute top-1/2 left-1/3 w-60 h-60 bg-amber-300/15 rounded-full blur-2xl animate-pulse-glow pointer-events-none" />
 
-      {/* Floating Stars in BG */}
-      <span className="absolute top-16 left-1/4 text-3xl animate-float opacity-80">⭐</span>
-      <span className="absolute bottom-24 left-1/5 text-2xl animate-wiggle opacity-70">✨</span>
-      <span className="absolute top-24 right-1/5 text-4xl animate-bounce-gentle opacity-80">🚀</span>
-      <span className="absolute bottom-16 right-1/4 text-3xl animate-float opacity-75">🎨</span>
+      {/* Floating 3D Emojis */}
+      <span className="absolute top-12 left-1/6 text-4xl animate-float opacity-80">🚀</span>
+      <span className="absolute top-28 right-1/6 text-3xl animate-wiggle opacity-80">⭐</span>
+      <span className="absolute bottom-20 left-1/5 text-4xl animate-bounce-gentle opacity-75">🎨</span>
+      <span className="absolute bottom-14 right-1/4 text-3xl animate-float-slow opacity-80">🎈</span>
 
-      {/* Main Glossy Container */}
-      <div className="relative z-10 w-full max-w-lg bg-white/95 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)] border-2 border-white/80 animate-in zoom-in-95 duration-300">
-        {/* Brand Logo Header with JR badge */}
-        <div className="flex flex-col items-center text-center space-y-2 mb-6">
+      {/* Main Glassmorphism Card */}
+      <div className="relative z-10 w-full max-w-xl bg-white/95 backdrop-blur-2xl rounded-[3rem] p-8 md:p-12 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.5)] border-2 border-white/90 animate-in zoom-in-95 duration-300">
+        {/* Brand Header */}
+        <div className="flex flex-col items-center text-center space-y-2.5 mb-7">
           <div className="relative">
-            <div className="w-20 h-20 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-3xl p-3 flex items-center justify-center shadow-xl shadow-blue-500/30 animate-bounce-gentle">
+            <div className="w-22 h-22 bg-gradient-to-tr from-blue-600 via-indigo-600 to-blue-500 rounded-3xl p-3 flex items-center justify-center shadow-xl shadow-blue-500/30 animate-bounce-gentle border border-white/40">
               <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow">
                 <path
                   d="M 50 8 L 62 36 L 94 38 L 70 59 L 77 90 L 50 74 L 23 90 L 30 59 L 6 38 L 38 36 Z"
@@ -94,13 +97,13 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
               </svg>
             </div>
             {/* Glowing JR Badge */}
-            <span className="absolute -bottom-1 -right-2 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-900 font-black text-xs shadow-md border-2 border-white animate-pulse-glow">
+            <span className="absolute -bottom-1 -right-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black text-xs shadow-md border-2 border-white animate-pulse-glow">
               Jr
             </span>
           </div>
 
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight font-['Nunito',sans-serif]">
+          <div className="pt-2 flex items-center justify-center gap-2">
+            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight font-['Nunito',sans-serif]">
               Vidya<span className="text-blue-600">AI</span>
             </h1>
             <span className="px-2.5 py-0.5 bg-amber-400 text-slate-950 font-black text-xs rounded-full shadow-sm">
@@ -108,19 +111,19 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             </span>
           </div>
 
-          <p className="text-sm font-extrabold text-slate-500">
-            Welcome, Little Explorer! Let's get to know you 🌟
+          <p className="text-sm font-extrabold text-slate-600 max-w-sm">
+            Welcome to the magical world of learning! What should we call you? 🌟
           </p>
         </div>
 
-        {/* Form */}
+        {/* Setup Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Avatar Choice */}
+          {/* Avatar Choices */}
           <div>
             <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2.5 text-center">
-              Choose Your Character
+              Pick Your Fun Character
             </label>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {AVATARS.map((av) => (
                 <button
                   type="button"
@@ -131,23 +134,22 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   }}
                   className={`p-3 rounded-2xl border-2 flex flex-col items-center gap-1 transition-all duration-200 cursor-pointer ${
                     selectedAvatar === av.id
-                      ? 'border-blue-500 bg-blue-50/80 shadow-md scale-105 ring-2 ring-blue-300'
-                      : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 hover:scale-102'
+                      ? 'border-blue-500 bg-blue-50 shadow-md scale-105 ring-4 ring-blue-200'
+                      : 'border-slate-200 bg-slate-50/70 hover:bg-slate-100 hover:scale-102'
                   }`}
                 >
-                  <span className="text-3xl filter drop-shadow">{av.emoji}</span>
-                  <span className="text-[11px] font-black text-slate-700 truncate w-full text-center">
-                    {av.name}
-                  </span>
+                  <span className="text-4xl filter drop-shadow">{av.emoji}</span>
+                  <span className="text-xs font-black text-slate-900">{av.name}</span>
+                  <span className="text-[10px] font-bold text-slate-400">{av.desc}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Name Input */}
+          {/* Name Input with Sparkle */}
           <div>
             <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
-              What is your name?
+              Enter Your Name
             </label>
             <div className="relative">
               <input
@@ -158,21 +160,21 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                   setName(e.target.value);
                   if (error) setError(false);
                 }}
-                placeholder="e.g. Aarav, Ananya, Kabir..."
+                placeholder="Type your name here (e.g. Aarav, Sara)..."
                 maxLength={24}
-                className={`w-full px-5 py-3.5 text-base font-extrabold rounded-2xl bg-white border-2 transition-all placeholder:text-slate-400 text-slate-800 shadow-inner focus:outline-none ${
+                className={`w-full px-5 py-4 text-base font-black rounded-2xl bg-white border-2 transition-all placeholder:text-slate-400 text-slate-800 shadow-inner focus:outline-none ${
                   error
                     ? 'border-rose-400 focus:ring-4 focus:ring-rose-200'
                     : 'border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100'
                 }`}
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xl">
-                ✨
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl">
+                ⭐
               </span>
             </div>
             {error && (
               <p className="text-xs font-bold text-rose-500 mt-1.5 flex items-center gap-1">
-                Please type your name to start!
+                Please enter a name so we can personalize your learning!
               </p>
             )}
           </div>
@@ -180,44 +182,47 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           {/* Grade / Class Selector */}
           <div>
             <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
-              Select Your Class / Grade
+              Select Your Grade / Level
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               {GRADES.map((gr) => (
                 <button
                   type="button"
-                  key={gr}
+                  key={gr.id}
                   onClick={() => {
                     sound.playPop();
-                    setSelectedGrade(gr);
+                    setSelectedGrade(gr.id);
                   }}
-                  className={`py-2 px-2.5 rounded-xl text-xs font-black transition-all cursor-pointer text-center ${
-                    selectedGrade === gr
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  className={`p-2.5 rounded-2xl border-2 transition-all cursor-pointer text-center flex flex-col items-center justify-center ${
+                    selectedGrade === gr.id
+                      ? 'border-blue-600 bg-blue-600 text-white shadow-md scale-102'
+                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
                   }`}
                 >
-                  {gr}
+                  <span className="text-xl mb-0.5">{gr.icon}</span>
+                  <span className="text-xs font-black">{gr.label}</span>
+                  <span className={`text-[10px] font-bold ${selectedGrade === gr.id ? 'text-blue-100' : 'text-slate-400'}`}>
+                    {gr.age}
+                  </span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Big Glossy Start Button */}
+          {/* Big Glossy CTA Button */}
           <button
             type="submit"
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 hover:from-yellow-300 hover:to-amber-400 active:scale-98 text-slate-950 font-black text-base shadow-xl shadow-amber-400/30 flex items-center justify-center gap-2 cursor-pointer transition-all glossy-pill shimmer-effect"
           >
-            <span>Start My Learning Adventure!</span>
+            <span>Let's Start Learning!</span>
             <ArrowRight className="w-5 h-5 stroke-[3]" />
           </button>
         </form>
 
-        {/* Footer info */}
-        <div className="mt-5 text-center text-xs font-bold text-slate-400 flex items-center justify-center gap-1">
-          <span>Fun learning made with</span>
+        {/* Footer */}
+        <div className="mt-6 text-center text-xs font-bold text-slate-400 flex items-center justify-center gap-1">
+          <span>Safe & friendly educational fun made with</span>
           <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />
-          <span>for curious kids</span>
         </div>
       </div>
     </div>

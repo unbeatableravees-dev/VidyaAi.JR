@@ -1,8 +1,8 @@
 import React from 'react';
-import { Home, Grid, BookOpen, BarChart3, Settings, Sparkles } from 'lucide-react';
+import { Home, Grid, BookOpen, BarChart3, Settings, Sparkles, Gamepad2 } from 'lucide-react';
 import { SidebarKidsIllustration } from '../illustrations/Illustrations';
 
-export type NavTab = 'home' | 'categories' | 'learning' | 'progress' | 'settings' | 'quiz' | 'quiz-results' | 'category-detail';
+export type NavTab = 'home' | 'categories' | 'practice' | 'learning' | 'progress' | 'settings' | 'quiz' | 'quiz-results' | 'category-detail';
 
 interface SidebarProps {
   currentTab: NavTab;
@@ -14,6 +14,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, onSwi
   const navItems = [
     { id: 'home' as NavTab, label: 'Home', icon: Home },
     { id: 'categories' as NavTab, label: 'Categories (13)', icon: Grid },
+    { id: 'practice' as NavTab, label: 'Practice Games 🎮', icon: Gamepad2 },
     { id: 'learning' as NavTab, label: 'My Learning', icon: BookOpen },
     { id: 'progress' as NavTab, label: 'Progress', icon: BarChart3 },
     { id: 'settings' as NavTab, label: 'Settings', icon: Settings },

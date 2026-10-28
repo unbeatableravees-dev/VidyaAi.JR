@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowRight, ChevronRight, Lock, Play, Sparkles } from 'lucide-react';
 import { ALL_CATEGORIES, PRACTICE_ACTIVITIES, FEATURED_VIDEOS } from '../../data/learningData';
 import { HeroBannerIllustration, CategoryIcon, PracticeIcon } from '../illustrations/Illustrations';
+import { VideoPlayerModal, VideoData } from '../modals/VideoPlayerModal';
+import { InteractiveGameModal } from '../modals/InteractiveGameModal';
 import { sound } from '../../utils/audio';
 
 interface HomeScreenProps {
@@ -9,14 +11,128 @@ interface HomeScreenProps {
   onStartLearning: () => void;
   onSelectCategory: (categoryId: string) => void;
   onViewAllCategories: () => void;
+  onOpenPractice?: () => void;
 }
+
+const FEATURED_VIDEO_DETAILS: Record<string, VideoData> = {
+  v1: {
+    id: 'v1',
+    title: "Toto Discovers The Elephant's Super Trunk",
+    category: 'Animals & Nature',
+    duration: '4:32',
+    thumbnailEmoji: '🐘',
+    bgGradient: 'from-pink-900 via-purple-900 to-indigo-950',
+    description: 'Join Toto the baby elephant as he discovers 7 miraculous things his trunk can do!',
+    notes: [
+      'An elephant trunk has over 40,000 muscles!',
+      'Elephants use trunks like a snorkel to swim underwater.',
+      'Trunks can pick up a tiny peanut or lift a heavy log.',
+    ],
+    objectives: [
+      'Learn animal adaptation and anatomy',
+      'Understand how Asian & African elephants live',
+      'Develop empathy and love for wildlife',
+    ],
+  },
+  v2: {
+    id: 'v2',
+    title: 'Train Kisne Banaya? (The Invention of Trains)',
+    category: 'Science & Invention',
+    duration: '5:18',
+    thumbnailEmoji: '🚂',
+    bgGradient: 'from-amber-900 via-orange-950 to-slate-900',
+    description: 'From coal-powered steam engines to modern high-speed bullet trains!',
+    notes: [
+      'George Stephenson built the first public inter-city railway.',
+      'Steam engines burned coal to heat water into high-pressure steam.',
+      'Modern Vande Bharat trains run on clean electricity.',
+    ],
+    objectives: [
+      'Discover the history of steam and electric locomotives',
+      'Understand how wheels grip steel tracks',
+      'Explore famous rail journeys of India and the world',
+    ],
+  },
+  v3: {
+    id: 'v3',
+    title: "Krishna's Mountain Adventure (Govardhan)",
+    category: 'Mythology & Moral',
+    duration: '6:21',
+    thumbnailEmoji: '🦚',
+    bgGradient: 'from-emerald-950 via-teal-900 to-blue-950',
+    description: 'Little Krishna lifts Govardhan mountain on his pinky finger to shelter villagers from torrential rains.',
+    notes: [
+      'True strength comes from protecting those in need.',
+      'Nature, cows, and mountains deserve our care and gratitude.',
+      'Unity gives power to overcome any stormy weather.',
+    ],
+    objectives: [
+      'Learn the value of humility and courage',
+      'Appreciate traditional folk heritage',
+      'Reflect on community teamwork and solidarity',
+    ],
+  },
+  v4: {
+    id: 'v4',
+    title: 'Mor Ka Choti Chidiya (The Peacock & The Sparrow)',
+    category: 'Moral Stories',
+    duration: '4:45',
+    thumbnailEmoji: '🦜',
+    bgGradient: 'from-blue-900 via-indigo-950 to-slate-900',
+    description: 'A proud peacock with iridescent feathers learns that every bird has their own unique gift.',
+    notes: [
+      'Never judge someone by their plain looks.',
+      'The little sparrow could fly high above stormy clouds to guide others.',
+      'Self-worth comes from goodness inside your heart.',
+    ],
+    objectives: [
+      'Embrace individuality and diversity in friends',
+      'Overcome vanity and bragging',
+      'Build respectful, kind friendships in school',
+    ],
+  },
+  v5: {
+    id: 'v5',
+    title: 'Little Detectives: Subtraction ka Raaz',
+    category: 'Math Mystery',
+    duration: '5:12',
+    thumbnailEmoji: '🔍',
+    bgGradient: 'from-purple-950 via-indigo-950 to-slate-950',
+    description: 'Who stole the 3 cookies from the jar? Solve clues using subtraction equations!',
+    notes: [
+      'Starting count: 8 chocolate chip cookies.',
+      'Leftover count: 5 cookies.',
+      'Equation: 8 - 5 = 3 missing cookies found by the puppy!',
+    ],
+    objectives: [
+      'Solve real-life subtraction word problems',
+      'Use deductive detective reasoning',
+      'Check answers using reverse addition',
+    ],
+  },
+};
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
   userName,
   onStartLearning,
   onSelectCategory,
   onViewAllCategories,
+  onOpenPractice,
 }) => {
+  const [selectedVideo, setSelectedVideo] = useState<VideoData | null>(null);
+  const [activeGame, setActiveGame] = useState<{ id: string; title: string } | null>(null);
+
+  const handleOpenFeaturedVideo = (videoId: string) => {
+    sound.playPop();
+    const vid = FEATURED_VIDEO_DETAILS[videoId] || FEATURED_VIDEO_DETAILS['v1'];
+    setSelectedVideo(vid);
+  };
+
+  const handleOpenPracticeGame = (actId: string, actTitle: string) => {
+    sound.playPop();
+    setActiveGame({ id: actId, title: actTitle });
+  };
+
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto pb-28 select-none">
       {/* Hero Banner with Glossy Glassmorphism & Animations */}
@@ -132,11 +248,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <button
             onClick={() => {
               sound.playPop();
-              onStartLearning();
+              if (onOpenPractice) {
+                onOpenPractice();
+              } else {
+                onStartLearning();
+              }
             }}
-            className="text-xs font-black text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200 hover:bg-blue-100 transition-all"
+            className="text-xs font-black text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200 hover:bg-blue-100 transition-all hover:scale-105"
           >
-            View All <ArrowRight className="w-3.5 h-3.5" />
+            View All Games <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
@@ -145,10 +265,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           {PRACTICE_ACTIVITIES.map((activity) => (
             <div
               key={activity.id}
-              onClick={() => {
-                sound.playPop();
-                onStartLearning();
-              }}
+              onClick={() => handleOpenPracticeGame(activity.id, activity.title)}
               style={{ backgroundColor: activity.bgColor }}
               className="rounded-3xl p-4 flex flex-col justify-between h-36 border-2 border-white/60 shadow-md hover:shadow-xl hover:-translate-y-2 transition-all cursor-pointer group select-none text-white relative overflow-hidden glossy-bubble"
             >
@@ -169,7 +286,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       </section>
 
-      {/* Featured Videos Section */}
+      {/* Featured Videos Section (Clicking opens Simulated Interactive Video Modal!) */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-black text-slate-900 tracking-tight">Featured Videos</h2>
@@ -189,10 +306,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           {FEATURED_VIDEOS.map((video) => (
             <div
               key={video.id}
-              onClick={() => {
-                sound.playPop();
-                onStartLearning();
-              }}
+              onClick={() => handleOpenFeaturedVideo(video.id)}
               className="group cursor-pointer rounded-3xl overflow-hidden bg-white border border-slate-200/80 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all flex flex-col justify-between"
             >
               {/* Thumbnail Container */}
@@ -205,14 +319,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   {video.thumbnail === 'detective' && <span className="text-4xl">🔍</span>}
                 </div>
 
-                {/* Lock icon top-left */}
-                <div className="absolute top-2 left-2 w-6 h-6 rounded-lg bg-black/60 backdrop-blur-sm flex items-center justify-center text-amber-300">
-                  <Lock className="w-3.5 h-3.5" />
-                </div>
-
                 {/* Duration badge bottom-right */}
                 <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-[11px] font-black text-white">
                   {video.duration}
+                </div>
+
+                {/* Play button hover overlay */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center shadow-lg transform scale-75 group-hover:scale-100 transition-transform">
+                    <Play className="w-5 h-5 fill-current translate-x-0.5" />
+                  </div>
                 </div>
               </div>
 
@@ -226,6 +342,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           ))}
         </div>
       </section>
+
+      {/* Simulated Interactive Video Player Modal */}
+      {selectedVideo && (
+        <VideoPlayerModal
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          onTakeQuiz={() => {
+            setSelectedVideo(null);
+            onStartLearning();
+          }}
+        />
+      )}
+
+      {/* Playable Interactive Mini Game Modal */}
+      {activeGame && (
+        <InteractiveGameModal
+          gameId={activeGame.id}
+          gameTitle={activeGame.title}
+          onClose={() => setActiveGame(null)}
+        />
+      )}
     </div>
   );
 };

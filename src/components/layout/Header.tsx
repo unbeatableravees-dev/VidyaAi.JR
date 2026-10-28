@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, ChevronDown, Award, Star, User, LogOut, Volume2 } from 'lucide-react';
+import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut } from 'lucide-react';
 import { sound } from '../../utils/audio';
 
 interface HeaderProps {
@@ -9,6 +9,7 @@ interface HeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onProfileClick?: () => void;
+  onSettingsClick?: () => void;
   onSwitchProfile?: () => void;
 }
 
@@ -18,12 +19,13 @@ export const Header: React.FC<HeaderProps> = ({
   searchQuery,
   onSearchChange,
   onProfileClick,
+  onSettingsClick,
   onSwitchProfile,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   return (
-    <header className="h-18 px-8 py-3.5 flex items-center justify-between border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-30 shadow-sm">
+    <header className="h-18 px-6 md:px-8 py-3.5 flex items-center justify-between border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-30 shadow-sm">
       {/* Search Input */}
       <div className="relative w-full max-w-md">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -38,21 +40,9 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right Controls */}
       <div className="flex items-center gap-4">
-        {/* Voice Hello Button */}
-        <button
-          onClick={() => {
-            sound.playPop();
-            sound.speakText(`Hello ${userName}! Ready to learn today?`);
-          }}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-black hover:bg-amber-100 transition-all cursor-pointer shadow-sm animate-pulse-glow"
-          title="Say Hello"
-        >
-          <Volume2 className="w-3.5 h-3.5 text-amber-600" />
-          <span>Say Hi</span>
-        </button>
-
         {/* Notification Bell */}
         <button
+          onClick={() => sound.playPop()}
           className="relative p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
           title="Notifications"
         >
@@ -64,10 +54,13 @@ export const Header: React.FC<HeaderProps> = ({
         {/* User Profile */}
         <div className="relative">
           <button
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            onClick={() => {
+              sound.playPop();
+              setShowProfileMenu(!showProfileMenu);
+            }}
             className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 rounded-full transition-all cursor-pointer shadow-sm hover:scale-102"
           >
-            {/* Cartoon Boy Avatar */}
+            {/* Cartoon Avatar */}
             <div className="w-8 h-8 rounded-full bg-blue-500 overflow-hidden ring-2 ring-blue-300 flex items-center justify-center shadow-sm">
               <svg viewBox="0 0 100 100" className="w-full h-full">
                 <circle cx="50" cy="45" r="28" fill="#fed7aa" />
@@ -84,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Profile Dropdown */}
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-60 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 text-slate-700 animate-in fade-in slide-in-from-top-2 duration-150 select-none">
+            <div className="absolute right-0 mt-2 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 text-slate-700 animate-in fade-in slide-in-from-top-2 duration-150 select-none">
               <div className="px-5 py-2 border-b border-slate-100">
                 <p className="font-black text-sm text-slate-900">{userName}</p>
                 <p className="text-xs font-bold text-blue-600">{userGrade} • Super Learner</p>
@@ -112,11 +105,21 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={() => {
                   setShowProfileMenu(false);
+                  if (onSettingsClick) onSettingsClick();
+                }}
+                className="w-full px-5 py-2.5 text-left text-xs font-black text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer"
+              >
+                <Settings className="w-4 h-4 text-slate-400" /> Edit Profile & Settings
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowProfileMenu(false);
                   if (onSwitchProfile) onSwitchProfile();
                 }}
                 className="w-full px-5 py-2.5 text-left text-xs font-black text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 cursor-pointer border-t border-slate-100"
               >
-                <LogOut className="w-4 h-4 text-rose-500" /> Change Name / Profile
+                <LogOut className="w-4 h-4 text-rose-500" /> Switch / Change Name
               </button>
             </div>
           )}

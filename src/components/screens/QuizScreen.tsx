@@ -64,7 +64,7 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
   };
 
   const speakQuestion = () => {
-    sound.speakText(currentQ.question);
+    sound.playPop();
   };
 
   const progressPercentage = Math.round(((currentQuestionIndex + 1) / QUIZ_QUESTIONS.length) * 100);

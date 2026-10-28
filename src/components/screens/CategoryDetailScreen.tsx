@@ -15,6 +15,7 @@ import {
 import { CATEGORY_DETAILS } from '../../data/categoryLessons';
 import { ALL_CATEGORIES } from '../../data/learningData';
 import { CategoryIcon } from '../illustrations/Illustrations';
+import { InteractiveGameModal } from '../modals/InteractiveGameModal';
 import { sound } from '../../utils/audio';
 
 interface CategoryDetailScreenProps {
@@ -41,7 +42,7 @@ export const CategoryDetailScreen: React.FC<CategoryDetailScreenProps> = ({
   });
 
   const handleSpeakCategory = () => {
-    sound.speakText(`${categoryMeta.name}! ${detail.tagline}`);
+    sound.playPop();
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Sidebar, NavTab } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { HomeScreen } from './components/screens/HomeScreen';
@@ -10,6 +10,8 @@ import { CategoryDetailScreen } from './components/screens/CategoryDetailScreen'
 import { ProgressScreen } from './components/screens/ProgressScreen';
 import { SettingsScreen } from './components/screens/SettingsScreen';
 import { WelcomeScreen } from './components/screens/WelcomeScreen';
+import { PracticeScreen } from './components/screens/PracticeScreen';
+import { VideoPlayerModal, VideoData } from './components/modals/VideoPlayerModal';
 import { sound } from './utils/audio';
 
 export function App() {
@@ -33,6 +35,9 @@ export function App() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('numbers');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Active modal video (if any clicked)
+  const [activeVideoModal, setActiveVideoModal] = useState<VideoData | null>(null);
+
   const handleNameSubmit = (name: string, avatar: string, grade: string) => {
     setUserName(name);
     setUserAvatar(avatar);
@@ -42,6 +47,15 @@ export function App() {
     localStorage.setItem('vidya_user_grade', grade);
     setShowWelcome(false);
     setCurrentTab('home');
+  };
+
+  const handleUpdateProfile = (name: string, avatar: string, grade: string) => {
+    setUserName(name);
+    setUserAvatar(avatar);
+    setUserGrade(grade);
+    localStorage.setItem('vidya_user_name', name);
+    localStorage.setItem('vidya_user_avatar', avatar);
+    localStorage.setItem('vidya_user_grade', grade);
   };
 
   const handleSwitchProfile = () => {
@@ -78,6 +92,12 @@ export function App() {
     setCurrentTab('category-detail');
   };
 
+  // Launch simulated video modal
+  const handleOpenVideo = (video: VideoData) => {
+    sound.playPop();
+    setActiveVideoModal(video);
+  };
+
   // If user has not entered a name yet (or clicked Switch Profile), show Welcome/Name Entry page!
   if (showWelcome) {
     return (
@@ -109,6 +129,7 @@ export function App() {
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onProfileClick={() => setCurrentTab('progress')}
+          onSettingsClick={() => setCurrentTab('settings')}
           onSwitchProfile={handleSwitchProfile}
         />
 
@@ -120,8 +141,11 @@ export function App() {
               onStartLearning={handleStartLearning}
               onSelectCategory={handleSelectCategory}
               onViewAllCategories={handleViewAllCategories}
+              onOpenPractice={() => setCurrentTab('practice')}
             />
           )}
+
+          {currentTab === 'practice' && <PracticeScreen />}
 
           {currentTab === 'category-detail' && (
             <CategoryDetailScreen
@@ -163,100 +187,33 @@ export function App() {
 
           {currentTab === 'progress' && <ProgressScreen />}
 
-          {currentTab === 'settings' && <SettingsScreen />}
+          {currentTab === 'settings' && (
+            <SettingsScreen
+              userName={activeDisplayName}
+              userAvatar={userAvatar}
+              userGrade={userGrade}
+              onUpdateProfile={handleUpdateProfile}
+              onResetProgress={() => {
+                localStorage.removeItem('vidya_user_name');
+                setUserName('');
+                setShowWelcome(true);
+              }}
+            />
+          )}
         </main>
       </div>
 
-      {/* Floating Screen Switcher Pill for instant 1-click preview of all requested views */}
-      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 hover:bg-slate-900 backdrop-blur-md border border-white/25 shadow-2xl px-2.5 py-1.5 rounded-full flex flex-wrap items-center justify-center gap-1 transition-all text-xs font-black text-white select-none">
-        <button
-          onClick={() => {
-            sound.playPop();
-            setShowWelcome(true);
-          }}
-          className="px-2.5 py-1 rounded-full text-amber-300 hover:text-amber-200 hover:bg-white/10 transition-all cursor-pointer flex items-center gap-1"
-          title="Enter Name / Onboarding Screen"
-        >
-          <span>👤 Name Page</span>
-        </button>
-
-        <span className="text-slate-600">|</span>
-
-        <button
-          onClick={() => {
-            sound.playPop();
-            setCurrentTab('home');
-          }}
-          className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-            currentTab === 'home'
-              ? 'bg-blue-600 text-white shadow-md'
-              : 'text-slate-300 hover:text-white hover:bg-white/10'
-          }`}
-          title="Image 1: Home Screen"
-        >
-          1. Home
-        </button>
-
-        <button
-          onClick={() => {
-            sound.playPop();
-            handleSelectCategory('numbers');
-          }}
-          className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-            currentTab === 'category-detail'
-              ? 'bg-blue-600 text-white shadow-md'
-              : 'text-slate-300 hover:text-white hover:bg-white/10'
-          }`}
-          title="Category Detail Page"
-        >
-          2. Category Page
-        </button>
-
-        <button
-          onClick={() => {
-            sound.playPop();
-            setCurrentTab('learning');
-          }}
-          className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-            currentTab === 'learning'
-              ? 'bg-blue-600 text-white shadow-md'
-              : 'text-slate-300 hover:text-white hover:bg-white/10'
-          }`}
-          title="Image 3: Video Lesson"
-        >
-          3. Video Lesson
-        </button>
-
-        <button
-          onClick={() => {
-            sound.playPop();
+      {/* Interactive Video Player Modal for fake screens */}
+      {activeVideoModal && (
+        <VideoPlayerModal
+          video={activeVideoModal}
+          onClose={() => setActiveVideoModal(null)}
+          onTakeQuiz={() => {
+            setActiveVideoModal(null);
             setCurrentTab('quiz');
           }}
-          className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-            currentTab === 'quiz'
-              ? 'bg-blue-600 text-white shadow-md'
-              : 'text-slate-300 hover:text-white hover:bg-white/10'
-          }`}
-          title="Image 4: Quiz Time"
-        >
-          4. Quiz Time
-        </button>
-
-        <button
-          onClick={() => {
-            sound.playPop();
-            setCurrentTab('quiz-results');
-          }}
-          className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-            currentTab === 'quiz-results'
-              ? 'bg-blue-600 text-white shadow-md'
-              : 'text-slate-300 hover:text-white hover:bg-white/10'
-          }`}
-          title="Image 2: Quiz Complete"
-        >
-          5. Quiz Complete
-        </button>
-      </div>
+        />
+      )}
     </div>
   );
 }
