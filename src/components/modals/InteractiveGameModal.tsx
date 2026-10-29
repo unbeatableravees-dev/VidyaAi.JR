@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import { X, Star, Trophy, RotateCcw, Check, Sparkles, Heart } from 'lucide-react';
 import { sound } from '../../utils/audio';
@@ -363,8 +364,16 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
     setSelectedMemoryIds([]);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 md:p-6 overflow-y-auto animate-in fade-in duration-200 select-none">
+  return createPortal(
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          sound.playPop();
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 md:p-6 overflow-y-auto animate-in fade-in duration-200 select-none"
+    >
       <div className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/60 my-auto flex flex-col">
         {/* Top Header */}
         <div className="px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-between">
@@ -727,6 +736,7 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
