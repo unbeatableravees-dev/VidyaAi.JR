@@ -22,8 +22,12 @@ export interface VideoData {
   title: string;
   category: string;
   duration: string;
-  thumbnailEmoji: string;
-  bgGradient: string;
+  youtubeId?: string;
+  channel?: string;
+  views?: string;
+  thumbnailEmoji?: string;
+  thumbnailUrl?: string;
+  bgGradient?: string;
   description: string;
   notes: string[];
   objectives: string[];
@@ -42,9 +46,6 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
 }) => {
   if (!video) return null;
 
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
-  const [progress, setProgress] = useState(35);
   const [likes, setLikes] = useState(342);
   const [hasLiked, setHasLiked] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'comments'>('overview');
@@ -54,17 +55,6 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
     { id: 2, name: 'Kabir R.', avatar: '🧒', time: '1h ago', text: 'Now I understand how to add numbers quickly!' },
     { id: 3, name: 'Meera K.', avatar: '👧', time: '3h ago', text: 'I got 5 stars on the quiz after watching this! ⭐⭐⭐⭐⭐' },
   ]);
-
-  // Simulated video playback timer
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setProgress((prev) => (prev >= 100 ? 0 : prev + 0.5));
-      }, 500);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying]);
 
   const handleLike = () => {
     sound.playPop();
@@ -120,105 +110,15 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
           </button>
         </div>
 
-        {/* Video Player Frame (16:9) */}
-        <div className="relative aspect-video bg-slate-950 flex flex-col justify-between overflow-hidden group select-none">
-          {/* Animated Animated Screen Background Scene */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${video.bgGradient} flex items-center justify-center`}>
-            {/* Soft drifting clouds & stars */}
-            <div className="absolute top-8 left-12 text-3xl animate-float opacity-70">☁️</div>
-            <div className="absolute top-12 right-20 text-2xl animate-float-slow opacity-60">✨</div>
-            <div className="absolute bottom-12 left-24 text-2xl animate-bounce-gentle opacity-60">⭐</div>
-
-            {/* Giant Central Animated Emoji / Character */}
-            <div className="flex flex-col items-center justify-center space-y-3 z-10">
-              <span className={`text-8xl drop-shadow-2xl ${isPlaying ? 'animate-bounce-gentle' : ''}`}>
-                {video.thumbnailEmoji}
-              </span>
-              <div className="px-4 py-1.5 rounded-full bg-black/50 backdrop-blur-md text-white font-black text-xs border border-white/20">
-                {isPlaying ? '▶ Playing in HD 1080p' : '⏸ Paused'}
-              </div>
-            </div>
-          </div>
-
-          {/* Top Video Overlay Tags */}
-          <div className="relative z-20 p-4 flex items-center justify-between">
-            <span className="px-3 py-1 bg-black/60 backdrop-blur-md text-white text-xs font-bold rounded-full border border-white/20">
-              VidyaAI Jr Player
-            </span>
-            <span className="px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black rounded-full shadow-md">
-              {video.duration}
-            </span>
-          </div>
-
-          {/* Center Play/Pause Click Overlay */}
-          <div
-            onClick={() => {
-              sound.playPop();
-              setIsPlaying(!isPlaying);
-            }}
-            className="absolute inset-0 flex items-center justify-center z-10 cursor-pointer"
-          >
-            {!isPlaying && (
-              <div className="w-20 h-20 rounded-full bg-black/70 backdrop-blur-md border-2 border-white text-white flex items-center justify-center shadow-2xl transition-transform hover:scale-110">
-                <Play className="w-10 h-10 fill-white translate-x-1" />
-              </div>
-            )}
-          </div>
-
-          {/* Bottom Video Controls Bar */}
-          <div className="relative z-20 px-4 py-3 bg-gradient-to-t from-black/95 via-black/70 to-transparent flex flex-col gap-2">
-            {/* Scrub Progress Bar */}
-            <div
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const pos = (e.clientX - rect.left) / rect.width;
-                setProgress(Math.round(pos * 100));
-              }}
-              className="w-full bg-white/30 hover:bg-white/40 h-2 rounded-full overflow-hidden cursor-pointer transition-all"
-            >
-              <div
-                style={{ width: `${progress}%` }}
-                className="bg-red-500 h-full rounded-full relative transition-all duration-300"
-              >
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-md"></div>
-              </div>
-            </div>
-
-            {/* Controls Row */}
-            <div className="flex items-center justify-between text-white text-xs font-bold">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => {
-                    sound.playPop();
-                    setIsPlaying(!isPlaying);
-                  }}
-                  className="hover:text-blue-400 cursor-pointer"
-                >
-                  {isPlaying ? <Pause className="w-5 h-5 fill-white" /> : <Play className="w-5 h-5 fill-white" />}
-                </button>
-
-                <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="hover:text-blue-400 cursor-pointer"
-                >
-                  {isMuted ? <VolumeX className="w-5 h-5 text-red-400" /> : <Volume2 className="w-5 h-5" />}
-                </button>
-
-                <span className="text-xs font-mono text-slate-300">
-                  {Math.floor((progress / 100) * 8)}:{String(Math.floor(((progress / 100) * 480) % 60)).padStart(2, '0')} / {video.duration}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="px-2 py-0.5 bg-white/20 rounded text-[10px] font-black">
-                  1080p 60fps
-                </span>
-                <button className="hover:text-blue-400 cursor-pointer">
-                  <Maximize2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
+        {/* Video Player Frame (16:9) with Real YouTube Embed */}
+        <div className="relative aspect-video bg-slate-950 flex flex-col justify-between overflow-hidden shadow-2xl">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${video.youtubeId || 'Aw6GkiCgkWs'}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+            title={video.title}
+            className="w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
         </div>
 
         {/* Content Details & Tabs Section */}

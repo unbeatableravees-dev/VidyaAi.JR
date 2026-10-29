@@ -15,6 +15,7 @@ import {
 import { EARNED_BADGES, RECOMMENDED_LESSONS } from '../../data/learningData';
 import { QuizCelebrationIllustration, HexBadge } from '../illustrations/Illustrations';
 import { sound } from '../../utils/audio';
+import { APP_IMAGES } from '../../assets/images';
 
 interface QuizResultsScreenProps {
   userName: string;
@@ -68,10 +69,10 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
           </p>
         </div>
 
-        {/* Celebrating 3D Mascot Character */}
-        <div className="relative z-10 hidden md:block w-44 h-52 flex items-center justify-center animate-bounce-gentle">
+        {/* Celebrating 3D Mascot Character - Always visible */}
+        <div className="relative z-10 w-36 h-44 sm:w-44 sm:h-52 md:w-52 md:h-60 flex items-center justify-center animate-bounce-gentle shrink-0 self-center">
           <img
-            src="/media/png1.png"
+            src={APP_IMAGES.explorerMascot}
             alt="Celebrating Hero"
             className="w-full h-full object-contain filter drop-shadow-2xl"
           />

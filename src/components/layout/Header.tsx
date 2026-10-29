@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut } from 'lucide-react';
 import { sound } from '../../utils/audio';
+import { APP_IMAGES } from '../../assets/images';
 
 interface HeaderProps {
   userName: string;
@@ -49,13 +50,13 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* 3D Kid Explorer on Navbar (png1.png as requested) */}
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white/70 backdrop-blur-md rounded-full border border-white/80 shadow-sm shrink-0">
+        <div className="flex items-center gap-2 px-3 py-1 bg-white/70 backdrop-blur-md rounded-full border border-white/80 shadow-sm shrink-0">
           <img
-            src="/media/png1.png"
+            src={APP_IMAGES.explorerMascot}
             alt="VidyaAI Explorer"
-            className="w-8 h-9 object-contain filter drop-shadow animate-bounce-gentle"
+            className="w-9 h-10 object-contain filter drop-shadow animate-bounce-gentle"
           />
-          <div className="text-left hidden md:block">
+          <div className="text-left hidden sm:block">
             <span className="text-[10px] font-black uppercase tracking-wider text-blue-600 block leading-tight">
               Jr Explorer
             </span>

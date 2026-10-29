@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 import { Sparkles, ArrowRight, Star, Heart, Check } from 'lucide-react';
 import { sound } from '../../utils/audio';
+import { APP_IMAGES } from '../../assets/images';
 
 interface WelcomeScreenProps {
   onNameSubmit: (name: string, avatar: string, grade: string) => void;
@@ -73,18 +74,15 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center space-y-2.5 mb-7">
           <div className="relative">
-            <div className="w-24 h-28 flex items-center justify-center animate-bounce-gentle">
+            <div className="w-36 h-40 md:w-44 md:h-48 flex items-center justify-center animate-bounce-gentle">
               <img
-                src="/media/vidya-3d-learning.png"
+                src={APP_IMAGES.hero3D}
                 alt="VidyaAI 3D Mascot"
-                className="w-full h-full object-contain filter drop-shadow-xl"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/media/VidyaAI 3D Learning Illustration.png';
-                }}
+                className="w-full h-full object-contain filter drop-shadow-2xl"
               />
             </div>
             {/* Glowing JR Badge */}
-            <span className="absolute bottom-1 -right-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black text-xs shadow-md border-2 border-white animate-pulse-glow">
+            <span className="absolute bottom-2 -right-2 px-3.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black text-xs shadow-md border-2 border-white animate-pulse-glow">
               Jr
             </span>
           </div>

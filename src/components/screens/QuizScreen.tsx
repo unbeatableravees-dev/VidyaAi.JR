@@ -21,6 +21,7 @@ import {
   QUIZ_SUBJECTS,
 } from '../../data/quizQuestions';
 import { sound } from '../../utils/audio';
+import { APP_IMAGES } from '../../assets/images';
 
 interface QuizScreenProps {
   userGrade: string;
@@ -422,15 +423,11 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
           <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 text-white p-6 shadow-xl border border-white/40 flex flex-col items-center text-center">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
             
-            <div className="relative w-36 h-48 md:w-44 md:h-56 mb-2">
+            <div className="relative w-44 h-56 md:w-56 md:h-64 mb-2 flex items-center justify-center">
               <img
-                src="/media/vidya-3d-learning.png"
+                src={APP_IMAGES.hero3D}
                 alt="VidyaAI 3D Mascot"
                 className="w-full h-full object-contain filter drop-shadow-2xl animate-float-slow"
-                onError={(e) => {
-                  // Fallback to original path if alias not cached yet
-                  (e.target as HTMLImageElement).src = '/media/VidyaAI 3D Learning Illustration.png';
-                }}
               />
             </div>
 

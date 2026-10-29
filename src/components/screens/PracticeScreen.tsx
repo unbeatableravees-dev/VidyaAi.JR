@@ -4,6 +4,7 @@ import { PRACTICE_ACTIVITIES } from '../../data/learningData';
 import { PracticeIcon } from '../illustrations/Illustrations';
 import { InteractiveGameModal } from '../modals/InteractiveGameModal';
 import { sound } from '../../utils/audio';
+import { APP_IMAGES } from '../../assets/images';
 
 type GameCategory = 'math' | 'words' | 'creativity' | 'logic';
 type PracticeGame = (typeof PRACTICE_ACTIVITIES)[number] & {
@@ -106,7 +107,7 @@ export const PracticeScreen: React.FC<{ userGrade: string }> = ({ userGrade }) =
         {/* Wide Panorama Banner Art in the background with subtle blend */}
         <div className="absolute inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
           <img
-            src="/media/animation3.png"
+            src={APP_IMAGES.bannerPanorama}
             alt="Arcade Panorama"
             className="w-full h-full object-cover"
           />
@@ -139,7 +140,7 @@ export const PracticeScreen: React.FC<{ userGrade: string }> = ({ userGrade }) =
         {/* 3D Animated Illustration using media asset */}
         <div className="w-36 h-36 md:w-44 md:h-44 rounded-3xl bg-white/15 backdrop-blur-md p-2 flex items-center justify-center border-2 border-white/50 shadow-2xl animate-bounce-gentle relative z-10">
           <img
-            src="/media/png1.png"
+            src={APP_IMAGES.explorerMascot}
             alt="Arcade Character"
             className="w-full h-full object-contain filter drop-shadow-lg"
           />

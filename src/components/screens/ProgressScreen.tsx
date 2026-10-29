@@ -2,6 +2,7 @@ import React from 'react';
 import { Award, Flame, Star, Trophy, BookOpen, Clock, Calendar, CheckCircle } from 'lucide-react';
 import { EARNED_BADGES } from '../../data/learningData';
 import { HexBadge } from '../illustrations/Illustrations';
+import { APP_IMAGES } from '../../assets/images';
 
 export const ProgressScreen: React.FC = () => {
   const userName = localStorage.getItem('vidya_user_name') || 'Aarav';
@@ -14,7 +15,7 @@ export const ProgressScreen: React.FC = () => {
         {/* Wide Panorama Banner Art (animation3.png) */}
         <div className="absolute inset-0 z-0 opacity-25 pointer-events-none overflow-hidden">
           <img
-            src="/media/animation3.png"
+            src={APP_IMAGES.bannerPanorama}
             alt="Achievements Panorama"
             className="w-full h-full object-cover"
           />
@@ -101,7 +102,7 @@ export const ProgressScreen: React.FC = () => {
         <div className="md:col-span-4 rounded-3xl bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-500 p-6 text-slate-950 flex flex-col items-center justify-between text-center shadow-lg relative overflow-hidden group">
           <div className="w-36 h-36 rounded-2xl overflow-hidden shadow-xl border-2 border-white/60 mb-2 group-hover:scale-105 transition-transform">
             <img
-              src="/media/vidya-trophy-3d.jpg"
+              src={APP_IMAGES.trophy3D}
               alt="3D Gold Achievement Trophy"
               className="w-full h-full object-cover"
             />

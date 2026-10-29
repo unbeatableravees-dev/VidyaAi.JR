@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { ArrowRight, ChevronRight, Lock, Play, Sparkles } from 'lucide-react';
-import { ALL_CATEGORIES, PRACTICE_ACTIVITIES, FEATURED_VIDEOS } from '../../data/learningData';
+import { ALL_CATEGORIES, PRACTICE_ACTIVITIES } from '../../data/learningData';
 import { HeroBannerIllustration, CategoryIcon, PracticeIcon } from '../illustrations/Illustrations';
 import { VideoPlayerModal, VideoData } from '../modals/VideoPlayerModal';
 import { InteractiveGameModal } from '../modals/InteractiveGameModal';
 import { sound } from '../../utils/audio';
+import { APP_IMAGES } from '../../assets/images';
+import { REAL_YOUTUBE_VIDEOS, RealVideoItem } from '../../data/youtubeVideos';
 
 interface HomeScreenProps {
   userName: string;
@@ -124,8 +126,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const handleOpenFeaturedVideo = (videoId: string) => {
     sound.playPop();
-    const vid = FEATURED_VIDEO_DETAILS[videoId] || FEATURED_VIDEO_DETAILS['v1'];
-    setSelectedVideo(vid);
+    const vid = REAL_YOUTUBE_VIDEOS.find((v) => v.id === videoId || v.youtubeId === videoId) || REAL_YOUTUBE_VIDEOS[0];
+    setSelectedVideo({
+      id: vid.id,
+      youtubeId: vid.youtubeId,
+      title: vid.title,
+      category: vid.category,
+      duration: vid.duration,
+      channel: vid.channel,
+      views: vid.views,
+      thumbnailUrl: vid.thumbnail,
+      description: vid.description,
+      notes: vid.notes,
+      objectives: vid.objectives,
+    });
   };
 
   const handleOpenPracticeGame = (actId: string, actTitle: string) => {
@@ -136,11 +150,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto pb-28 select-none">
       {/* Hero Banner with Glossy Glassmorphism & Media Art */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#93c5fd]/95 via-[#7dd3fc]/85 to-[#67e8f9]/95 shadow-xl border-2 border-white/80 min-h-[240px] flex items-center justify-between px-8 md:px-12 py-7 shimmer-effect">
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#93c5fd]/95 via-[#7dd3fc]/85 to-[#67e8f9]/95 shadow-xl border-2 border-white/80 min-h-[300px] md:min-h-[340px] flex flex-col md:flex-row items-center justify-between px-6 sm:px-8 md:px-12 py-8 shimmer-effect gap-6">
         {/* Wide Panorama Banner Art in the background with subtle blend */}
-        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-25 pointer-events-none overflow-hidden">
           <img
-            src="/media/animation3.png"
+            src={APP_IMAGES.bannerPanorama}
             alt="Learning Adventure"
             className="w-full h-full object-cover"
           />
@@ -151,21 +165,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <div className="absolute -bottom-10 left-20 w-48 h-48 bg-yellow-200/30 rounded-full blur-xl pointer-events-none animate-float" />
 
         {/* Left Text & CTA */}
-        <div className="relative z-10 max-w-md space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/40 backdrop-blur-md rounded-full text-xs font-black text-slate-800 shadow-sm">
+        <div className="relative z-10 max-w-lg space-y-3.5 text-center md:text-left">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white/50 backdrop-blur-md rounded-full text-xs font-black text-slate-800 shadow-sm border border-white/60">
             <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
             <span>Welcome Back, {userName}!</span>
           </div>
 
-          <h1 className="text-3xl lg:text-4xl font-black text-[#0f2e5a] tracking-tight leading-tight drop-shadow-sm">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0f2e5a] tracking-tight leading-tight drop-shadow-sm font-['Nunito',sans-serif]">
             Let's Make<br />
-            <span className="bg-gradient-to-r from-blue-700 to-indigo-800 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 bg-clip-text text-transparent">
               Learning Fun!
             </span>
           </h1>
 
-          <p className="text-slate-700 text-sm font-bold leading-relaxed">
-            Explore 13 magical subjects, play quizzes, and discover new things every day.
+          <p className="text-slate-700 text-sm md:text-base font-bold leading-relaxed">
+            Explore 13 magical subjects, play dynamic random quizzes, and watch HD educational episodes!
           </p>
 
           <button
@@ -174,22 +188,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               sound.playSuccess();
               onStartLearning();
             }}
-            className="mt-2 inline-flex items-center gap-2.5 px-7 py-3 bg-gradient-to-r from-[#facc15] via-[#fbbf24] to-[#f59e0b] hover:from-[#fde047] hover:to-[#facc15] active:scale-95 text-slate-950 font-black rounded-full shadow-lg shadow-amber-500/25 transition-all text-sm cursor-pointer glossy-pill hover:scale-105"
+            className="mt-2 inline-flex items-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-[#facc15] via-[#fbbf24] to-[#f59e0b] hover:from-[#fde047] hover:to-[#facc15] active:scale-95 text-slate-950 font-black rounded-full shadow-lg shadow-amber-500/25 transition-all text-sm cursor-pointer glossy-pill hover:scale-105"
           >
             <Play className="w-4 h-4 fill-slate-950 text-slate-950" />
-            <span>Start Learning</span>
+            <span>Start Learning Hub</span>
           </button>
         </div>
 
-        {/* Right 3D Learning Illustration (using new media asset!) */}
-        <div className="relative z-10 hidden md:block w-48 h-56 flex items-center justify-center animate-float">
+        {/* Right 3D Learning Illustration - Large & Fully Transparent without white box */}
+        <div className="relative z-10 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[28rem] lg:h-[24rem] flex items-center justify-center animate-float shrink-0 self-center">
           <img
-            src="/media/vidya-3d-learning.png"
+            src={APP_IMAGES.hero3D}
             alt="VidyaAI 3D Character"
             className="w-full h-full object-contain filter drop-shadow-2xl"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/media/VidyaAI 3D Learning Illustration.png';
-            }}
           />
         </div>
       </div>
@@ -384,42 +395,49 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </button>
         </div>
 
-        {/* 5 Video Cards */}
+        {/* 5 Real YouTube Video Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {FEATURED_VIDEOS.map((video) => (
+          {REAL_YOUTUBE_VIDEOS.slice(0, 5).map((video) => (
             <div
               key={video.id}
               onClick={() => handleOpenFeaturedVideo(video.id)}
               className="group cursor-pointer rounded-3xl overflow-hidden bg-white border border-slate-200/80 shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all flex flex-col justify-between"
             >
-              {/* Thumbnail Container */}
-              <div className="relative aspect-[16/10] bg-slate-800 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-indigo-950 via-sky-900 to-amber-950 group-hover:scale-110 transition-transform duration-300 flex items-center justify-center">
-                  {video.thumbnail === 'elephant' && <span className="text-4xl animate-bounce-gentle">🐘</span>}
-                  {video.thumbnail === 'train' && <span className="text-4xl animate-wiggle">🚂</span>}
-                  {video.thumbnail === 'krishna' && <span className="text-4xl">🦚</span>}
-                  {video.thumbnail === 'peacock' && <span className="text-4xl">🦜</span>}
-                  {video.thumbnail === 'detective' && <span className="text-4xl">🔍</span>}
-                </div>
+              {/* Real YouTube Thumbnail Container */}
+              <div className="relative aspect-[16/10] bg-slate-900 overflow-hidden">
+                <img
+                  src={video.thumbnail}
+                  alt={video.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
 
                 {/* Duration badge bottom-right */}
-                <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-sm text-[11px] font-black text-white">
+                <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-sm text-[11px] font-black text-white">
                   {video.duration}
                 </div>
 
+                {/* Channel badge top-left */}
+                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white truncate max-w-[70%]">
+                  {video.channel}
+                </div>
+
                 {/* Play button hover overlay */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="w-10 h-10 rounded-full bg-white/90 text-blue-600 flex items-center justify-center shadow-lg transform scale-75 group-hover:scale-100 transition-transform">
-                    <Play className="w-5 h-5 fill-current translate-x-0.5" />
+                <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="w-11 h-11 rounded-full bg-red-600 text-white flex items-center justify-center shadow-xl transform scale-75 group-hover:scale-100 transition-transform">
+                    <Play className="w-5 h-5 fill-white translate-x-0.5" />
                   </div>
                 </div>
               </div>
 
-              {/* Title */}
-              <div className="p-3">
+              {/* Title & Stats */}
+              <div className="p-3 space-y-1">
                 <p className="text-xs font-black text-slate-800 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors">
                   {video.title}
                 </p>
+                <div className="flex items-center justify-between text-[10px] font-bold text-slate-400">
+                  <span>{video.category}</span>
+                  <span>{video.views}</span>
+                </div>
               </div>
             </div>
           ))}

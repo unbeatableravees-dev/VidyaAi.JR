@@ -1,6 +1,7 @@
 import React from 'react';
 import { Home, Grid, BookOpen, BarChart3, Settings, Sparkles, Gamepad2 } from 'lucide-react';
 import { SidebarKidsIllustration } from '../illustrations/Illustrations';
+import { APP_IMAGES } from '../../assets/images';
 
 export type NavTab = 'home' | 'categories' | 'practice' | 'learning' | 'progress' | 'settings' | 'quiz' | 'quiz-results' | 'category-detail';
 
@@ -99,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, onSwi
       <div className="pt-3 border-t border-white/10 flex flex-col items-center">
         <div className="relative w-32 h-36 flex items-center justify-center">
           <img
-            src="/media/png1.png"
+            src={APP_IMAGES.explorerMascot}
             alt="VidyaAI Kid Explorer"
             className="w-full h-full object-contain filter drop-shadow-xl animate-float-slow"
           />

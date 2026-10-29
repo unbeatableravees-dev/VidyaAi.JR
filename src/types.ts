@@ -24,6 +24,10 @@ export interface VideoItem {
   category: string;
   isLocked: boolean;
   thumbnail: string;
+  youtubeId?: string;
+  channel?: string;
+  views?: string;
+  hindiTitle?: string;
 }
 
 export interface BadgeItem {
