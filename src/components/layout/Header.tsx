@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
   const activeAvatar = AVATAR_STYLES[userAvatar] || AVATAR_STYLES['boy-aarav'];
 
   return (
-    <header className="h-18 px-6 md:px-8 py-3.5 flex items-center justify-between border-b border-white/60 bg-white/65 backdrop-blur-xl sticky top-0 z-30 shadow-sm/40">
+    <header className="h-20 shrink-0 w-full px-4 sm:px-6 md:px-8 py-3.5 flex items-center justify-between border-b border-white/70 bg-white/75 backdrop-blur-2xl z-30 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden select-none">
       {/* Search Input & Navbar 3D Mascot */}
       <div className="flex items-center gap-4 flex-1 max-w-xl">
         <div className="relative w-full">

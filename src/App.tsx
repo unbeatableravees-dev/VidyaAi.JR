@@ -12,6 +12,7 @@ import { SettingsScreen } from './components/screens/SettingsScreen';
 import { WelcomeScreen } from './components/screens/WelcomeScreen';
 import { PracticeScreen } from './components/screens/PracticeScreen';
 import { VideoPlayerModal, VideoData } from './components/modals/VideoPlayerModal';
+import { AnimatedBackground } from './components/layout/AnimatedBackground';
 import { sound } from './utils/audio';
 
 export function App() {
@@ -123,15 +124,9 @@ export function App() {
   const activeDisplayName = userName || 'Aarav';
 
   return (
-    <div className="relative flex min-h-screen bg-gradient-to-br from-[#ebf3ff] via-[#f5f3ff] to-[#fef2f8] text-slate-800 font-['Nunito',sans-serif] selection:bg-blue-200 overflow-x-hidden">
-      {/* Ambient glowing background orbs for subtle glassmorphism transparency */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-300/35 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute top-1/4 -right-24 w-96 h-96 bg-purple-300/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-amber-200/35 rounded-full blur-3xl animate-pulse-glow" />
-        <div className="absolute -bottom-24 right-1/4 w-96 h-96 bg-cyan-200/35 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute top-2/3 -left-20 w-72 h-72 bg-pink-200/30 rounded-full blur-3xl animate-float" />
-      </div>
+    <div className="relative flex h-screen w-screen overflow-hidden text-slate-800 font-['Nunito',sans-serif] selection:bg-blue-200">
+      {/* Magical Disney/Pixar Animated Sky Theme with drifting particles */}
+      <AnimatedBackground />
 
       {/* Deep Blue Left Sidebar with JR Logo */}
       <Sidebar
@@ -140,9 +135,9 @@ export function App() {
         onSwitchProfile={handleSwitchProfile}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header with Dynamic Name and Profile menu */}
+      {/* Main Content Area - Locked to 100vh with non-scrolling Navbar */}
+      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative z-10">
+        {/* Fixed Non-Scrolling Top Header */}
         <Header
           userName={activeDisplayName}
           userAvatar={userAvatar}
@@ -154,8 +149,8 @@ export function App() {
           onSwitchProfile={handleSwitchProfile}
         />
 
-        {/* Dynamic Screen Rendering */}
-        <main className="flex-1 overflow-y-auto">
+        {/* Dynamic Screen Rendering - Only this section scrolls! */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
           {currentTab === 'home' && (
             <HomeScreen
               userName={activeDisplayName}

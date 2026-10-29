@@ -110,6 +110,54 @@
   animation: bounce-gentle 2s ease-in-out infinite;
 }
 
+@keyframes drift-up {
+  0% {
+    transform: translateY(105vh) scale(0.7) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-15vh) scale(1.1) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+@keyframes aurora-pulse {
+  0%, 100% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.38;
+  }
+  50% {
+    transform: scale(1.18) translate(30px, -20px);
+    opacity: 0.6;
+  }
+}
+
+.animate-aurora {
+  animation: aurora-pulse 10s ease-in-out infinite alternate;
+}
+
+.animate-aurora-reverse {
+  animation: aurora-pulse 14s ease-in-out infinite alternate-reverse;
+}
+
+.animate-drift-slow {
+  animation: drift-up 18s linear infinite;
+}
+
+.animate-drift-medium {
+  animation: drift-up 13s linear infinite;
+}
+
+.animate-drift-fast {
+  animation: drift-up 9s linear infinite;
+}
+
 .shimmer-effect {
   position: relative;
   overflow: hidden;
