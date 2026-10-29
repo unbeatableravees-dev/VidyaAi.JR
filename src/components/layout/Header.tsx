@@ -35,16 +35,35 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="h-18 px-6 md:px-8 py-3.5 flex items-center justify-between border-b border-white/60 bg-white/65 backdrop-blur-xl sticky top-0 z-30 shadow-sm/40">
-      {/* Search Input */}
-      <div className="relative w-full max-w-md">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search for lessons, videos, or topics..."
-          className="w-full pl-11 pr-4 py-2 text-sm bg-white/70 backdrop-blur-sm border border-white/80 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
-        />
+      {/* Search Input & Navbar 3D Mascot */}
+      <div className="flex items-center gap-4 flex-1 max-w-xl">
+        <div className="relative w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search for lessons, videos, or topics..."
+            className="w-full pl-11 pr-4 py-2 text-sm bg-white/70 backdrop-blur-sm border border-white/80 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
+          />
+        </div>
+
+        {/* 3D Kid Explorer on Navbar (png1.png as requested) */}
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white/70 backdrop-blur-md rounded-full border border-white/80 shadow-sm shrink-0">
+          <img
+            src="/media/png1.png"
+            alt="VidyaAI Explorer"
+            className="w-8 h-9 object-contain filter drop-shadow animate-bounce-gentle"
+          />
+          <div className="text-left hidden md:block">
+            <span className="text-[10px] font-black uppercase tracking-wider text-blue-600 block leading-tight">
+              Jr Explorer
+            </span>
+            <span className="text-xs font-black text-slate-800 leading-tight">
+              {userGrade}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Right Controls */}

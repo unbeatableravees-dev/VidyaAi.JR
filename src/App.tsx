@@ -34,7 +34,12 @@ export function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('numbers');
   const [searchQuery, setSearchQuery] = useState('');
-  const [quizResult, setQuizResult] = useState({ correct: 0, total: 10 });
+  const [quizResult, setQuizResult] = useState<{
+    correct: number;
+    total: number;
+    subjectName?: string;
+    grade?: string;
+  }>({ correct: 0, total: 10, subjectName: 'All Subjects Mix', grade: 'Grade 1' });
 
   // Active modal video (if any clicked)
   const [activeVideoModal, setActiveVideoModal] = useState<VideoData | null>(null);
@@ -72,8 +77,13 @@ export function App() {
     setCurrentTab('quiz');
   };
 
-  const handleCompleteQuiz = (result: { correct: number; total: number }) => {
-    setQuizResult(result);
+  const handleCompleteQuiz = (result: { correct: number; total: number; subjectName?: string; grade?: string }) => {
+    setQuizResult({
+      correct: result.correct,
+      total: result.total,
+      subjectName: result.subjectName || 'All Subjects Mix',
+      grade: result.grade || userGrade,
+    });
     setCurrentTab('quiz-results');
   };
 
@@ -176,6 +186,7 @@ export function App() {
           {currentTab === 'quiz' && (
             <QuizScreen
               userGrade={userGrade}
+              selectedCategoryId={selectedCategoryId}
               onBackToLesson={handleBackToLearning}
               onCompleteQuiz={handleCompleteQuiz}
             />

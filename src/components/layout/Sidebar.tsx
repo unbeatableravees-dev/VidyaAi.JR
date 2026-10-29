@@ -95,9 +95,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, onSwi
         </nav>
       </div>
 
-      {/* Bottom Illustration (Kids reading book on cloud) */}
-      <div className="pt-4 border-t border-blue-400/20">
-        <SidebarKidsIllustration />
+      {/* Bottom 3D Mascot Character */}
+      <div className="pt-3 border-t border-white/10 flex flex-col items-center">
+        <div className="relative w-32 h-36 flex items-center justify-center">
+          <img
+            src="/media/png1.png"
+            alt="VidyaAI Kid Explorer"
+            className="w-full h-full object-contain filter drop-shadow-xl animate-float-slow"
+          />
+        </div>
+        <p className="text-[11px] font-black text-blue-200 mt-1">Made for Young Minds ⭐</p>
       </div>
     </aside>
   );

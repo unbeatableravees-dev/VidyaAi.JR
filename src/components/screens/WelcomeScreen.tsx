@@ -69,35 +69,22 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       <span className="absolute bottom-14 right-1/4 text-3xl animate-float-slow opacity-80">🎈</span>
 
       {/* Main Glassmorphism Card */}
-      <div className="relative z-10 w-full max-w-xl bg-white/95 backdrop-blur-2xl rounded-[3rem] p-8 md:p-12 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.5)] border-2 border-white/90 animate-in zoom-in-95 duration-300">
+      <div className="relative z-10 w-full max-w-xl bg-white/90 backdrop-blur-2xl rounded-[3rem] p-8 md:p-12 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.45)] border-2 border-white/85 animate-in zoom-in-95 duration-300">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center space-y-2.5 mb-7">
           <div className="relative">
-            <div className="w-22 h-22 bg-gradient-to-tr from-blue-600 via-indigo-600 to-blue-500 rounded-3xl p-3 flex items-center justify-center shadow-xl shadow-blue-500/30 animate-bounce-gentle border border-white/40">
-              <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow">
-                <path
-                  d="M 50 8 L 62 36 L 94 38 L 70 59 L 77 90 L 50 74 L 23 90 L 30 59 L 6 38 L 38 36 Z"
-                  fill="#FACC15"
-                  stroke="#CA8A04"
-                  strokeWidth="3"
-                  strokeLinejoin="round"
-                />
-                <circle cx="42" cy="50" r="3.5" fill="#1E293B" />
-                <circle cx="58" cy="50" r="3.5" fill="#1E293B" />
-                <ellipse cx="36" cy="57" rx="4" ry="2.5" fill="#F87171" opacity="0.7" />
-                <ellipse cx="64" cy="57" rx="4" ry="2.5" fill="#F87171" opacity="0.7" />
-                <path d="M 44 58 Q 50 65 56 58" fill="none" stroke="#1E293B" strokeWidth="3" strokeLinecap="round" />
-                {/* Cap */}
-                <g transform="translate(18, -4) rotate(-8 32 30)">
-                  <polygon points="32,15 58,25 32,35 6,25" fill="#0f172a" />
-                  <path d="M 18 28 Q 32 34 46 28 L 46 33 Q 32 38 18 33 Z" fill="#0f172a" />
-                  <path d="M 32 25 Q 48 30 50 42" fill="none" stroke="#F59E0B" strokeWidth="2.5" />
-                  <circle cx="50" cy="44" r="2.5" fill="#D97706" />
-                </g>
-              </svg>
+            <div className="w-24 h-28 flex items-center justify-center animate-bounce-gentle">
+              <img
+                src="/media/vidya-3d-learning.png"
+                alt="VidyaAI 3D Mascot"
+                className="w-full h-full object-contain filter drop-shadow-xl"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/media/VidyaAI 3D Learning Illustration.png';
+                }}
+              />
             </div>
             {/* Glowing JR Badge */}
-            <span className="absolute -bottom-1 -right-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black text-xs shadow-md border-2 border-white animate-pulse-glow">
+            <span className="absolute bottom-1 -right-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black text-xs shadow-md border-2 border-white animate-pulse-glow">
               Jr
             </span>
           </div>

@@ -102,8 +102,17 @@ export const PracticeScreen: React.FC<{ userGrade: string }> = ({ userGrade }) =
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto pb-28 space-y-6 select-none">
       {/* Practice Header Banner */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white p-8 md:p-10 shadow-xl border border-white/40 flex flex-col md:flex-row items-center justify-between gap-6 shimmer-effect">
-        <div className="space-y-3 max-w-xl text-center md:text-left">
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-purple-600/95 via-indigo-600/90 to-blue-600/95 text-white p-8 md:p-10 shadow-xl border border-white/40 flex flex-col md:flex-row items-center justify-between gap-6 shimmer-effect">
+        {/* Wide Panorama Banner Art in the background with subtle blend */}
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
+          <img
+            src="/media/animation3.png"
+            alt="Arcade Panorama"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        <div className="space-y-3 max-w-xl text-center md:text-left relative z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-black shadow-sm">
             <Gamepad2 className="w-4 h-4 text-amber-300" />
             <span>{userGrade} Interactive Game Arcade</span>
@@ -127,9 +136,13 @@ export const PracticeScreen: React.FC<{ userGrade: string }> = ({ userGrade }) =
           </div>
         </div>
 
-        {/* 3D Animated Trophy */}
-        <div className="w-36 h-36 md:w-44 md:h-44 rounded-3xl bg-white/15 backdrop-blur-md p-4 flex items-center justify-center border-2 border-white/50 shadow-2xl animate-bounce-gentle">
-          <span className="text-7xl">🕹️</span>
+        {/* 3D Animated Illustration using media asset */}
+        <div className="w-36 h-36 md:w-44 md:h-44 rounded-3xl bg-white/15 backdrop-blur-md p-2 flex items-center justify-center border-2 border-white/50 shadow-2xl animate-bounce-gentle relative z-10">
+          <img
+            src="/media/png1.png"
+            alt="Arcade Character"
+            className="w-full h-full object-contain filter drop-shadow-lg"
+          />
         </div>
       </div>
 

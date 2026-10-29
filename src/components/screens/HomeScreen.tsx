@@ -135,8 +135,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto pb-28 select-none">
-      {/* Hero Banner with Glossy Glassmorphism & Animations */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#93c5fd] via-[#7dd3fc] to-[#67e8f9] shadow-xl border-2 border-white/80 min-h-[230px] flex items-center justify-between px-8 md:px-12 py-7 shimmer-effect">
+      {/* Hero Banner with Glossy Glassmorphism & Media Art */}
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#93c5fd]/95 via-[#7dd3fc]/85 to-[#67e8f9]/95 shadow-xl border-2 border-white/80 min-h-[240px] flex items-center justify-between px-8 md:px-12 py-7 shimmer-effect">
+        {/* Wide Panorama Banner Art in the background with subtle blend */}
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
+          <img
+            src="/media/animation3.png"
+            alt="Learning Adventure"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
         {/* Soft background light/cloud effect */}
         <div className="absolute -top-10 -right-10 w-64 h-64 bg-white/30 rounded-full blur-2xl pointer-events-none animate-float-slow" />
         <div className="absolute -bottom-10 left-20 w-48 h-48 bg-yellow-200/30 rounded-full blur-xl pointer-events-none animate-float" />
@@ -172,9 +181,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </button>
         </div>
 
-        {/* Right 3D Banner Art with animated floating */}
-        <div className="relative z-10 hidden md:block animate-float">
-          <HeroBannerIllustration />
+        {/* Right 3D Learning Illustration (using new media asset!) */}
+        <div className="relative z-10 hidden md:block w-48 h-56 flex items-center justify-center animate-float">
+          <img
+            src="/media/vidya-3d-learning.png"
+            alt="VidyaAI 3D Character"
+            className="w-full h-full object-contain filter drop-shadow-2xl"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/media/VidyaAI 3D Learning Illustration.png';
+            }}
+          />
         </div>
       </div>
 
@@ -235,6 +251,73 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* 3D Visual Learning Spotlight Cards (using generated 3D illustrations) */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Math 3D World Card */}
+        <div
+          onClick={() => {
+            sound.playPop();
+            onSelectCategory('mathematics');
+          }}
+          className="rounded-[2.5rem] bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 text-white p-6 shadow-xl border border-white/50 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+        >
+          <div className="space-y-2 z-10 max-w-[60%]">
+            <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
+              3D Math World
+            </span>
+            <h3 className="text-xl font-black leading-tight drop-shadow">
+              Explore 3D Numbers & Equations!
+            </h3>
+            <p className="text-xs text-blue-100 font-bold">
+              Solve visual puzzles, addition safari, and earn golden stars!
+            </p>
+            <span className="inline-flex items-center gap-1.5 text-xs font-black text-amber-300 pt-1 group-hover:translate-x-1 transition-transform">
+              Play Math Adventure →
+            </span>
+          </div>
+
+          <div className="w-32 h-32 md:w-36 md:h-36 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/60 shrink-0 group-hover:scale-105 transition-transform">
+            <img
+              src="/media/vidya-math-3d.jpg"
+              alt="3D Math Adventure"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+
+        {/* Science 3D Discovery Card */}
+        <div
+          onClick={() => {
+            sound.playPop();
+            onSelectCategory('science');
+          }}
+          className="rounded-[2.5rem] bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white p-6 shadow-xl border border-white/50 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+        >
+          <div className="space-y-2 z-10 max-w-[60%]">
+            <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
+              3D Junior Science Lab
+            </span>
+            <h3 className="text-xl font-black leading-tight drop-shadow">
+              Discover Space, Solar System & Nature!
+            </h3>
+            <p className="text-xs text-teal-100 font-bold">
+              Explore glowing planets, animal habitats & 5 senses!
+            </p>
+            <span className="inline-flex items-center gap-1.5 text-xs font-black text-yellow-300 pt-1 group-hover:translate-x-1 transition-transform">
+              Enter Science Lab →
+            </span>
+          </div>
+
+          <div className="w-32 h-32 md:w-36 md:h-36 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/60 shrink-0 group-hover:scale-105 transition-transform">
+            <img
+              src="/media/vidya-science-3d.jpg"
+              alt="3D Science Discovery"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       </section>
 

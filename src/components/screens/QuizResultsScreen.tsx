@@ -52,19 +52,29 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
   return (
     <div className="p-8 max-w-7xl mx-auto pb-24 space-y-6">
       {/* Celebration Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#bae6fd] via-[#7dd3fc] to-[#67e8f9] shadow-lg border border-white/70 min-h-[190px] flex items-center justify-between px-10 py-6">
-        <div className="relative z-10 max-w-md space-y-2">
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#bae6fd] via-[#7dd3fc] to-[#67e8f9] shadow-xl border-2 border-white/80 min-h-[220px] flex items-center justify-between px-10 py-6">
+        <div className="relative z-10 max-w-lg space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/50 backdrop-blur-md rounded-full text-xs font-black text-slate-800 shadow-sm">
+            <span>🏆 {quizResult.subjectName || 'All Subjects'} Quiz</span>
+            <span>•</span>
+            <span>{quizResult.grade || userGrade}</span>
+          </div>
+
           <h1 className="text-2xl lg:text-3xl font-black text-[#0f2e5a] tracking-tight leading-snug">
             Awesome, {userName}!<br />You completed the Quiz!
           </h1>
-          <p className="text-slate-600 text-xs sm:text-sm font-semibold">
-            You're doing great! Keep learning and collect more stars!
+          <p className="text-slate-700 text-xs sm:text-sm font-semibold">
+            You scored {quizResult.correct} out of {quizResult.total} questions! You earned +{quizResult.correct * 10} gold stars!
           </p>
         </div>
 
-        {/* Celebrating Aarav + Confetti + Star */}
-        <div className="relative z-10 hidden md:block">
-          <QuizCelebrationIllustration />
+        {/* Celebrating 3D Mascot Character */}
+        <div className="relative z-10 hidden md:block w-44 h-52 flex items-center justify-center animate-bounce-gentle">
+          <img
+            src="/media/png1.png"
+            alt="Celebrating Hero"
+            className="w-full h-full object-contain filter drop-shadow-2xl"
+          />
         </div>
       </div>
 
@@ -147,13 +157,26 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 text-center">
-            <p className="text-xs font-black text-slate-800">
-              {scorePercentage >= 80 ? 'Excellent work!' : 'Great effort!'}
-            </p>
-            <p className="text-[11px] font-semibold text-slate-400">
-              {userGrade} quiz completed. Keep practising to build confidence.
-            </p>
+          <div className="pt-2 border-t border-slate-100 space-y-2">
+            <div className="text-center">
+              <p className="text-xs font-black text-slate-800">
+                {scorePercentage >= 80 ? '🌟 Outstanding Performance!' : '💪 Great Practice Effort!'}
+              </p>
+              <p className="text-[11px] font-semibold text-slate-400">
+                {quizResult.subjectName || 'All Subjects'} • {quizResult.grade || userGrade}
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                sound.playPop();
+                onRetakeQuiz();
+              }}
+              className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition-all glossy-pill hover:scale-102"
+            >
+              <span>Take 10 New Questions (Random!)</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
 
