@@ -1,19 +1,36 @@
 import React, { useState } from 'react';
-import { Gamepad2, Sparkles, Trophy, Star, Play, Filter, CheckCircle2 } from 'lucide-react';
+import { Gamepad2, Sparkles, Trophy, Star, Play } from 'lucide-react';
 import { PRACTICE_ACTIVITIES } from '../../data/learningData';
 import { PracticeIcon } from '../illustrations/Illustrations';
 import { InteractiveGameModal } from '../modals/InteractiveGameModal';
 import { sound } from '../../utils/audio';
 
-const EXTENDED_GAMES = [
-  ...PRACTICE_ACTIVITIES,
+type GameCategory = 'math' | 'words' | 'creativity' | 'logic';
+type PracticeGame = (typeof PRACTICE_ACTIVITIES)[number] & {
+  category: GameCategory;
+  desc: string;
+};
+
+const EXTENDED_GAMES: PracticeGame[] = [
+  ...PRACTICE_ACTIVITIES.map((activity) => ({
+    ...activity,
+    category: activity.id.includes('alpha') ? 'words' as const
+      : activity.id.includes('shape') || activity.id.includes('colour') ? 'creativity' as const
+        : activity.id.includes('pattern') ? 'logic' as const : 'math' as const,
+    desc: activity.title === 'Alphabets' ? 'Match letters with their sounds and words.'
+      : activity.title === 'Numbers' ? 'Count carefully and solve number puzzles.'
+        : activity.title === 'Shape Tracing' ? 'Find shapes by their sides and properties.'
+          : activity.title === 'Pattern Play' ? 'Spot the rule and complete each sequence.'
+            : activity.title === 'Colour the Shapes' ? 'Choose colors and create a bright picture.'
+              : 'Spot the target and pop only the right bubbles.',
+  })),
   {
     id: 'p-balloon-pop',
     title: 'Balloon Pop Math',
     iconType: 'p-pop',
     bgColor: '#f43f5e',
     badgeColor: '#be123c',
-    category: 'Math',
+    category: 'math',
     desc: 'Pop glowing number balloons before they float away!',
   },
   {
@@ -22,7 +39,7 @@ const EXTENDED_GAMES = [
     iconType: 'p-numbers',
     bgColor: '#f59e0b',
     badgeColor: '#b45309',
-    category: 'Math',
+    category: 'math',
     desc: 'Count and feed the exact number of crunchy carrots.',
   },
   {
@@ -31,7 +48,7 @@ const EXTENDED_GAMES = [
     iconType: 'p-colour',
     bgColor: '#8b5cf6',
     badgeColor: '#6d28d9',
-    category: 'Creativity',
+    category: 'creativity',
     desc: 'Pick bright paints and color stars, circles, and hearts!',
   },
   {
@@ -40,13 +57,40 @@ const EXTENDED_GAMES = [
     iconType: 'p-pattern',
     bgColor: '#10b981',
     badgeColor: '#047857',
-    category: 'Logic',
+    category: 'logic',
     desc: 'Discover what fruit comes next in the puzzle sequence.',
+  },
+  {
+    id: 'p-math-quest',
+    title: 'Math Quest',
+    iconType: 'p-numbers',
+    bgColor: '#2563eb',
+    badgeColor: '#1d4ed8',
+    category: 'math',
+    desc: 'Solve multi-step number stories that match your grade.',
+  },
+  {
+    id: 'p-memory-match',
+    title: 'Brainy Memory Match',
+    iconType: 'p-pattern',
+    bgColor: '#7c3aed',
+    badgeColor: '#6d28d9',
+    category: 'logic',
+    desc: 'Flip cards and match equations with their answers.',
+  },
+  {
+    id: 'p-fraction-factory',
+    title: 'Fraction Factory',
+    iconType: 'p-shapes',
+    bgColor: '#0f766e',
+    badgeColor: '#115e59',
+    category: 'math',
+    desc: 'Build fractions and solve visual number challenges.',
   },
 ];
 
-export const PracticeScreen: React.FC = () => {
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'math' | 'words' | 'creativity'>('all');
+export const PracticeScreen: React.FC<{ userGrade: string }> = ({ userGrade }) => {
+  const [selectedFilter, setSelectedFilter] = useState<'all' | GameCategory>('all');
   const [activeGame, setActiveGame] = useState<{ id: string; title: string } | null>(null);
   const [starsWon, setStarsWon] = useState(45);
 
@@ -62,7 +106,7 @@ export const PracticeScreen: React.FC = () => {
         <div className="space-y-3 max-w-xl text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-black shadow-sm">
             <Gamepad2 className="w-4 h-4 text-amber-300" />
-            <span>Interactive Game Arcade</span>
+            <span>{userGrade} Interactive Game Arcade</span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-black tracking-tight drop-shadow-sm">
@@ -70,7 +114,7 @@ export const PracticeScreen: React.FC = () => {
           </h1>
 
           <p className="text-white/90 text-sm md:text-base font-semibold leading-relaxed">
-            Hands-on interactive games to sharpen math, phonics, patterns, and colors while earning shiny gold stars!
+            Grade-aware games for maths, memory, patterns, phonics, and creative problem-solving.
           </p>
 
           <div className="pt-1 flex items-center justify-center md:justify-start gap-4">
@@ -97,12 +141,13 @@ export const PracticeScreen: React.FC = () => {
             { id: 'math', label: 'Math & Numbers' },
             { id: 'words', label: 'Alphabets & Phonics' },
             { id: 'creativity', label: 'Colors & Shapes' },
+            { id: 'logic', label: 'Logic & Memory' },
           ].map((f) => (
             <button
               key={f.id}
               onClick={() => {
                 sound.playPop();
-                setSelectedFilter(f.id as 'all' | 'math' | 'words' | 'creativity');
+                setSelectedFilter(f.id as 'all' | GameCategory);
               }}
               className={`px-4 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer ${
                 selectedFilter === f.id
@@ -116,16 +161,21 @@ export const PracticeScreen: React.FC = () => {
         </div>
 
         <span className="text-xs font-black text-slate-500 hidden sm:inline">
-          Showing 10 Interactive Activities
+          Showing {EXTENDED_GAMES.filter((game) => selectedFilter === 'all' || game.category === selectedFilter).length} Interactive Activities
         </span>
       </div>
 
       {/* Playable Games Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
-        {EXTENDED_GAMES.map((game) => (
+        {EXTENDED_GAMES.filter((game) => selectedFilter === 'all' || game.category === selectedFilter).map((game) => (
           <div
             key={game.id}
             onClick={() => handleLaunchGame(game.id, game.title)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') handleLaunchGame(game.id, game.title);
+            }}
+            role="button"
+            tabIndex={0}
             style={{ backgroundColor: game.bgColor }}
             className="rounded-[2rem] p-6 border-2 border-white/80 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col justify-between h-56 select-none relative overflow-hidden text-white glossy-bubble"
           >
@@ -146,7 +196,7 @@ export const PracticeScreen: React.FC = () => {
                 {game.title}
               </h3>
               <p className="text-xs font-bold text-white/90 line-clamp-1">
-                {'desc' in game ? (game as { desc: string }).desc : 'Interactive practice activity'}
+                {game.desc}
               </p>
 
               <div className="pt-2 flex items-center justify-between">
@@ -167,10 +217,11 @@ export const PracticeScreen: React.FC = () => {
         <InteractiveGameModal
           gameId={activeGame.id}
           gameTitle={activeGame.title}
+          userGrade={userGrade}
           onClose={() => {
             setActiveGame(null);
-            setStarsWon((prev) => prev + 10);
           }}
+          onWin={() => setStarsWon((previous) => previous + 10)}
         />
       )}
     </div>

@@ -11,28 +11,116 @@ export type GameType =
   | 'p-alphabets'
   | 'p-numbers'
   | 'balloon-pop'
+  | 'math-quest'
+  | 'memory-match'
+  | 'fraction-factory'
   | 'trace'
   | 'general';
 
 interface InteractiveGameModalProps {
   gameId: string;
   gameTitle: string;
+  userGrade?: string;
   onClose: () => void;
+  onWin?: () => void;
 }
+
+interface ChallengeQuestion {
+  question: string;
+  visual: string;
+  options: string[];
+  answer: string;
+  explanation: string;
+}
+
+interface MemoryCard {
+  id: number;
+  pair: string;
+  label: string;
+  matched: boolean;
+}
+
+const getChallengeQuestions = (grade: string, fractionsOnly = false): ChallengeQuestion[] => {
+  if (fractionsOnly && grade === 'Grade 3') {
+    return [
+      { question: 'Which fraction is equivalent to 2/4?', visual: '2/4 = ?', options: ['1/2', '1/4', '2/3', '4/2'], answer: '1/2', explanation: 'Divide the numerator and denominator by 2: 2/4 = 1/2.' },
+      { question: 'A pizza has 8 equal slices. What fraction is 3 slices?', visual: '3 slices out of 8', options: ['3/8', '8/3', '5/8', '3/5'], answer: '3/8', explanation: 'Three of the eight equal slices is 3/8.' },
+      { question: 'Which fraction is greater?', visual: '3/4  or  1/4', options: ['3/4', '1/4', 'They are equal', 'Not enough information'], answer: '3/4', explanation: 'With the same denominator, 3 fourths is greater than 1 fourth.' },
+      { question: 'A cake is split into 6 equal pieces. 2 are eaten. What fraction remains?', visual: '6 pieces − 2 pieces', options: ['4/6', '2/6', '2/4', '6/2'], answer: '4/6', explanation: 'Four of the six pieces remain, so 4/6 is left.' },
+      { question: 'Which fraction means one whole?', visual: 'Choose one whole', options: ['4/4', '1/4', '3/4', '2/4'], answer: '4/4', explanation: 'Four fourths make one complete whole.' },
+    ];
+  }
+
+  if (fractionsOnly) {
+    return [
+      { question: 'A shape is split into 2 equal parts. What is one part called?', visual: '1 of 2 equal parts', options: ['One half', 'One whole', 'One third', 'Two halves'], answer: 'One half', explanation: 'One of two equal parts is one half.' },
+      { question: 'There are 4 equal slices. You eat 1. How many are left?', visual: '4 slices − 1 slice', options: ['3', '2', '4', '5'], answer: '3', explanation: '4 − 1 = 3 slices remain.' },
+      { question: 'Which shows 2 equal groups?', visual: 'Share 6 counters equally', options: ['3 and 3', '2 and 2', '4 and 1', '6 and 1'], answer: '3 and 3', explanation: '3 and 3 make two equal groups of 3.' },
+      { question: 'Which is more: one half or one whole?', visual: '1/2  or  1 whole', options: ['1 whole', '1/2', 'They are equal', 'Neither'], answer: '1 whole', explanation: 'One whole is made of two halves.' },
+    ];
+  }
+
+  if (grade === 'Grade 3') {
+    return [
+      { question: 'A library has 248 storybooks and gets 176 more. How many now?', visual: '248 + 176 = ?', options: ['414', '424', '434', '324'], answer: '424', explanation: '248 + 176 = 424 books.' },
+      { question: 'A farmer packs 7 eggs in each carton. How many eggs fill 8 cartons?', visual: '8 × 7 = ?', options: ['54', '56', '64', '15'], answer: '56', explanation: '8 groups of 7 eggs make 56 eggs.' },
+      { question: 'Share 63 apples equally among 9 baskets. How many per basket?', visual: '63 ÷ 9 = ?', options: ['6', '7', '8', '9'], answer: '7', explanation: '9 × 7 = 63, so each basket gets 7 apples.' },
+      { question: 'A 600 cm ribbon is cut. 287 cm is used. How much remains?', visual: '600 − 287 = ?', options: ['313 cm', '323 cm', '413 cm', '303 cm'], answer: '313 cm', explanation: '600 − 287 = 313 cm.' },
+      { question: 'Find the next number: 5, 11, 23, 47, __', visual: 'Each number doubles, then adds 1', options: ['94', '95', '96', '87'], answer: '95', explanation: '47 × 2 + 1 = 95.' },
+    ];
+  }
+
+  if (grade === 'Grade 2') {
+    return [
+      { question: 'A shop has 38 red balls and 27 blue balls. How many altogether?', visual: '38 + 27 = ?', options: ['55', '65', '66', '75'], answer: '65', explanation: '38 + 27 = 65 balls.' },
+      { question: 'There are 5 plates with 4 cookies on each. How many cookies?', visual: '5 × 4 = ?', options: ['9', '20', '15', '25'], answer: '20', explanation: '5 groups of 4 make 20 cookies.' },
+      { question: 'A book has 72 pages. You read 35. How many are left?', visual: '72 − 35 = ?', options: ['37', '47', '43', '27'], answer: '37', explanation: '72 − 35 = 37 pages.' },
+      { question: 'What time is 30 minutes after 4:15?', visual: '4:15 + 30 minutes', options: ['4:45', '4:30', '5:15', '3:45'], answer: '4:45', explanation: '30 minutes after 4:15 is 4:45.' },
+    ];
+  }
+
+  return [
+    { question: 'You have 24 crayons and find 18 more. How many now?', visual: '24 + 18 = ?', options: ['32', '42', '52', '40'], answer: '42', explanation: '24 + 18 = 42 crayons.' },
+    { question: 'There are 4 bags with 5 oranges each. How many oranges?', visual: '4 groups of 5', options: ['9', '20', '15', '25'], answer: '20', explanation: '4 groups of 5 make 20 oranges.' },
+    { question: 'A bus has 50 passengers. 16 get off. How many remain?', visual: '50 − 16 = ?', options: ['34', '36', '44', '26'], answer: '34', explanation: '50 − 16 = 34 passengers.' },
+    { question: 'What number comes next? 12, 15, 18, __', visual: 'Count forward by 3', options: ['20', '21', '22', '24'], answer: '21', explanation: 'The pattern adds 3 each time.' },
+  ];
+};
+
+const makeMemoryCards = (grade: string): MemoryCard[] => {
+  const pairs = grade === 'Grade 3'
+    ? [['6 × 7', '42'], ['8 × 9', '72'], ['56 ÷ 7', '8'], ['3/6', '1/2']]
+    : grade === 'Grade 2'
+      ? [['4 × 3', '12'], ['5 × 6', '30'], ['24 ÷ 4', '6'], ['35 + 15', '50']]
+      : [['6 + 4', '10'], ['12 − 5', '7'], ['3 + 8', '11'], ['15 − 6', '9']];
+
+  return pairs.flatMap(([equation, answer], index) => [
+    { id: index * 2, pair: `pair-${index}`, label: equation, matched: false },
+    { id: index * 2 + 1, pair: `pair-${index}`, label: answer, matched: false },
+  ]);
+};
 
 export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
   gameId,
   gameTitle,
+  userGrade = 'Grade 1',
   onClose,
+  onWin,
 }) => {
   const [score, setScore] = useState(0);
   const [gameWon, setGameWon] = useState(false);
 
   // Normalize game type
   const type: GameType =
-    gameId === 'p-pop' || gameTitle.toLowerCase().includes('pop')
+    gameId === 'p-math-quest'
+      ? 'math-quest'
+      : gameId === 'p-memory-match'
+        ? 'memory-match'
+        : gameId === 'p-fraction-factory'
+          ? 'fraction-factory'
+          : gameId === 'p-pop' || gameTitle.toLowerCase().includes('pop')
       ? 'p-pop'
-      : gameId === 'p-colour' || gameTitle.toLowerCase().includes('colour') || gameTitle.toLowerCase().includes('paint')
+      : gameId === 'p-colour' || gameId === 'p-color-canvas' || gameTitle.toLowerCase().includes('colour') || gameTitle.toLowerCase().includes('color') || gameTitle.toLowerCase().includes('paint')
       ? 'p-colour'
       : gameId === 'p-shapes' || gameTitle.toLowerCase().includes('shape') || gameTitle.toLowerCase().includes('tracing')
       ? 'p-shapes'
@@ -41,6 +129,59 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
       : gameId === 'p-alphabets' || gameTitle.toLowerCase().includes('alpha') || gameTitle.toLowerCase().includes('letter')
       ? 'p-alphabets'
       : 'p-numbers';
+
+  const challengeQuestions = getChallengeQuestions(userGrade, type === 'fraction-factory');
+  const [challengeStep, setChallengeStep] = useState(0);
+  const [challengeAnswer, setChallengeAnswer] = useState<string | null>(null);
+  const [memoryCards, setMemoryCards] = useState(() => makeMemoryCards(userGrade));
+  const [selectedMemoryIds, setSelectedMemoryIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (selectedMemoryIds.length !== 2) return;
+    const timer = window.setTimeout(() => setSelectedMemoryIds([]), 700);
+    return () => window.clearTimeout(timer);
+  }, [selectedMemoryIds]);
+
+  const handleChallengeAnswer = (answer: string) => {
+    if (challengeAnswer !== null) return;
+    sound.playPop();
+    setChallengeAnswer(answer);
+    if (answer === challengeQuestions[challengeStep].answer) {
+      sound.playSuccess();
+      setScore((previous) => previous + 1);
+    }
+  };
+
+  const handleNextChallenge = () => {
+    if (challengeStep + 1 === challengeQuestions.length) {
+      triggerWin();
+      return;
+    }
+    setChallengeStep((previous) => previous + 1);
+    setChallengeAnswer(null);
+  };
+
+  const handleMemoryCardClick = (cardId: number) => {
+    const card = memoryCards.find((item) => item.id === cardId);
+    if (!card || card.matched || selectedMemoryIds.length === 2 || selectedMemoryIds.includes(cardId)) return;
+
+    sound.playPop();
+    const revealed = [...selectedMemoryIds, cardId];
+    setSelectedMemoryIds(revealed);
+    if (revealed.length !== 2) return;
+
+    const first = memoryCards.find((item) => item.id === revealed[0]);
+    if (first?.pair === card.pair) {
+      setMemoryCards((previous) => previous.map((item) =>
+        item.pair === card.pair ? { ...item, matched: true } : item,
+      ));
+      setScore((previous) => previous + 1);
+      sound.playSuccess();
+      if (memoryCards.filter((item) => item.matched).length + 2 === memoryCards.length) {
+        triggerWin();
+      }
+    }
+  };
 
   // --- GAME 1: BUBBLE POP GAME STATE ---
   const [bubbles, setBubbles] = useState([
@@ -185,7 +326,9 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
   };
 
   const triggerWin = () => {
+    if (gameWon) return;
     setGameWon(true);
+    onWin?.();
     sound.playSuccess();
     try {
       confetti({
@@ -214,6 +357,10 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
     setAlphaStep(0);
     setCarrotsGiven(0);
     setShapeStep(0);
+    setChallengeStep(0);
+    setChallengeAnswer(null);
+    setMemoryCards(makeMemoryCards(userGrade));
+    setSelectedMemoryIds([]);
   };
 
   return (
@@ -227,7 +374,7 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
             </span>
             <div>
               <h3 className="text-base font-black tracking-tight">{gameTitle}</h3>
-              <p className="text-[11px] font-bold text-blue-100">Interactive Learning Mini-Game</p>
+              <p className="text-[11px] font-bold text-blue-100">{userGrade} Interactive Learning Game</p>
             </div>
           </div>
 
@@ -281,6 +428,81 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
             </div>
           ) : (
             <>
+              {(type === 'math-quest' || type === 'fraction-factory') && (
+                <div className="w-full max-w-xl space-y-5 text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-900 font-black text-xs">
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    {type === 'fraction-factory' ? 'Fraction Factory' : 'Math Quest'} · Mission {challengeStep + 1} of {challengeQuestions.length}
+                  </div>
+                  <div className="rounded-3xl bg-white border border-indigo-100 shadow-inner p-5 space-y-3">
+                    <p className="text-lg font-black text-slate-900">{challengeQuestions[challengeStep].question}</p>
+                    <p className="text-2xl font-black text-indigo-700">{challengeQuestions[challengeStep].visual}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {challengeQuestions[challengeStep].options.map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => handleChallengeAnswer(option)}
+                        disabled={challengeAnswer !== null}
+                        className={`min-h-14 px-3 rounded-2xl border-2 font-black text-sm transition-all ${
+                          challengeAnswer === option
+                            ? option === challengeQuestions[challengeStep].answer
+                              ? 'bg-emerald-100 border-emerald-500 text-emerald-800'
+                              : 'bg-rose-100 border-rose-400 text-rose-800'
+                            : challengeAnswer !== null && option === challengeQuestions[challengeStep].answer
+                              ? 'bg-emerald-50 border-emerald-400 text-emerald-800'
+                              : 'bg-white border-slate-200 text-slate-800 hover:border-indigo-400 hover:-translate-y-0.5'
+                        } disabled:cursor-default`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                  {challengeAnswer !== null && (
+                    <div className="flex items-center justify-between gap-3 rounded-2xl bg-blue-50 border border-blue-100 p-3 text-left">
+                      <span className="text-xs font-bold text-blue-900">
+                        {challengeQuestions[challengeStep].explanation}
+                      </span>
+                      <button
+                        onClick={handleNextChallenge}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black whitespace-nowrap"
+                      >
+                        {challengeStep + 1 === challengeQuestions.length ? 'Finish' : 'Next'}
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-xs font-bold text-slate-500">Missions solved: {score}</p>
+                </div>
+              )}
+
+              {type === 'memory-match' && (
+                <div className="w-full max-w-lg space-y-5 text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-100 text-violet-900 font-black text-xs">
+                    <span>Flip two cards and match each equation to its answer.</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {memoryCards.map((card) => {
+                      const revealed = card.matched || selectedMemoryIds.includes(card.id);
+                      return (
+                        <button
+                          key={card.id}
+                          onClick={() => handleMemoryCardClick(card.id)}
+                          disabled={card.matched || selectedMemoryIds.length === 2}
+                          className={`aspect-square rounded-2xl border-2 p-2 flex items-center justify-center font-black text-sm transition-all duration-300 hover:-translate-y-0.5 ${
+                            revealed
+                              ? 'bg-violet-100 border-violet-400 text-violet-900 rotate-0'
+                              : 'bg-gradient-to-br from-violet-500 to-indigo-600 border-white text-white shadow-md hover:scale-105'
+                          }`}
+                        >
+                          {revealed ? card.label : '✦'}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs font-bold text-slate-500">Pairs found: {score} / {memoryCards.length / 2}</p>
+                </div>
+              )}
+
               {/* --- GAME: BUBBLE POP --- */}
               {type === 'p-pop' && (
                 <div className="w-full space-y-6 text-center">

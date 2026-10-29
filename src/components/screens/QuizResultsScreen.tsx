@@ -18,6 +18,8 @@ import { sound } from '../../utils/audio';
 
 interface QuizResultsScreenProps {
   userName: string;
+  userGrade: string;
+  quizResult: { correct: number; total: number };
   onContinueLearning: () => void;
   onRetakeQuiz: () => void;
   onSelectLesson: (lessonId: string) => void;
@@ -25,10 +27,14 @@ interface QuizResultsScreenProps {
 
 export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
   userName,
+  userGrade,
+  quizResult,
   onContinueLearning,
   onRetakeQuiz,
   onSelectLesson,
 }) => {
+  const scorePercentage = Math.round((quizResult.correct / quizResult.total) * 100);
+  const wrongAnswers = quizResult.total - quizResult.correct;
   // Trigger celebratory confetti on mount
   useEffect(() => {
     sound.playSuccess();
@@ -74,7 +80,7 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
           </div>
 
           <div className="flex items-center justify-around py-2">
-            {/* Circular Gauge: 80% 8/10 */}
+            {/* Circular Score Gauge */}
             <div className="relative w-28 h-28 flex items-center justify-center">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                 <path
@@ -88,13 +94,13 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
                   fill="none"
                   stroke="#10b981"
                   strokeWidth="3.6"
-                  strokeDasharray="80, 100"
+                  strokeDasharray={`${scorePercentage}, 100`}
                   strokeLinecap="round"
                 />
               </svg>
               <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-xl font-black text-slate-900 leading-none">80%</span>
-                <span className="text-[11px] font-bold text-slate-500 mt-0.5">8/10</span>
+                <span className="text-xl font-black text-slate-900 leading-none">{scorePercentage}%</span>
+                <span className="text-[11px] font-bold text-slate-500 mt-0.5">{quizResult.correct}/{quizResult.total}</span>
               </div>
             </div>
 
@@ -105,10 +111,16 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
                   <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" /> Stars Earned
                 </p>
                 <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
-                  <Star className="w-4 h-4 fill-slate-200 text-slate-200" />
+                  {[1, 2, 3, 4].map((star) => (
+                    <Star
+                      key={star}
+                      className={`w-4 h-4 ${
+                        star <= Math.ceil(scorePercentage / 25)
+                          ? 'fill-amber-400 text-amber-500'
+                          : 'fill-slate-200 text-slate-200'
+                      }`}
+                    />
+                  ))}
                 </div>
               </div>
 
@@ -117,28 +129,30 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
                   <span className="flex items-center gap-1.5 text-emerald-600">
                     <CheckCircle2 className="w-4 h-4" /> Correct Answers
                   </span>
-                  <span className="font-black text-slate-900">8</span>
+                  <span className="font-black text-slate-900">{quizResult.correct}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4 font-bold text-slate-700">
                   <span className="flex items-center gap-1.5 text-rose-500">
                     <XCircle className="w-4 h-4" /> Wrong Answers
                   </span>
-                  <span className="font-black text-slate-900">2</span>
+                  <span className="font-black text-slate-900">{wrongAnswers}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4 font-bold text-slate-700">
                   <span className="flex items-center gap-1.5 text-blue-600">
-                    <Clock className="w-4 h-4" /> Time Taken
+                    <Clock className="w-4 h-4" /> Class Level
                   </span>
-                  <span className="font-black text-slate-900">4:32</span>
+                  <span className="font-black text-slate-900">{userGrade}</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="pt-2 border-t border-slate-100 text-center">
-            <p className="text-xs font-black text-slate-800">Excellent work!</p>
+            <p className="text-xs font-black text-slate-800">
+              {scorePercentage >= 80 ? 'Excellent work!' : 'Great effort!'}
+            </p>
             <p className="text-[11px] font-semibold text-slate-400">
-              You understood the lesson well.
+              {userGrade} quiz completed. Keep practising to build confidence.
             </p>
           </div>
         </div>
