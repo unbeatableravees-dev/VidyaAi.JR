@@ -13,8 +13,16 @@ interface HeaderProps {
   onSwitchProfile?: () => void;
 }
 
+const AVATAR_STYLES: Record<string, { emoji: string; color: string }> = {
+  'boy-aarav': { emoji: '👦', color: 'from-blue-400 to-indigo-500' },
+  'girl-ananya': { emoji: '👧', color: 'from-pink-400 to-rose-500' },
+  'boy-kabir': { emoji: '🧑‍🚀', color: 'from-amber-400 to-orange-500' },
+  'girl-meera': { emoji: '🐼', color: 'from-emerald-400 to-teal-500' },
+};
+
 export const Header: React.FC<HeaderProps> = ({
   userName,
+  userAvatar = 'boy-aarav',
   userGrade = 'Grade 1',
   searchQuery,
   onSearchChange,
@@ -23,9 +31,10 @@ export const Header: React.FC<HeaderProps> = ({
   onSwitchProfile,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const activeAvatar = AVATAR_STYLES[userAvatar] || AVATAR_STYLES['boy-aarav'];
 
   return (
-    <header className="h-18 px-6 md:px-8 py-3.5 flex items-center justify-between border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-30 shadow-sm">
+    <header className="h-18 px-6 md:px-8 py-3.5 flex items-center justify-between border-b border-white/60 bg-white/65 backdrop-blur-xl sticky top-0 z-30 shadow-sm/40">
       {/* Search Input */}
       <div className="relative w-full max-w-md">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -34,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search for lessons, videos, or topics..."
-          className="w-full pl-11 pr-4 py-2 text-sm bg-white/90 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
+          className="w-full pl-11 pr-4 py-2 text-sm bg-white/70 backdrop-blur-sm border border-white/80 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
         />
       </div>
 
@@ -60,16 +69,8 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 rounded-full transition-all cursor-pointer shadow-sm hover:scale-102"
           >
-            {/* Cartoon Avatar */}
-            <div className="w-8 h-8 rounded-full bg-blue-500 overflow-hidden ring-2 ring-blue-300 flex items-center justify-center shadow-sm">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="50" cy="45" r="28" fill="#fed7aa" />
-                <path d="M 24 40 C 22 18 38 10 52 10 C 68 10 74 18 76 38 C 70 28 62 20 50 20 C 38 20 30 28 24 40 Z" fill="#451a03" />
-                <circle cx="42" cy="42" r="3" fill="#1e293b" />
-                <circle cx="58" cy="42" r="3" fill="#1e293b" />
-                <path d="M 46 48 Q 50 52 54 48" fill="none" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" />
-                <path d="M 22 75 Q 50 65 78 75 L 82 100 L 18 100 Z" fill="#2563eb" />
-              </svg>
+            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${activeAvatar.color} ring-2 ring-blue-300 flex items-center justify-center text-2xl shadow-sm transition-transform duration-300 hover:scale-110 hover:rotate-[-8deg]`}>
+              <span role="img" aria-label="Selected character">{activeAvatar.emoji}</span>
             </div>
             <span className="text-sm font-black text-slate-800">Hi, {userName}</span>
             <ChevronDown className="w-4 h-4 text-slate-500" />
@@ -79,8 +80,15 @@ export const Header: React.FC<HeaderProps> = ({
           {showProfileMenu && (
             <div className="absolute right-0 mt-2 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 text-slate-700 animate-in fade-in slide-in-from-top-2 duration-150 select-none">
               <div className="px-5 py-2 border-b border-slate-100">
-                <p className="font-black text-sm text-slate-900">{userName}</p>
-                <p className="text-xs font-bold text-blue-600">{userGrade} • Super Learner</p>
+                <div className="flex items-center gap-3">
+                  <span className={`w-10 h-10 rounded-full bg-gradient-to-br ${activeAvatar.color} flex items-center justify-center text-2xl shadow-sm`}>
+                    {activeAvatar.emoji}
+                  </span>
+                  <div>
+                    <p className="font-black text-sm text-slate-900">{userName}</p>
+                    <p className="text-xs font-bold text-blue-600">{userGrade} • Super Learner</p>
+                  </div>
+                </div>
               </div>
 
               <div className="px-4 py-2 flex items-center justify-between text-xs font-black text-slate-600 bg-amber-50/80 my-2 mx-3 rounded-2xl border border-amber-200/50">

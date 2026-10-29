@@ -34,6 +34,7 @@ export function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('numbers');
   const [searchQuery, setSearchQuery] = useState('');
+  const [quizResult, setQuizResult] = useState({ correct: 0, total: 10 });
 
   // Active modal video (if any clicked)
   const [activeVideoModal, setActiveVideoModal] = useState<VideoData | null>(null);
@@ -71,7 +72,8 @@ export function App() {
     setCurrentTab('quiz');
   };
 
-  const handleCompleteQuiz = () => {
+  const handleCompleteQuiz = (result: { correct: number; total: number }) => {
+    setQuizResult(result);
     setCurrentTab('quiz-results');
   };
 
@@ -111,7 +113,16 @@ export function App() {
   const activeDisplayName = userName || 'Aarav';
 
   return (
-    <div className="flex min-h-screen bg-[#f0f4f9] text-slate-800 font-['Nunito',sans-serif] selection:bg-blue-200">
+    <div className="relative flex min-h-screen bg-gradient-to-br from-[#ebf3ff] via-[#f5f3ff] to-[#fef2f8] text-slate-800 font-['Nunito',sans-serif] selection:bg-blue-200 overflow-x-hidden">
+      {/* Ambient glowing background orbs for subtle glassmorphism transparency */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-300/35 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute top-1/4 -right-24 w-96 h-96 bg-purple-300/30 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-amber-200/35 rounded-full blur-3xl animate-pulse-glow" />
+        <div className="absolute -bottom-24 right-1/4 w-96 h-96 bg-cyan-200/35 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute top-2/3 -left-20 w-72 h-72 bg-pink-200/30 rounded-full blur-3xl animate-float" />
+      </div>
+
       {/* Deep Blue Left Sidebar with JR Logo */}
       <Sidebar
         currentTab={currentTab}
@@ -120,7 +131,7 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative z-10">
         {/* Top Header with Dynamic Name and Profile menu */}
         <Header
           userName={activeDisplayName}
@@ -145,7 +156,7 @@ export function App() {
             />
           )}
 
-          {currentTab === 'practice' && <PracticeScreen />}
+          {currentTab === 'practice' && <PracticeScreen userGrade={userGrade} />}
 
           {currentTab === 'category-detail' && (
             <CategoryDetailScreen
@@ -164,6 +175,7 @@ export function App() {
 
           {currentTab === 'quiz' && (
             <QuizScreen
+              userGrade={userGrade}
               onBackToLesson={handleBackToLearning}
               onCompleteQuiz={handleCompleteQuiz}
             />
@@ -172,6 +184,8 @@ export function App() {
           {currentTab === 'quiz-results' && (
             <QuizResultsScreen
               userName={activeDisplayName}
+              userGrade={userGrade}
+              quizResult={quizResult}
               onContinueLearning={handleStartLearning}
               onRetakeQuiz={() => setCurrentTab('quiz')}
               onSelectLesson={(_lessonId) => setCurrentTab('learning')}

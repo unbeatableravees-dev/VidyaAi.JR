@@ -9,10 +9,10 @@ interface WelcomeScreenProps {
 }
 
 const AVATARS = [
-  { id: 'boy-aarav', name: 'Aarav', emoji: '👦', desc: 'Curious Learner', bg: 'from-blue-400 to-indigo-500' },
-  { id: 'girl-ananya', name: 'Ananya', emoji: '👧', desc: 'Math Superstar', bg: 'from-pink-400 to-rose-500' },
-  { id: 'boy-kabir', name: 'Kabir', emoji: '🧒', desc: 'Story Explorer', bg: 'from-amber-400 to-orange-500' },
-  { id: 'girl-meera', name: 'Meera', emoji: '👧', desc: 'Creative Artist', bg: 'from-emerald-400 to-teal-500' },
+  { id: 'boy-aarav', name: 'Aarav', emoji: '👦', bg: 'from-blue-400 to-indigo-500' },
+  { id: 'girl-ananya', name: 'Ananya', emoji: '👧', bg: 'from-pink-400 to-rose-500' },
+  { id: 'boy-kabir', name: 'Kabir', emoji: '🧑‍🚀', bg: 'from-amber-400 to-orange-500' },
+  { id: 'girl-meera', name: 'Meera', emoji: '🐼', bg: 'from-emerald-400 to-teal-500' },
 ];
 
 const GRADES = [
@@ -132,15 +132,22 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                     sound.playPop();
                     setSelectedAvatar(av.id);
                   }}
-                  className={`p-3 rounded-2xl border-2 flex flex-col items-center gap-1 transition-all duration-200 cursor-pointer ${
+                  aria-label={`${av.name} character`}
+                  aria-pressed={selectedAvatar === av.id}
+                  className={`group relative p-3 rounded-2xl border-2 flex flex-col items-center justify-center min-h-24 transition-all duration-300 cursor-pointer ${
                     selectedAvatar === av.id
-                      ? 'border-blue-500 bg-blue-50 shadow-md scale-105 ring-4 ring-blue-200'
-                      : 'border-slate-200 bg-slate-50/70 hover:bg-slate-100 hover:scale-102'
+                      ? 'border-blue-500 bg-blue-50 shadow-lg scale-105 ring-4 ring-blue-200'
+                      : 'border-slate-200 bg-slate-50/70 hover:bg-white hover:-translate-y-1 hover:scale-105 hover:shadow-md'
                   }`}
                 >
-                  <span className="text-4xl filter drop-shadow">{av.emoji}</span>
-                  <span className="text-xs font-black text-slate-900">{av.name}</span>
-                  <span className="text-[10px] font-bold text-slate-400">{av.desc}</span>
+                  <span className={`w-14 h-14 rounded-full bg-gradient-to-br ${av.bg} flex items-center justify-center text-4xl filter drop-shadow-md transition-transform duration-300 group-hover:rotate-[-8deg] group-hover:scale-110 ${selectedAvatar === av.id ? 'animate-bounce-gentle' : ''}`}>
+                    {av.emoji}
+                  </span>
+                  {selectedAvatar === av.id && (
+                    <span className="absolute top-1 right-1 w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center animate-in zoom-in-50">
+                      <Check className="w-3 h-3 stroke-[3]" />
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
