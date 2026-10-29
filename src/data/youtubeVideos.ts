@@ -18,16 +18,16 @@ export interface RealVideoItem {
 export const REAL_YOUTUBE_VIDEOS: RealVideoItem[] = [
   {
     id: 'v-elephants',
-    youtubeId: 'Aw6GkiCgkWs',
+    youtubeId: 'lLAyDRLHKXY',
     title: "How Elephants Use Their Super Trunks!",
-    hindiTitle: "हाथी की जादुई सूंड के 7 अनोखे करतब",
+    hindiTitle: "हाथी की जादुई सूंड के अनोखे करतब",
     channel: 'National Geographic Kids',
     duration: '4:32',
     category: 'Animals & Wildlife',
     categoryId: 'animals',
     gradeLevel: 'All Ages',
     views: '1.4M views',
-    thumbnail: 'https://img.youtube.com/vi/Aw6GkiCgkWs/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/lLAyDRLHKXY/hqdefault.jpg',
     description: 'Join Toto and Nat Geo Kids to discover how elephants use their amazing trunk as a hand, hose, snorkel, and trumpet!',
     notes: [
       'An elephant trunk has over 40,000 muscles and zero bones!',
@@ -42,7 +42,7 @@ export const REAL_YOUTUBE_VIDEOS: RealVideoItem[] = [
   },
   {
     id: 'v-trains',
-    youtubeId: 'B0g_S9Jj6d0',
+    youtubeId: 'Yr88rbWb-7E',
     title: 'The Invention of Trains | Steam to Bullet Trains',
     hindiTitle: 'ट्रेन का आविष्कार कैसे हुआ? छुक-छुक से बुलेट ट्रेन',
     channel: 'Peekaboo Kidz (Dr. Binocs)',
@@ -51,7 +51,7 @@ export const REAL_YOUTUBE_VIDEOS: RealVideoItem[] = [
     categoryId: 'science',
     gradeLevel: 'Grade 1-2',
     views: '2.8M views',
-    thumbnail: 'https://img.youtube.com/vi/B0g_S9Jj6d0/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/Yr88rbWb-7E/hqdefault.jpg',
     description: 'Hop aboard with Dr. Binocs to see how coal, boiling water, and steam revolutionized travel across the world!',
     notes: [
       'George Stephenson built the world’s first passenger railway.',
@@ -66,7 +66,7 @@ export const REAL_YOUTUBE_VIDEOS: RealVideoItem[] = [
   },
   {
     id: 'v-plants',
-    youtubeId: 'dUBIQ1fTRzI',
+    youtubeId: 'D1Ymc311XS8',
     title: 'How Does A Seed Grow Into A Plant? (Photosynthesis)',
     hindiTitle: 'बीज से पौधा कैसे बनता है? फोटोसिंथेसिस',
     channel: 'Dr. Binocs Show',
@@ -75,7 +75,7 @@ export const REAL_YOUTUBE_VIDEOS: RealVideoItem[] = [
     categoryId: 'science',
     gradeLevel: 'All Ages',
     views: '3.9M views',
-    thumbnail: 'https://img.youtube.com/vi/dUBIQ1fTRzI/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/D1Ymc311XS8/hqdefault.jpg',
     description: 'Explore the magical life cycle of a seed, root systems, and how leaves catch sunlight to cook sweet food for plants!',
     notes: [
       'Seeds need sunlight, water, and healthy soil to germinate.',
@@ -90,7 +90,7 @@ export const REAL_YOUTUBE_VIDEOS: RealVideoItem[] = [
   },
   {
     id: 'v-numberblocks-add',
-    youtubeId: 'y1nZf-o0UTo',
+    youtubeId: 'G_FYTTmxukc',
     title: 'Numberblocks – Magical Addition & Combining Numbers',
     hindiTitle: 'नंबरब्लॉक्स के साथ जोड़ना सीखें (२ + ३ = ५)',
     channel: 'Numberblocks Official',
@@ -99,7 +99,7 @@ export const REAL_YOUTUBE_VIDEOS: RealVideoItem[] = [
     categoryId: 'numbers',
     gradeLevel: 'KG',
     views: '5.2M views',
-    thumbnail: 'https://img.youtube.com/vi/y1nZf-o0UTo/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/G_FYTTmxukc/hqdefault.jpg',
     description: 'Sing and count with the colorful Numberblocks! See how 2 and 3 jump together to form happy Number Five.',
     notes: [
       'Addition means combining two sets together into one total.',
@@ -114,7 +114,7 @@ export const REAL_YOUTUBE_VIDEOS: RealVideoItem[] = [
   },
   {
     id: 'v-planets',
-    youtubeId: 'libKVRa01L8',
+    youtubeId: 'w36yxLgwUOc',
     title: 'Explore the Solar System & 8 Wonder Planets',
     hindiTitle: 'सौरमंडल और ८ ग्रहों की जादुई अंतरिक्ष यात्रा',
     channel: 'Peekaboo Kidz',
@@ -123,7 +123,7 @@ export const REAL_YOUTUBE_VIDEOS: RealVideoItem[] = [
     categoryId: 'space',
     gradeLevel: 'All Ages',
     views: '4.1M views',
-    thumbnail: 'https://img.youtube.com/vi/libKVRa01L8/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/w36yxLgwUOc/hqdefault.jpg',
     description: 'Zoom through the solar system from blazing Mercury to icy Neptune, passing Jupiter’s great red storm and Saturn’s rings!',
     notes: [
       'The Sun holds 99.8% of all the mass in our solar system.',

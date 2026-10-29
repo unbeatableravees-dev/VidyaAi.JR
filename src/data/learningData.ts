@@ -169,7 +169,7 @@ export const PRACTICE_ACTIVITIES: PracticeActivity[] = [
 export const FEATURED_VIDEOS: VideoItem[] = [
   {
     id: 'v1',
-    youtubeId: 'Aw6GkiCgkWs',
+    youtubeId: 'lLAyDRLHKXY',
     title: "How Elephants Use Their Super Trunks!",
     hindiTitle: "हाथी की जादुई सूंड के अनोखे करतब",
     duration: '4:32',
@@ -177,11 +177,11 @@ export const FEATURED_VIDEOS: VideoItem[] = [
     channel: 'National Geographic Kids',
     views: '1.4M views',
     isLocked: false,
-    thumbnail: 'https://img.youtube.com/vi/Aw6GkiCgkWs/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/lLAyDRLHKXY/hqdefault.jpg',
   },
   {
     id: 'v2',
-    youtubeId: 'B0g_S9Jj6d0',
+    youtubeId: 'Yr88rbWb-7E',
     title: 'The Invention of Trains | Steam to High Speed',
     hindiTitle: 'ट्रेन का आविष्कार कैसे हुआ?',
     duration: '5:18',
@@ -189,11 +189,11 @@ export const FEATURED_VIDEOS: VideoItem[] = [
     channel: 'Peekaboo Kidz',
     views: '2.8M views',
     isLocked: false,
-    thumbnail: 'https://img.youtube.com/vi/B0g_S9Jj6d0/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/Yr88rbWb-7E/hqdefault.jpg',
   },
   {
     id: 'v3',
-    youtubeId: 'dUBIQ1fTRzI',
+    youtubeId: 'D1Ymc311XS8',
     title: 'How Does A Seed Grow Into A Plant?',
     hindiTitle: 'बीज से पौधा कैसे बनता है? फोटोसिंथेसिस',
     duration: '4:45',
@@ -201,11 +201,11 @@ export const FEATURED_VIDEOS: VideoItem[] = [
     channel: 'Dr. Binocs Show',
     views: '3.9M views',
     isLocked: false,
-    thumbnail: 'https://img.youtube.com/vi/dUBIQ1fTRzI/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/D1Ymc311XS8/hqdefault.jpg',
   },
   {
     id: 'v4',
-    youtubeId: 'y1nZf-o0UTo',
+    youtubeId: 'G_FYTTmxukc',
     title: 'Numberblocks – Magical Addition Adventures',
     hindiTitle: 'नंबरब्लॉक्स के साथ जोड़ना सीखें',
     duration: '6:10',
@@ -213,11 +213,11 @@ export const FEATURED_VIDEOS: VideoItem[] = [
     channel: 'Numberblocks Official',
     views: '5.2M views',
     isLocked: false,
-    thumbnail: 'https://img.youtube.com/vi/y1nZf-o0UTo/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/G_FYTTmxukc/hqdefault.jpg',
   },
   {
     id: 'v5',
-    youtubeId: 'libKVRa01L8',
+    youtubeId: 'w36yxLgwUOc',
     title: 'Explore the Solar System & 8 Wonder Planets',
     hindiTitle: 'सौरमंडल और आठ ग्रहों की अंतरिक्ष यात्रा',
     duration: '6:42',
@@ -225,7 +225,7 @@ export const FEATURED_VIDEOS: VideoItem[] = [
     channel: 'Peekaboo Kidz',
     views: '4.1M views',
     isLocked: false,
-    thumbnail: 'https://img.youtube.com/vi/libKVRa01L8/hqdefault.jpg',
+    thumbnail: 'https://img.youtube.com/vi/w36yxLgwUOc/hqdefault.jpg',
   },
 ];
 

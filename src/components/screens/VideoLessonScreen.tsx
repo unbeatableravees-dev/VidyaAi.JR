@@ -100,7 +100,7 @@ export const VideoLessonScreen: React.FC<VideoLessonScreenProps> = ({
           {mode === 'video' ? (
             <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-950 border-2 border-white shadow-2xl flex flex-col justify-between">
               <iframe
-                src={`https://www.youtube-nocookie.com/embed/${currentVideo.youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+                src={`https://www.youtube.com/embed/${currentVideo.youtubeId}?autoplay=1&rel=0`}
                 title={currentVideo.title}
                 className="w-full h-full border-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

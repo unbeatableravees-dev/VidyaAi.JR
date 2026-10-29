@@ -99,21 +99,35 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
             </h2>
           </div>
 
-          <button
-            onClick={() => {
-              sound.playPop();
-              onClose();
-            }}
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {video.youtubeId && (
+              <a
+                href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+                target="_blank"
+                rel="noreferrer"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-sm transition-all cursor-pointer"
+              >
+                <span>Watch on YouTube</span>
+                <span className="text-[10px]">↗</span>
+              </a>
+            )}
+
+            <button
+              onClick={() => {
+                sound.playPop();
+                onClose();
+              }}
+              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Video Player Frame (16:9) with Real YouTube Embed */}
         <div className="relative aspect-video bg-slate-950 flex flex-col justify-between overflow-hidden shadow-2xl">
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${video.youtubeId || 'Aw6GkiCgkWs'}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+            src={`https://www.youtube.com/embed/${video.youtubeId || 'lLAyDRLHKXY'}?autoplay=1&rel=0`}
             title={video.title}
             className="w-full h-full border-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
