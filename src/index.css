@@ -48,6 +48,13 @@
   -webkit-font-smoothing: antialiased;
 }
 
+
+/* Iconic Solid Deep Royal Blue Sidebar */
+.sidebar-royal-blue {
+  background-color: #0c2e6b !important;
+  background-image: linear-gradient(180deg, #0c2e6b 0%, #103b87 50%, #082252 100%) !important;
+}
+
 /* Custom smooth scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
