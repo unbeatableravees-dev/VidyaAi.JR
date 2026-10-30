@@ -43,7 +43,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
     initialCategory && initialCategory !== 'all' ? 'detail' : 'hub'
   );
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'prophets');
-  const [hubFilter, setHubFilter] = useState<'all' | 'prophets' | 'quran-hadith' | 'manners-hobbies'>('all');
+  const [hubFilter, setHubFilter] = useState<'all' | 'prophets' | 'karbala' | 'quran-hadith' | 'manners-hobbies'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeItem, setActiveItem] = useState<IslamicTeaching | null>(() => {
     if (initialCategory && initialCategory !== 'all') {
@@ -77,6 +77,9 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
 
     if (hubFilter === 'prophets') {
       return track.id === 'prophets' || track.id === 'seerah' || track.id === 'sahabah';
+    }
+    if (hubFilter === 'karbala') {
+      return track.id === 'karbala' || track.id === 'sahabah' || track.id === 'seerah';
     }
     if (hubFilter === 'quran-hadith') {
       return track.id === 'quran' || track.id === 'hadith' || track.id === 'namaz';
@@ -214,7 +217,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                   Islamic Academy Hub
                 </h1>
                 <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black uppercase tracking-wider">
-                  11 Core Tracks
+                  12 Core Tracks
                 </span>
               </div>
               <p className="text-xs md:text-sm font-extrabold text-emerald-700 font-urdu mt-0.5">
@@ -244,8 +247,9 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
           {/* Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             {[
-              { id: 'all', label: 'All 11 Tracks', icon: '✨' },
+              { id: 'all', label: 'All 12 Tracks', icon: '✨' },
               { id: 'prophets', label: 'Prophets & Seerah', icon: '🌟' },
+              { id: 'karbala', label: 'Karbala & Ahl al-Bayt', icon: '🏴' },
               { id: 'quran-hadith', label: 'Quran & Hadith', icon: '📖' },
               { id: 'manners-hobbies', label: 'Manners & Sunnah', icon: '🌸' },
             ].map((pill) => (

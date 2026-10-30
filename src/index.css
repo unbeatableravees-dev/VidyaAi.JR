@@ -20,6 +20,25 @@
 }
 
 /* Quranic Arabic font with crisp Tashkeel & clear letter forms */
+
+/* Punjabi Gurmukhi font for Sikh students */
+.font-punjabi {
+  font-family: 'Noto Sans Gurmukhi', 'Mukta Mahee', -apple-system, sans-serif;
+  line-height: 1.8;
+  letter-spacing: 0.2px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hindi Devanagari font for Hindu students */
+.font-hindi {
+  font-family: 'Noto Sans Devanagari', -apple-system, sans-serif;
+  line-height: 1.8;
+  letter-spacing: 0.2px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
 .font-arabic {
   font-family: 'Amiri', 'Noto Sans Arabic', 'Traditional Arabic', serif;
   line-height: 2.2;
