@@ -6,6 +6,8 @@
 
 export interface IslamicTeaching {
   id: string;
+  contentType?: 'teaching' | 'practice';
+  sourceLessonId?: string;
   title: string;
   urduTitle: string;
   category:
@@ -296,7 +298,92 @@ export const ISLAMIC_TRACKS: IslamicTrack[] = [
   },
 ];
 
-export const ISLAMIC_TEACHINGS: IslamicTeaching[] = [
+interface ReviewActivityPrompt {
+  title: string;
+  titleUrdu: string;
+  instruction: string;
+  instructionUrdu: string;
+}
+
+const REVIEW_ACTIVITY_PROMPTS: ReviewActivityPrompt[] = [
+  { title: 'Recall Check', titleUrdu: 'یادداشت کی مشق', instruction: 'Name two details from the lesson, then check them against the source lesson.', instructionUrdu: 'سبق کی دو باتیں یاد سے بیان کریں، پھر اصل سبق سے اپنے جواب کی جانچ کریں۔' },
+  { title: 'Explain It Simply', titleUrdu: 'آسان الفاظ میں بیان', instruction: 'Explain the main idea in your own words, as if teaching a younger student.', instructionUrdu: 'مرکزی خیال اپنے الفاظ میں ایسے سمجھائیں جیسے کسی چھوٹے بچے کو پڑھا رہے ہوں۔' },
+  { title: 'Lesson Link', titleUrdu: 'سبق کا تعلق', instruction: 'Connect one detail from the lesson to its explanation. What helped you make the connection?', instructionUrdu: 'سبق کی ایک بات کو اس کی وضاحت سے ملائیں۔ اس تعلق کو سمجھنے میں کس بات نے مدد دی؟' },
+  { title: 'Daily Action', titleUrdu: 'روزمرہ عمل', instruction: 'Read the source lesson’s practical tip and choose one safe way to try it today.', instructionUrdu: 'اصل سبق کا عملی مشورہ پڑھیں اور آج اسے آزمانے کا ایک محفوظ طریقہ چنیں۔' },
+  { title: 'Family Conversation', titleUrdu: 'گھر میں گفتگو', instruction: 'Share the lesson’s main idea with a family member and ask what they learned from it.', instructionUrdu: 'سبق کا مرکزی خیال گھر کے کسی فرد کو بتائیں اور پوچھیں کہ انہوں نے اس سے کیا سیکھا۔' },
+  { title: 'Draw and Label', titleUrdu: 'تصویر بنائیں', instruction: 'Draw a picture representing an idea from the lesson and label it with three words from the source.', instructionUrdu: 'سبق کے ایک خیال کی تصویر بنائیں اور اصل سبق کے تین الفاظ سے اس پر نام لکھیں۔' },
+  { title: 'Question Builder', titleUrdu: 'سوال بنائیں', instruction: 'Write one question about the lesson and answer it using only information in the source.', instructionUrdu: 'سبق کے بارے میں ایک سوال لکھیں اور صرف اصل سبق کی معلومات سے جواب دیں۔' },
+  { title: 'Key Words', titleUrdu: 'اہم الفاظ', instruction: 'Choose three important words from the lesson and explain what each means in this context.', instructionUrdu: 'سبق کے تین اہم الفاظ چنیں اور اس سبق کے مطابق ہر لفظ کا مطلب سمجھائیں۔' },
+  { title: 'Teach-Back', titleUrdu: 'دوسروں کو سکھائیں', instruction: 'Teach the main idea to someone else in three short steps, then check the source lesson.', instructionUrdu: 'مرکزی خیال تین مختصر مراحل میں کسی اور کو سکھائیں، پھر اصل سبق سے جانچ کریں۔' },
+  { title: 'Compare Ideas', titleUrdu: 'خیالات کا موازنہ', instruction: 'Choose two details from the lesson. How are they alike, and how are they different?', instructionUrdu: 'سبق کی دو باتیں چنیں۔ وہ کس طرح ملتی جلتی اور کس طرح مختلف ہیں؟' },
+  { title: 'Imagine and Apply', titleUrdu: 'سوچیں اور اپنائیں', instruction: 'Imagine a school-day situation where the lesson’s stated guidance could help. Describe your choice.', instructionUrdu: 'اسکول کے دن کی ایسی صورتِ حال سوچیں جہاں سبق کی بیان کردہ رہنمائی کام آ سکتی ہو۔ اپنا انتخاب بتائیں۔' },
+  { title: 'Kindness Challenge', titleUrdu: 'مہربانی کا چیلنج', instruction: 'Find a value explicitly mentioned in the lesson and plan one kind action that reflects it.', instructionUrdu: 'سبق میں واضح طور پر بیان کی گئی ایک خوبی تلاش کریں اور اس کے مطابق مہربانی کا ایک کام سوچیں۔' },
+  { title: 'Reflection Journal', titleUrdu: 'غور و فکر', instruction: 'Write one thing you learned and one question you still have after reading the source lesson.', instructionUrdu: 'اصل سبق پڑھنے کے بعد سیکھی ہوئی ایک بات اور ایک ایسا سوال لکھیں جو ابھی باقی ہے۔' },
+  { title: 'Story Map', titleUrdu: 'سبق کا نقشہ', instruction: 'If the source lesson tells a story, identify its beginning, an important moment, and its lesson.', instructionUrdu: 'اگر اصل سبق میں کہانی ہے تو اس کا آغاز، ایک اہم موڑ اور اس سے ملنے والا سبق بتائیں۔' },
+  { title: 'Choose a Takeaway', titleUrdu: 'سبق کا خلاصہ', instruction: 'Pick the most useful takeaway from the source lesson and explain why it stood out to you.', instructionUrdu: 'اصل سبق کی سب سے مفید بات چنیں اور بتائیں کہ وہ آپ کے لیے کیوں نمایاں ہے۔' },
+  { title: 'Ask a Trusted Adult', titleUrdu: 'بڑے سے پوچھیں', instruction: 'Share one question about the lesson with a parent or teacher and discuss the source together.', instructionUrdu: 'سبق کے بارے میں ایک سوال والدین یا استاد سے پوچھیں اور اصل سبق ساتھ پڑھیں۔' },
+  { title: 'One-Sentence Summary', titleUrdu: 'ایک جملے کا خلاصہ', instruction: 'Summarize the source lesson in one sentence without adding facts that are not in it.', instructionUrdu: 'اصل سبق کا ایک جملے میں خلاصہ کریں اور اس میں غیر موجود بات شامل نہ کریں۔' },
+  { title: 'Find a Virtue', titleUrdu: 'اچھی خوبی تلاش کریں', instruction: 'Name a good quality stated in the lesson and point to the words that helped you identify it.', instructionUrdu: 'سبق میں بیان کی گئی ایک اچھی خوبی بتائیں اور وہ الفاظ دکھائیں جن سے آپ نے اسے پہچانا۔' },
+  { title: 'Two Details and a Question', titleUrdu: 'دو باتیں اور ایک سوال', instruction: 'Write two details you can verify in the lesson, then add one question for further discussion.', instructionUrdu: 'سبق میں موجود دو قابلِ تصدیق باتیں لکھیں اور گفتگو کے لیے ایک مزید سوال شامل کریں۔' },
+  { title: 'Connect to Your Routine', titleUrdu: 'اپنے معمول سے جوڑیں', instruction: 'Connect the lesson’s practical tip to one routine you already have at home or school.', instructionUrdu: 'سبق کے عملی مشورے کو گھر یا اسکول کے اپنے کسی موجودہ معمول سے جوڑیں۔' },
+  { title: 'Make a Mini Poster', titleUrdu: 'چھوٹا پوسٹر', instruction: 'Create a small poster with the lesson title, one source detail, and your own takeaway.', instructionUrdu: 'سبق کے عنوان، اصل سبق کی ایک بات اور اپنے حاصلِ مطالعہ کے ساتھ چھوٹا پوسٹر بنائیں۔' },
+  { title: 'Read and Retell', titleUrdu: 'پڑھیں اور سنائیں', instruction: 'Read the source lesson once, look away, and retell its main idea without guessing extra details.', instructionUrdu: 'اصل سبق ایک بار پڑھیں، پھر اسے دیکھے بغیر مرکزی خیال سنائیں اور اضافی باتیں نہ گھڑیں۔' },
+  { title: 'Build a Word Web', titleUrdu: 'الفاظ کا جال', instruction: 'Write the lesson’s main topic in the center and connect three related words from the source.', instructionUrdu: 'سبق کا مرکزی موضوع درمیان میں لکھیں اور اصل سبق کے تین متعلقہ الفاظ اس سے جوڑیں۔' },
+  { title: 'Sequence the Ideas', titleUrdu: 'خیالات کی ترتیب', instruction: 'Put three ideas from the source lesson in a sensible order and explain your order.', instructionUrdu: 'اصل سبق کے تین خیالات مناسب ترتیب میں رکھیں اور اپنی ترتیب کی وجہ بتائیں۔' },
+  { title: 'What Would You Do?', titleUrdu: 'آپ کیا کریں گے؟', instruction: 'Use the source lesson’s guidance to explain what you would do in a simple everyday example.', instructionUrdu: 'روزمرہ کی ایک آسان مثال میں بتائیں کہ آپ اصل سبق کی رہنمائی کے مطابق کیا کریں گے۔' },
+  { title: 'Make a Memory Card', titleUrdu: 'یادداشت کارڈ', instruction: 'Make a question-and-answer card using one detail and its answer from the source lesson.', instructionUrdu: 'اصل سبق کی ایک بات اور اس کے جواب سے سوال جواب والا یادداشت کارڈ بنائیں۔' },
+  { title: 'Check the Practical Tip', titleUrdu: 'عملی مشورہ دہرائیں', instruction: 'Restate the practical tip in your own words and name an adult who can help you try it safely.', instructionUrdu: 'عملی مشورہ اپنے الفاظ میں دہرائیں اور اس بڑے کا نام بتائیں جو اسے محفوظ طریقے سے آزمانے میں مدد کرے۔' },
+  { title: 'Create a Mini Quiz', titleUrdu: 'چھوٹا کوئز بنائیں', instruction: 'Write one multiple-choice question whose correct answer can be found directly in the source lesson.', instructionUrdu: 'ایک ایسا چار جوابی سوال بنائیں جس کا درست جواب براہِ راست اصل سبق میں موجود ہو۔' },
+];
+
+const REVIEW_ACTIVITY_TOTAL = 1000;
+
+const buildReviewActivities = (): IslamicTeaching[] => {
+  const activities: IslamicTeaching[] = [];
+  const baseItemsByCategory = new Map(
+    ISLAMIC_TRACKS.map((track) => [
+      track.id,
+      BASE_ISLAMIC_TEACHINGS.filter((item) => item.category === track.id),
+    ]),
+  );
+  const activitiesPerTrack = Math.floor(REVIEW_ACTIVITY_TOTAL / ISLAMIC_TRACKS.length);
+  const extraActivities = REVIEW_ACTIVITY_TOTAL % ISLAMIC_TRACKS.length;
+
+  ISLAMIC_TRACKS.forEach((track, trackIndex) => {
+    const sourceLessons = baseItemsByCategory.get(track.id) || [];
+    if (sourceLessons.length === 0) {
+      throw new Error(`Cannot create review activities without source lessons for ${track.id}.`);
+    }
+
+    const activityCount = activitiesPerTrack + Number(trackIndex < extraActivities);
+    for (let index = 0; index < activityCount; index += 1) {
+      const sourceLesson = sourceLessons[index % sourceLessons.length];
+      const prompt = REVIEW_ACTIVITY_PROMPTS[Math.floor(index / sourceLessons.length) % REVIEW_ACTIVITY_PROMPTS.length];
+      const activityNumber = String(index + 1).padStart(2, '0');
+
+      activities.push({
+        id: `review-${track.id}-${activityNumber}`,
+        contentType: 'practice',
+        sourceLessonId: sourceLesson.id,
+        title: `Review ${activityNumber}: ${prompt.title}`,
+        urduTitle: `سرگرمی ${activityNumber}: ${prompt.titleUrdu}`,
+        category: track.id,
+        categoryUrdu: sourceLesson.categoryUrdu,
+        translationUrdu: `یہ دہرائی کی سرگرمی موجودہ سبق "${sourceLesson.urduTitle}" پر مبنی ہے۔ ${prompt.instructionUrdu}`,
+        translationEng: `Review activity based on the existing lesson "${sourceLesson.title}". ${prompt.instruction}`,
+        explanation: `Use only the linked source lesson "${sourceLesson.title}" for lesson details. This is a review activity, not new Quran or Hadith text.`,
+        practicalTip: sourceLesson.practicalTip,
+        badge: 'Review Activity',
+        icon: sourceLesson.icon,
+        color: sourceLesson.color,
+      });
+    }
+  });
+
+  return activities;
+};
+
+const BASE_ISLAMIC_TEACHINGS: IslamicTeaching[] = [
 
   {
     id: 'prophet-shees',
@@ -2253,4 +2340,10 @@ export const ISLAMIC_TEACHINGS: IslamicTeaching[] = [
     icon: '🗣️',
     color: 'from-violet-600 to-pink-700',
   },
+];
+
+export const ISLAMIC_PRACTICE_ACTIVITIES = buildReviewActivities();
+export const ISLAMIC_TEACHINGS: IslamicTeaching[] = [
+  ...BASE_ISLAMIC_TEACHINGS,
+  ...ISLAMIC_PRACTICE_ACTIVITIES,
 ];

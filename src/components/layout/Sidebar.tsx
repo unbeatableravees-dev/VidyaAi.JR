@@ -129,14 +129,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const renderContent = (isMobile: boolean = false) => (
     <div className="flex flex-col justify-between h-full min-h-full select-none text-white">
       <div>
-        {/* Brand Header - Sleek & Compact */}
-        <div className="flex items-center justify-between px-1 mb-2.5 pt-0.5">
+        {/* Brand Header - Compact & Sleek */}
+        <div className="flex items-center justify-between px-1.5 mb-6 pt-1">
           <div
             onClick={() => handleItemClick('home')}
             className="flex items-center gap-2 cursor-pointer group"
           >
             <div className="relative">
-              <div className="w-8 h-8 bg-white/15 backdrop-blur-md rounded-xl p-1 flex items-center justify-center shadow-md border border-white/30 group-hover:scale-105 transition-transform">
+              <div className="w-11 h-11 bg-white/15 backdrop-blur-md rounded-2xl p-1.5 flex items-center justify-center shadow-md border border-white/30 group-hover:scale-105 transition-transform">
                 <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow">
                   <path
                     d="M 50 8 L 62 36 L 94 38 L 70 59 L 77 90 L 50 74 L 23 90 L 30 59 L 6 38 L 38 36 Z"
@@ -164,10 +164,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             <div className="flex items-center gap-1">
-              <span className="text-lg font-black tracking-tight text-white flex items-center font-['Nunito',sans-serif]">
+              <span className="text-2xl font-black tracking-tight text-white flex items-center font-['Nunito',sans-serif]">
                 Vidya<span className="text-cyan-300">AI</span>
               </span>
-              <span className="px-1.5 py-0.2 rounded-md bg-yellow-400 text-slate-950 text-[9.5px] font-black shadow-xs tracking-wide">
+              <span className="px-2 py-0.5 rounded-lg bg-yellow-400 text-slate-950 text-[11px] font-black shadow-xs tracking-wide">
                 JR
               </span>
             </div>
@@ -189,7 +189,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* Navigation Items - Original Glowing Blue Route Capsule */}
+        {/* Navigation Items - Compact, Sleek Padding & Sizing */}
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -204,25 +204,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item.id)}
-                style={
+                aria-current={isActive ? 'page' : undefined}
+                className={`w-full flex items-center justify-between px-2.5 py-2.5 rounded-2xl font-bold transition-all duration-300 text-left cursor-pointer ${
                   isActive
-                    ? {
-                        background: 'linear-gradient(135deg, #1d68ed 0%, #3b82f6 50%, #1d68ed 100%)',
-                        boxShadow: '0 4px 16px rgba(37, 99, 235, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.6)',
-                      }
-                    : undefined
-                }
-                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl font-bold transition-all duration-150 text-left cursor-pointer ${
-                  isActive
-                    ? 'text-white border border-white/40 ring-1 ring-blue-300/40 glossy-pill translate-x-1'
-                    : 'bg-white/8 hover:bg-white/18 text-white border border-white/10 hover:border-white/20 hover:translate-x-0.5'
+                    ? 'bg-gradient-to-b from-[#3988ff] via-[#2878ff] to-[#1762ed] text-white shadow-lg shadow-blue-950/40 translate-x-1 border border-blue-200/50 glossy-pill'
+                    : 'text-blue-100 hover:bg-white/10 hover:backdrop-blur-md hover:text-white hover:translate-x-0.5'
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-blue-200'}`} />
+                <div className="flex items-center gap-2.5">
+                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-blue-200'}`} />
                   <div>
-                    <span className="block leading-tight text-xs font-black text-white">{item.label}</span>
-                    <span className="text-[9px] font-bold text-blue-200/90 block leading-tight">
+                    <span className="block leading-tight text-sm font-black">{item.label}</span>
+                    <span className="text-[10px] font-bold text-blue-200/80 block leading-tight">
                       {item.secondary}
                     </span>
                   </div>
@@ -235,7 +228,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Bottom Switch Profile Button & 3D Mascot */}
-      <div className="pt-2 border-t border-white/10 flex flex-col items-center">
+      <div className="pt-3 border-t border-white/15 flex flex-col items-center">
         {onSwitchProfile && (
           <button
             onClick={() => {
@@ -243,21 +236,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
               if (isMobile && onCloseMobile) onCloseMobile();
               onSwitchProfile();
             }}
-            className="w-full mb-1.5 py-1.5 px-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[10.5px] font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/20 active:scale-98 shadow-xs"
+            className="w-full mb-3 py-2 px-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/25 active:scale-98 shadow-xs"
           >
             <User className="w-3.5 h-3.5" />
-            <span>Switch Student</span>
+            <span>Switch Student Profile</span>
           </button>
         )}
 
-        <div className="relative w-14 h-16 flex items-center justify-center">
+        <div className="relative w-20 h-24 flex items-center justify-center">
           <img
             src={APP_IMAGES.explorerMascot}
             alt="VidyaAI Kid Explorer"
             className="w-full h-full object-contain filter drop-shadow-md animate-float-slow"
           />
         </div>
-        <p className="text-[9px] font-black text-blue-200/90 mt-0.5">Young Minds ⭐</p>
+        <p className="text-[10px] font-black text-blue-200/90 mt-0.5">Young Minds ⭐</p>
       </div>
     </div>
   );
@@ -281,8 +274,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Off-canvas Slide-out Drawer with SOLID DEEP ROYAL BLUE */}
           <aside
-            style={sidebarStyle}
-            className="sidebar-royal-blue fixed inset-y-0 left-0 z-50 w-56 max-w-[80vw] text-white py-3 px-2.5 select-none shadow-2xl border-r border-blue-400/30 overflow-y-auto animate-in slide-in-from-left duration-200"
+            style={{ backgroundColor: '#0c2e6b' }}
+            className="sidebar-royal-blue fixed inset-y-0 left-0 z-50 w-64 max-w-[80vw] text-white py-4 px-4 select-none shadow-2xl border-r border-blue-400/30 overflow-y-auto animate-in slide-in-from-left duration-200"
           >
             {renderContent(true)}
           </aside>
@@ -291,8 +284,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* 2. DESKTOP SIDEBAR - SOLID DEEP ROYAL BLUE, COMPACT w-52 / w-56 */}
       <aside
-        style={sidebarStyle}
-        className="sidebar-royal-blue hidden md:flex flex-col justify-between shrink-0 w-52 lg:w-56 min-h-screen py-3 px-2.5 select-none shadow-2xl border-r border-blue-400/20"
+        style={{ backgroundColor: '#0c2e6b' }}
+        className="sidebar-royal-blue hidden md:flex flex-col justify-between shrink-0 w-64 min-h-screen py-4 px-4 select-none shadow-2xl border-r border-blue-400/20"
       >
         {renderContent(false)}
       </aside>
