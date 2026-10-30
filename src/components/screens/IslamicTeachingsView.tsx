@@ -92,15 +92,16 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
     return true;
   });
 
-  // Filtered lessons for the detail reader view
+  // Filtered lessons for the detail reader view (with guaranteed null-safety)
   const filteredTeachings = ISLAMIC_TEACHINGS.filter((item) => {
+    if (!item) return false;
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
 
     const matchesSearch =
       !searchQuery ||
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.urduTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.explanation.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.urduTitle && item.urduTitle.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.explanation && item.explanation.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (item.arabicText && item.arabicText.includes(searchQuery));
 
     return matchesCategory && matchesSearch;
@@ -110,13 +111,13 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
   const currentItem: IslamicTeaching | null =
     activeItem && (selectedCategory === 'all' || activeItem.category === selectedCategory)
       ? activeItem
-      : filteredTeachings[0] || ISLAMIC_TEACHINGS.find((i) => i.category === selectedCategory) || ISLAMIC_TEACHINGS[0] || null;
+      : filteredTeachings[0] || ISLAMIC_TEACHINGS.find((i) => i && i.category === selectedCategory) || ISLAMIC_TEACHINGS[0] || null;
 
   const handleOpenTrack = (trackId: IslamicTeaching['category']) => {
     sound.playPop();
     setSearchQuery('');
     setSelectedCategory(trackId);
-    const firstInCat = ISLAMIC_TEACHINGS.find((i) => i.category === trackId);
+    const firstInCat = ISLAMIC_TEACHINGS.find((i) => i && i.category === trackId);
     if (firstInCat) setActiveItem(firstInCat);
     setViewMode('detail');
   };

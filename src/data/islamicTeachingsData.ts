@@ -417,7 +417,7 @@ export const ISLAMIC_TEACHINGS: IslamicTeaching[] = [
     badge: 'Signs of the Hour',
     icon: '⛰️',
     color: 'from-amber-700 to-orange-900',
-  },,
+  },
   // =========================================================================
   // 1. ALL 23 PROPHETS IN FULL HISTORICAL DETAIL (پیغمبرانِ الٰہی - قصص الانبیاء)
   // =========================================================================
@@ -765,7 +765,7 @@ export const ISLAMIC_TEACHINGS: IslamicTeaching[] = [
     badge: 'Seal of the Prophets',
     icon: '💚',
     color: 'from-emerald-600 via-green-600 to-teal-800',
-  },,
+  },
 
   // =========================================================================
   // 2. HOLY QURAN & COMPLETE SURAHS WITH MEANING (قرآنِ کریم اور سورتیں)
@@ -1039,7 +1039,7 @@ export const ISLAMIC_TEACHINGS: IslamicTeaching[] = [
     badge: 'Night Shield',
     icon: '🛡️',
     color: 'from-blue-600 to-indigo-800',
-  },,
+  },
 
   // =========================================================================
   // 3. HADITH MUBARAK WITH MEANING (احادیثِ نبویہ ﷺ با ترجمہ)
@@ -1283,7 +1283,7 @@ export const ISLAMIC_TEACHINGS: IslamicTeaching[] = [
     badge: 'Mercy to All',
     icon: '🐾',
     color: 'from-amber-600 to-orange-700',
-  },,
+  },
 
   // 3. ISLAMIC MANNERS & AKHLAQ (حسنِ اخلاق اور روزمرہ آداب)
   // =========================================================================
