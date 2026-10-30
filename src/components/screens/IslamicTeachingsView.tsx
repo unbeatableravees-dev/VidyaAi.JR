@@ -101,6 +101,12 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
     return matchesCategory && matchesSearch;
   });
 
+  // Active or fallback current item guaranteed at top level
+  const currentItem: IslamicTeaching | null =
+    activeItem && (selectedCategory === 'all' || activeItem.category === selectedCategory)
+      ? activeItem
+      : filteredTeachings[0] || ISLAMIC_TEACHINGS.find((i) => i.category === selectedCategory) || ISLAMIC_TEACHINGS[0] || null;
+
   const handleOpenTrack = (trackId: IslamicTeaching['category']) => {
     sound.playPop();
     setSearchQuery('');
@@ -539,13 +545,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
 
         {/* Right Column: Full Interactive Reading & Audio Lesson Pane */}
         <div className="lg:col-span-7">
-          {(() => {
-            const currentItem =
-              activeItem && (selectedCategory === 'all' || currentItem.category === selectedCategory)
-                ? activeItem
-                : filteredTeachings[0] || ISLAMIC_TEACHINGS.find((i) => i.category === selectedCategory) || ISLAMIC_TEACHINGS[0];
-
-            return currentItem ? (
+          {currentItem ? (
             <div className="bg-white rounded-3xl border-2 border-emerald-200/90 shadow-xl overflow-hidden p-6 md:p-8 space-y-6">
               {/* Header of Active Item */}
               <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
@@ -677,13 +677,12 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                 </button>
               </div>
             </div>
-            ) : (
-              <div className="p-12 text-center bg-white rounded-3xl border-2 border-slate-200 text-slate-400">
-                <p className="text-4xl mb-2">🕌</p>
-                <p className="font-black text-slate-700">Select a teaching from the left</p>
-              </div>
-            );
-          })()}
+          ) : (
+            <div className="p-12 text-center bg-white rounded-3xl border-2 border-slate-200 text-slate-400">
+              <p className="text-4xl mb-2">🕌</p>
+              <p className="font-black text-slate-700">Select a teaching from the left</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
