@@ -52,7 +52,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
         {/* Filter Pills */}
         <div className="flex flex-wrap gap-2">
           {[
-            { id: 'all', label: 'All Subjects (13)' },
+            { id: 'all', label: 'All Subjects (14)' },
             { id: 'stem', label: 'Math & Science' },
             { id: 'language', label: 'Languages' },
             { id: 'creativity', label: 'Arts & Tales' },
