@@ -40,7 +40,6 @@ export function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('numbers');
   const [searchQuery, setSearchQuery] = useState('');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [quizResult, setQuizResult] = useState<{
     correct: number;
     total: number;
@@ -147,8 +146,6 @@ export function App() {
         currentTab={currentTab}
         onTabChange={setCurrentTab}
         onSwitchProfile={handleSwitchProfile}
-        isOpenMobile={isMobileMenuOpen}
-        onCloseMobile={() => setIsMobileMenuOpen(false)}
         studentProfile={studentProfile}
       />
 
@@ -164,8 +161,6 @@ export function App() {
           onProfileClick={() => setCurrentTab('progress')}
           onSettingsClick={() => setCurrentTab('settings')}
           onSwitchProfile={handleSwitchProfile}
-          onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
-          isMobileMenuOpen={isMobileMenuOpen}
           studentProfile={studentProfile}
         />
 

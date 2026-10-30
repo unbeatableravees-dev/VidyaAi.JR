@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, Menu } from 'lucide-react';
+import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
@@ -14,8 +14,6 @@ interface HeaderProps {
   onProfileClick?: () => void;
   onSettingsClick?: () => void;
   onSwitchProfile?: () => void;
-  onToggleMobileMenu?: () => void;
-  isMobileMenuOpen?: boolean;
   studentProfile?: StudentProfile | null;
 }
 
@@ -39,8 +37,6 @@ export const Header: React.FC<HeaderProps> = ({
   onProfileClick,
   onSettingsClick,
   onSwitchProfile,
-  onToggleMobileMenu,
-  isMobileMenuOpen,
   studentProfile,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -52,23 +48,8 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="h-16 md:h-20 shrink-0 w-full px-3 sm:px-6 md:px-8 py-2.5 flex items-center justify-between border-b border-white/70 bg-white/75 backdrop-blur-2xl z-30 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden select-none">
-      {/* Left side: Mobile Hamburger Button (Three Lines) + Search Bar */}
+      {/* Left side: Search Bar */}
       <div className="flex items-center gap-2.5 sm:gap-4 flex-1 max-w-xl">
-        {/* Mobile Hamburger Menu Button (Three Lines / ☰ icon) */}
-        {onToggleMobileMenu && (
-          <button
-            onClick={() => {
-              sound.playPop();
-              onToggleMobileMenu();
-            }}
-            className="md:hidden p-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0 border border-white/30 flex items-center justify-center"
-            title="Open Navigation Menu"
-            aria-label="Navigation Menu"
-          >
-            <Menu className="w-5 h-5 stroke-[2.5]" />
-          </button>
-        )}
-
         {/* Search Input */}
         <div className="relative w-full">
           <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
