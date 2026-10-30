@@ -204,10 +204,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item.id)}
-                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl font-bold transition-all duration-150 text-left cursor-pointer ${
+                aria-current={isActive ? 'page' : undefined}
+                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl font-bold transition-all duration-300 text-left cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-950/40 translate-x-1 border border-white/25 glossy-pill'
-                    : 'text-blue-100 hover:bg-white/10 hover:text-white hover:translate-x-0.5'
+                    ? 'bg-gradient-to-r from-blue-400/35 via-cyan-400/25 to-blue-500/35 backdrop-blur-xl text-white shadow-lg shadow-blue-300/20 translate-x-1 border border-white/35'
+                    : 'text-blue-100 hover:bg-white/10 hover:backdrop-blur-md hover:text-white hover:translate-x-0.5'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
