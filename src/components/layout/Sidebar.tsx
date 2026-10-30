@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Grid, BookOpen, BarChart3, Settings, Gamepad2, Compass, Moon, X, User } from 'lucide-react';
+import { Home, Grid, BookOpen, BarChart3, Settings, Gamepad2, Compass, Moon, User } from 'lucide-react';
 import { APP_IMAGES } from '../../assets/images';
 import { sound } from '../../utils/audio';
 import { StudentProfile } from '../../types/student';
@@ -26,8 +26,6 @@ interface SidebarProps {
   currentTab: NavTab;
   onTabChange: (tab: NavTab) => void;
   onSwitchProfile?: () => void;
-  isOpenMobile?: boolean;
-  onCloseMobile?: () => void;
   studentProfile?: StudentProfile | null;
 }
 
@@ -35,8 +33,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentTab,
   onTabChange,
   onSwitchProfile,
-  isOpenMobile = false,
-  onCloseMobile,
   studentProfile,
 }) => {
   const religion = studentProfile?.religion || 'muslim';
@@ -121,16 +117,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleItemClick = (id: NavTab) => {
     sound.playPop();
     onTabChange(id);
-    if (onCloseMobile) {
-      onCloseMobile();
-    }
   };
 
-  const renderContent = (isMobile: boolean = false) => (
-    <div className="flex flex-col justify-between h-full min-h-full select-none text-white">
-      <div>
+  const renderContent = () => (
+    <div className="flex h-full min-h-0 flex-col select-none text-white">
+      <div className="flex min-h-0 flex-1 flex-col">
         {/* Brand Header - Compact & Sleek */}
-        <div className="flex items-center justify-between px-1.5 mb-6 pt-1">
+        <div className="flex items-center justify-between px-1.5 mb-3 pt-1">
           <div
             onClick={() => handleItemClick('home')}
             className="flex items-center gap-2 cursor-pointer group"
@@ -173,24 +166,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
 
-          {/* Close button on mobile drawer */}
-          {isMobile && onCloseMobile && (
-            <button
-              onClick={() => {
-                sound.playPop();
-                onCloseMobile();
-              }}
-              className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white active:scale-95 transition-all cursor-pointer border border-white/20 flex items-center justify-center shadow-xs"
-              title="Close Menu"
-              aria-label="Close Navigation"
-            >
-              <X className="w-4 h-4 stroke-[2.5]" />
-            </button>
-          )}
         </div>
 
         {/* Navigation Items - Compact, Sleek Padding & Sizing */}
-        <nav className="space-y-1">
+        <nav className="min-h-0 flex-1 space-y-0.5 overflow-y-auto overscroll-contain pr-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -205,17 +184,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 key={item.id}
                 onClick={() => handleItemClick(item.id)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`w-full flex items-center justify-between px-2.5 py-2.5 rounded-2xl font-bold transition-all duration-300 text-left cursor-pointer ${
+                className={`w-full flex items-center justify-between px-2.5 py-[6.5px] rounded-2xl font-bold transition-all duration-300 text-left cursor-pointer ${
                   isActive
                     ? 'bg-gradient-to-b from-[#3988ff] via-[#2878ff] to-[#1762ed] text-white shadow-lg shadow-blue-950/40 translate-x-1 border border-blue-200/50 glossy-pill'
                     : 'text-blue-100 hover:bg-white/10 hover:backdrop-blur-md hover:text-white hover:translate-x-0.5'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-blue-200'}`} />
+                <div className="flex items-center gap-2">
+                  <Icon className={`w-[17px] h-[17px] shrink-0 ${isActive ? 'text-white' : 'text-blue-200'}`} />
                   <div>
-                    <span className="block leading-tight text-sm font-black">{item.label}</span>
-                    <span className="text-[10px] font-bold text-blue-200/80 block leading-tight">
+                    <span className="block leading-tight text-[13.5px] font-black">{item.label}</span>
+                    <span className="text-[9.5px] font-bold text-blue-200/80 block leading-tight">
                       {item.secondary}
                     </span>
                   </div>
@@ -228,67 +207,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Bottom Switch Profile Button & 3D Mascot */}
-      <div className="pt-3 border-t border-white/15 flex flex-col items-center">
-        {onSwitchProfile && (
-          <button
-            onClick={() => {
-              sound.playPop();
-              if (isMobile && onCloseMobile) onCloseMobile();
-              onSwitchProfile();
-            }}
-            className="w-full mb-3 py-2 px-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/25 active:scale-98 shadow-xs"
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>Switch Student Profile</span>
-          </button>
-        )}
-
-        <div className="relative w-20 h-24 flex items-center justify-center">
+      <div className="shrink-0 pt-2 border-t border-white/15 flex flex-col items-center">
+        <div className="relative w-[10.5rem] h-[7.2rem] flex items-center justify-center">
           <img
             src={APP_IMAGES.explorerMascot}
             alt="VidyaAI Kid Explorer"
             className="w-full h-full object-contain filter drop-shadow-md animate-float-slow"
           />
         </div>
-        <p className="text-[10px] font-black text-blue-200/90 mt-0.5">Young Minds ⭐</p>
+        <p className="text-[10px] font-black text-blue-200/90 mt-1">Young Minds ⭐</p>
+        {onSwitchProfile && (
+          <button
+            onClick={() => {
+              sound.playPop();
+              onSwitchProfile();
+            }}
+            className="w-full mt-2 py-1.5 px-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/25 active:scale-98 shadow-xs"
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>Switch Student Profile</span>
+          </button>
+        )}
       </div>
     </div>
   );
 
-  const sidebarStyle: React.CSSProperties = {
-    backgroundColor: '#103b87',
-    backgroundImage: 'linear-gradient(180deg, #103b87 0%, #14479e 50%, #0f3475 100%)',
-  };
-
   return (
-    <>
-      {/* 1. MOBILE DRAWER (Only rendered when isOpenMobile is true on mobile screens) */}
-      {isOpenMobile && (
-        <div className="md:hidden">
-          {/* Dark Backdrop Overlay */}
-          <div
-            onClick={onCloseMobile}
-            className="fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-50 transition-opacity animate-in fade-in duration-200"
-            aria-hidden="true"
-          />
-
-          {/* Off-canvas Slide-out Drawer with SOLID DEEP ROYAL BLUE */}
-          <aside
-            style={{ backgroundColor: '#0c2e6b' }}
-            className="sidebar-royal-blue fixed inset-y-0 left-0 z-50 w-64 max-w-[80vw] text-white py-4 px-4 select-none shadow-2xl border-r border-blue-400/30 overflow-y-auto animate-in slide-in-from-left duration-200"
-          >
-            {renderContent(true)}
-          </aside>
-        </div>
-      )}
-
-      {/* 2. DESKTOP SIDEBAR - SOLID DEEP ROYAL BLUE, COMPACT w-52 / w-56 */}
-      <aside
-        style={{ backgroundColor: '#0c2e6b' }}
-        className="sidebar-royal-blue hidden md:flex flex-col justify-between shrink-0 w-64 min-h-screen py-4 px-4 select-none shadow-2xl border-r border-blue-400/20"
-      >
-        {renderContent(false)}
-      </aside>
-    </>
+    <aside className="sidebar-royal-blue relative z-20 flex h-screen min-h-0 w-60 shrink-0 flex-col overflow-hidden py-3 pl-4 pr-3 select-none shadow-2xl border-r border-blue-400/20 lg:w-64">
+      {renderContent()}
+    </aside>
   );
 };

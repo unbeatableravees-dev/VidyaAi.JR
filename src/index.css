@@ -49,10 +49,10 @@
 }
 
 
-/* Solid deep royal-blue sidebar background */
+/* Keep the reference sidebar background opaque above the animated page backdrop. */
 .sidebar-royal-blue {
-  background-color: #0c2e6b !important;
-  background-image: none !important;
+  background-color: #164486;
+  background-image: linear-gradient(180deg, #194a91 0%, #174582 55%, #123a73 100%);
 }
 
 /* Custom smooth scrollbar */

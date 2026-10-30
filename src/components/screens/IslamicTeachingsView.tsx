@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import {
   ISLAMIC_TEACHINGS,
+  ISLAMIC_TOPIC_LESSONS,
   ISLAMIC_TRACKS,
   IslamicTeaching,
   IslamicTrack,
@@ -104,8 +105,10 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
       !searchQuery ||
       (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (item.urduTitle && item.urduTitle.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.arabicTitle && item.arabicTitle.includes(searchQuery)) ||
       (item.explanation && item.explanation.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (item.arabicText && item.arabicText.includes(searchQuery));
+      (item.arabicText && item.arabicText.includes(searchQuery)) ||
+      (item.translationArabic && item.translationArabic.includes(searchQuery));
 
     return matchesCategory && matchesSearch;
   });
@@ -175,7 +178,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
 
     let text = '';
     if (part === 'ar') {
-      text = item.arabicText || item.title;
+      text = item.arabicText || item.translationArabic || item.title;
     } else if (part === 'ur') {
       text = `${item.urduTitle}۔ ${item.translationUrdu}`;
     } else {
@@ -207,9 +210,9 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
     setActiveSpeechPart('all');
 
     // Sequential Female Voice Playback: Arabic -> Urdu -> English
-    if (item.arabicText) {
+    if (item.arabicText || item.translationArabic) {
       femaleVoice.speak({
-        text: item.arabicText,
+        text: item.arabicText || item.translationArabic || '',
         lang: 'ar',
         onEnd: () => {
           femaleVoice.speak({
@@ -404,6 +407,10 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                   </p>
                   <p className="text-xs md:text-sm font-extrabold text-white/90 mt-2 leading-relaxed">
                     {track.description}
+                  </p>
+                  <p className="text-xs font-black text-amber-200 mt-2">
+                    {ISLAMIC_TOPIC_LESSONS.filter((item) => item.category === track.id).length} new topics
+                    {' · English · اردو · العربية'}
                   </p>
                 </div>
 
@@ -605,6 +612,11 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                         <p className="text-sm font-bold text-emerald-800 font-urdu mt-0.5 text-right">
                           {item.urduTitle}
                         </p>
+                        {item.arabicTitle && (
+                          <p className="text-sm font-bold text-emerald-900 font-arabic mt-0.5 text-right" dir="rtl">
+                            {item.arabicTitle}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -724,9 +736,11 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
               </div>
 
               {/* Crystal-clear Human-Readable Urdu Heading */}
-              {currentItem.contentType === 'practice' && (
+              {(currentItem.contentType === 'practice' || currentItem.contentType === 'topic') && (
                 <div className="rounded-2xl border border-blue-200 bg-blue-50 p-3 text-xs font-bold text-blue-900">
-                  Practice activity based on an existing lesson. No new Quran or Hadith text is added.
+                  {currentItem.contentType === 'topic'
+                    ? 'New study topic based on an existing lesson. No new Quran or Hadith quotation is added.'
+                    : 'Practice activity based on an existing lesson. No new Quran or Hadith text is added.'}
                   {currentItem.sourceLessonId && (
                     <span className="block mt-1 text-[11px] text-blue-700">
                       Source lesson: {ISLAMIC_TEACHINGS.find((item) => item.id === currentItem.sourceLessonId)?.title}
@@ -738,6 +752,11 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                 <h3 className="text-xl md:text-2xl font-bold text-emerald-950 font-urdu leading-loose">
                   {currentItem.urduTitle}
                 </h3>
+                {currentItem.arabicTitle && (
+                  <p className="text-xl font-bold text-emerald-900 font-arabic leading-loose mt-2" dir="rtl">
+                    {currentItem.arabicTitle}
+                  </p>
+                )}
               </div>
 
               {/* Sacred Arabic Quran / Hadith Text with Full Tashkeel & Arabic Female Voice */}
@@ -771,6 +790,43 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                   </div>
                   <p className="text-xl md:text-2xl lg:text-3xl font-bold text-emerald-950 font-arabic leading-loose tracking-wide text-right">
                     {currentItem.arabicText}
+                  </p>
+                </div>
+              )}
+
+              {currentItem.contentType === 'topic' && currentItem.translationArabic && (
+                <div className="bg-gradient-to-b from-sky-50 via-white to-white p-5 md:p-6 rounded-3xl border-2 border-sky-200 shadow-inner space-y-3">
+                  <div className="flex items-center justify-between border-b border-sky-200 pb-2">
+                    <button
+                      onClick={() => handleSpeakPart('ar', currentItem)}
+                      className={`px-3 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1.5 cursor-pointer transition-all ${
+                        speakingId === currentItem.id && activeSpeechPart === 'ar'
+                          ? 'bg-sky-700 text-white animate-pulse shadow-sm'
+                          : 'bg-sky-100 text-sky-900 hover:bg-sky-200'
+                      }`}
+                      title="Read Arabic learning notes"
+                    >
+                      {speakingId === currentItem.id && activeSpeechPart === 'ar' ? (
+                        <>
+                          <VolumeX className="w-3.5 h-3.5" />
+                          <span>Stop Arabic</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3.5 h-3.5" />
+                          <span>Listen Arabic</span>
+                        </>
+                      )}
+                    </button>
+                    <span className="text-[11px] font-black text-sky-800 uppercase tracking-wider">
+                      ملاحظات تعليمية بالعربية
+                    </span>
+                  </div>
+                  <p className="text-lg md:text-xl font-bold text-slate-900 font-arabic leading-loose text-right" dir="rtl">
+                    {currentItem.translationArabic}
+                  </p>
+                  <p className="text-[10px] font-bold text-sky-800">
+                    Original learning notes, not Quran or Hadith quotation.
                   </p>
                 </div>
               )}

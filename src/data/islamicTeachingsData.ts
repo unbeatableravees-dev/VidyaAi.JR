@@ -6,8 +6,10 @@
 
 export interface IslamicTeaching {
   id: string;
-  contentType?: 'teaching' | 'practice';
+  contentType?: 'teaching' | 'practice' | 'topic';
   sourceLessonId?: string;
+  arabicTitle?: string;
+  translationArabic?: string;
   title: string;
   urduTitle: string;
   category:
@@ -298,89 +300,89 @@ export const ISLAMIC_TRACKS: IslamicTrack[] = [
   },
 ];
 
-interface ReviewActivityPrompt {
+interface TopicFocus {
   title: string;
   titleUrdu: string;
-  instruction: string;
-  instructionUrdu: string;
+  titleArabic: string;
+  topic: string;
+  topicUrdu: string;
+  topicArabic: string;
 }
 
-const REVIEW_ACTIVITY_PROMPTS: ReviewActivityPrompt[] = [
-  { title: 'Recall Check', titleUrdu: 'یادداشت کی مشق', instruction: 'Name two details from the lesson, then check them against the source lesson.', instructionUrdu: 'سبق کی دو باتیں یاد سے بیان کریں، پھر اصل سبق سے اپنے جواب کی جانچ کریں۔' },
-  { title: 'Explain It Simply', titleUrdu: 'آسان الفاظ میں بیان', instruction: 'Explain the main idea in your own words, as if teaching a younger student.', instructionUrdu: 'مرکزی خیال اپنے الفاظ میں ایسے سمجھائیں جیسے کسی چھوٹے بچے کو پڑھا رہے ہوں۔' },
-  { title: 'Lesson Link', titleUrdu: 'سبق کا تعلق', instruction: 'Connect one detail from the lesson to its explanation. What helped you make the connection?', instructionUrdu: 'سبق کی ایک بات کو اس کی وضاحت سے ملائیں۔ اس تعلق کو سمجھنے میں کس بات نے مدد دی؟' },
-  { title: 'Daily Action', titleUrdu: 'روزمرہ عمل', instruction: 'Read the source lesson’s practical tip and choose one safe way to try it today.', instructionUrdu: 'اصل سبق کا عملی مشورہ پڑھیں اور آج اسے آزمانے کا ایک محفوظ طریقہ چنیں۔' },
-  { title: 'Family Conversation', titleUrdu: 'گھر میں گفتگو', instruction: 'Share the lesson’s main idea with a family member and ask what they learned from it.', instructionUrdu: 'سبق کا مرکزی خیال گھر کے کسی فرد کو بتائیں اور پوچھیں کہ انہوں نے اس سے کیا سیکھا۔' },
-  { title: 'Draw and Label', titleUrdu: 'تصویر بنائیں', instruction: 'Draw a picture representing an idea from the lesson and label it with three words from the source.', instructionUrdu: 'سبق کے ایک خیال کی تصویر بنائیں اور اصل سبق کے تین الفاظ سے اس پر نام لکھیں۔' },
-  { title: 'Question Builder', titleUrdu: 'سوال بنائیں', instruction: 'Write one question about the lesson and answer it using only information in the source.', instructionUrdu: 'سبق کے بارے میں ایک سوال لکھیں اور صرف اصل سبق کی معلومات سے جواب دیں۔' },
-  { title: 'Key Words', titleUrdu: 'اہم الفاظ', instruction: 'Choose three important words from the lesson and explain what each means in this context.', instructionUrdu: 'سبق کے تین اہم الفاظ چنیں اور اس سبق کے مطابق ہر لفظ کا مطلب سمجھائیں۔' },
-  { title: 'Teach-Back', titleUrdu: 'دوسروں کو سکھائیں', instruction: 'Teach the main idea to someone else in three short steps, then check the source lesson.', instructionUrdu: 'مرکزی خیال تین مختصر مراحل میں کسی اور کو سکھائیں، پھر اصل سبق سے جانچ کریں۔' },
-  { title: 'Compare Ideas', titleUrdu: 'خیالات کا موازنہ', instruction: 'Choose two details from the lesson. How are they alike, and how are they different?', instructionUrdu: 'سبق کی دو باتیں چنیں۔ وہ کس طرح ملتی جلتی اور کس طرح مختلف ہیں؟' },
-  { title: 'Imagine and Apply', titleUrdu: 'سوچیں اور اپنائیں', instruction: 'Imagine a school-day situation where the lesson’s stated guidance could help. Describe your choice.', instructionUrdu: 'اسکول کے دن کی ایسی صورتِ حال سوچیں جہاں سبق کی بیان کردہ رہنمائی کام آ سکتی ہو۔ اپنا انتخاب بتائیں۔' },
-  { title: 'Kindness Challenge', titleUrdu: 'مہربانی کا چیلنج', instruction: 'Find a value explicitly mentioned in the lesson and plan one kind action that reflects it.', instructionUrdu: 'سبق میں واضح طور پر بیان کی گئی ایک خوبی تلاش کریں اور اس کے مطابق مہربانی کا ایک کام سوچیں۔' },
-  { title: 'Reflection Journal', titleUrdu: 'غور و فکر', instruction: 'Write one thing you learned and one question you still have after reading the source lesson.', instructionUrdu: 'اصل سبق پڑھنے کے بعد سیکھی ہوئی ایک بات اور ایک ایسا سوال لکھیں جو ابھی باقی ہے۔' },
-  { title: 'Story Map', titleUrdu: 'سبق کا نقشہ', instruction: 'If the source lesson tells a story, identify its beginning, an important moment, and its lesson.', instructionUrdu: 'اگر اصل سبق میں کہانی ہے تو اس کا آغاز، ایک اہم موڑ اور اس سے ملنے والا سبق بتائیں۔' },
-  { title: 'Choose a Takeaway', titleUrdu: 'سبق کا خلاصہ', instruction: 'Pick the most useful takeaway from the source lesson and explain why it stood out to you.', instructionUrdu: 'اصل سبق کی سب سے مفید بات چنیں اور بتائیں کہ وہ آپ کے لیے کیوں نمایاں ہے۔' },
-  { title: 'Ask a Trusted Adult', titleUrdu: 'بڑے سے پوچھیں', instruction: 'Share one question about the lesson with a parent or teacher and discuss the source together.', instructionUrdu: 'سبق کے بارے میں ایک سوال والدین یا استاد سے پوچھیں اور اصل سبق ساتھ پڑھیں۔' },
-  { title: 'One-Sentence Summary', titleUrdu: 'ایک جملے کا خلاصہ', instruction: 'Summarize the source lesson in one sentence without adding facts that are not in it.', instructionUrdu: 'اصل سبق کا ایک جملے میں خلاصہ کریں اور اس میں غیر موجود بات شامل نہ کریں۔' },
-  { title: 'Find a Virtue', titleUrdu: 'اچھی خوبی تلاش کریں', instruction: 'Name a good quality stated in the lesson and point to the words that helped you identify it.', instructionUrdu: 'سبق میں بیان کی گئی ایک اچھی خوبی بتائیں اور وہ الفاظ دکھائیں جن سے آپ نے اسے پہچانا۔' },
-  { title: 'Two Details and a Question', titleUrdu: 'دو باتیں اور ایک سوال', instruction: 'Write two details you can verify in the lesson, then add one question for further discussion.', instructionUrdu: 'سبق میں موجود دو قابلِ تصدیق باتیں لکھیں اور گفتگو کے لیے ایک مزید سوال شامل کریں۔' },
-  { title: 'Connect to Your Routine', titleUrdu: 'اپنے معمول سے جوڑیں', instruction: 'Connect the lesson’s practical tip to one routine you already have at home or school.', instructionUrdu: 'سبق کے عملی مشورے کو گھر یا اسکول کے اپنے کسی موجودہ معمول سے جوڑیں۔' },
-  { title: 'Make a Mini Poster', titleUrdu: 'چھوٹا پوسٹر', instruction: 'Create a small poster with the lesson title, one source detail, and your own takeaway.', instructionUrdu: 'سبق کے عنوان، اصل سبق کی ایک بات اور اپنے حاصلِ مطالعہ کے ساتھ چھوٹا پوسٹر بنائیں۔' },
-  { title: 'Read and Retell', titleUrdu: 'پڑھیں اور سنائیں', instruction: 'Read the source lesson once, look away, and retell its main idea without guessing extra details.', instructionUrdu: 'اصل سبق ایک بار پڑھیں، پھر اسے دیکھے بغیر مرکزی خیال سنائیں اور اضافی باتیں نہ گھڑیں۔' },
-  { title: 'Build a Word Web', titleUrdu: 'الفاظ کا جال', instruction: 'Write the lesson’s main topic in the center and connect three related words from the source.', instructionUrdu: 'سبق کا مرکزی موضوع درمیان میں لکھیں اور اصل سبق کے تین متعلقہ الفاظ اس سے جوڑیں۔' },
-  { title: 'Sequence the Ideas', titleUrdu: 'خیالات کی ترتیب', instruction: 'Put three ideas from the source lesson in a sensible order and explain your order.', instructionUrdu: 'اصل سبق کے تین خیالات مناسب ترتیب میں رکھیں اور اپنی ترتیب کی وجہ بتائیں۔' },
-  { title: 'What Would You Do?', titleUrdu: 'آپ کیا کریں گے؟', instruction: 'Use the source lesson’s guidance to explain what you would do in a simple everyday example.', instructionUrdu: 'روزمرہ کی ایک آسان مثال میں بتائیں کہ آپ اصل سبق کی رہنمائی کے مطابق کیا کریں گے۔' },
-  { title: 'Make a Memory Card', titleUrdu: 'یادداشت کارڈ', instruction: 'Make a question-and-answer card using one detail and its answer from the source lesson.', instructionUrdu: 'اصل سبق کی ایک بات اور اس کے جواب سے سوال جواب والا یادداشت کارڈ بنائیں۔' },
-  { title: 'Check the Practical Tip', titleUrdu: 'عملی مشورہ دہرائیں', instruction: 'Restate the practical tip in your own words and name an adult who can help you try it safely.', instructionUrdu: 'عملی مشورہ اپنے الفاظ میں دہرائیں اور اس بڑے کا نام بتائیں جو اسے محفوظ طریقے سے آزمانے میں مدد کرے۔' },
-  { title: 'Create a Mini Quiz', titleUrdu: 'چھوٹا کوئز بنائیں', instruction: 'Write one multiple-choice question whose correct answer can be found directly in the source lesson.', instructionUrdu: 'ایک ایسا چار جوابی سوال بنائیں جس کا درست جواب براہِ راست اصل سبق میں موجود ہو۔' },
+const TOPIC_FOCUSES: TopicFocus[] = [
+  { title: 'Core Ideas', titleUrdu: 'بنیادی خیالات', titleArabic: 'الأفكار الأساسية', topic: 'the main ideas and their meaning', topicUrdu: 'بنیادی خیالات اور ان کے معنی', topicArabic: 'الأفكار الأساسية ومعانيها' },
+  { title: 'Key Vocabulary', titleUrdu: 'اہم الفاظ', titleArabic: 'المفردات المهمة', topic: 'important words and how they are used', topicUrdu: 'اہم الفاظ اور ان کا استعمال', topicArabic: 'الكلمات المهمة وكيفية استعمالها' },
+  { title: 'Background', titleUrdu: 'پس منظر', titleArabic: 'الخلفية', topic: 'the background needed to understand the lesson', topicUrdu: 'سبق کو سمجھنے کے لیے ضروری پس منظر', topicArabic: 'الخلفية اللازمة لفهم الدرس' },
+  { title: 'People and Roles', titleUrdu: 'شخصیات اور کردار', titleArabic: 'الشخصيات والأدوار', topic: 'the people mentioned and the roles described in the source', topicUrdu: 'اصل سبق میں بیان کردہ شخصیات اور ان کے کردار', topicArabic: 'الشخصيات المذكورة والأدوار الواردة في الدرس' },
+  { title: 'Places and Setting', titleUrdu: 'مقامات اور حالات', titleArabic: 'الأماكن والسياق', topic: 'the places and setting described by the source', topicUrdu: 'اصل سبق میں بیان کردہ مقامات اور حالات', topicArabic: 'الأماكن والسياق المذكوران في الدرس' },
+  { title: 'Events in Order', titleUrdu: 'واقعات کی ترتیب', titleArabic: 'ترتيب الأحداث', topic: 'the order of events and how the source connects them', topicUrdu: 'واقعات کی ترتیب اور اصل سبق میں ان کا باہمی تعلق', topicArabic: 'ترتيب الأحداث وكيفية ترابطها في الدرس' },
+  { title: 'Important Choices', titleUrdu: 'اہم فیصلے', titleArabic: 'القرارات المهمة', topic: 'the choices described in the lesson and their stated outcomes', topicUrdu: 'سبق میں بیان کردہ فیصلے اور ان کے بیان کردہ نتائج', topicArabic: 'القرارات المذكورة في الدرس ونتائجها الواردة فيه' },
+  { title: 'Challenges', titleUrdu: 'مشکلات اور آزمائشیں', titleArabic: 'التحديات', topic: 'the challenges described in the source and how they are presented', topicUrdu: 'اصل سبق میں بیان کردہ مشکلات اور ان کا ذکر', topicArabic: 'التحديات المذكورة في الدرس وكيفية عرضها' },
+  { title: 'Responses and Actions', titleUrdu: 'ردِعمل اور اعمال', titleArabic: 'الاستجابات والأعمال', topic: 'the responses and actions explicitly described by the source', topicUrdu: 'اصل سبق میں واضح طور پر بیان کردہ ردِعمل اور اعمال', topicArabic: 'الاستجابات والأعمال المذكورة بوضوح في الدرس' },
+  { title: 'Values and Character', titleUrdu: 'اقدار اور کردار', titleArabic: 'القيم والأخلاق', topic: 'the values and character lessons directly supported by the source', topicUrdu: 'اصل سبق سے ثابت ہونے والی اقدار اور کردار کے اسباق', topicArabic: 'القيم والدروس الأخلاقية التي يدعمها الدرس' },
+  { title: 'Causes and Outcomes', titleUrdu: 'اسباب اور نتائج', titleArabic: 'الأسباب والنتائج', topic: 'the causes and outcomes stated in the lesson', topicUrdu: 'سبق میں بیان کردہ اسباب اور نتائج', topicArabic: 'الأسباب والنتائج المذكورة في الدرس' },
+  { title: 'Turning Points', titleUrdu: 'اہم موڑ', titleArabic: 'المحطات المهمة', topic: 'the important turning points highlighted by the source', topicUrdu: 'اصل سبق میں نمایاں کیے گئے اہم موڑ', topicArabic: 'المحطات المهمة التي يبرزها الدرس' },
+  { title: 'Relationships', titleUrdu: 'باہمی تعلقات', titleArabic: 'العلاقات', topic: 'the relationships described in the lesson and their context', topicUrdu: 'سبق میں بیان کیے گئے تعلقات اور ان کا سیاق', topicArabic: 'العلاقات المذكورة في الدرس وسياقها' },
+  { title: 'Questions and Answers', titleUrdu: 'سوالات اور جوابات', titleArabic: 'الأسئلة والأجوبة', topic: 'questions that can be answered from the source lesson', topicUrdu: 'ایسے سوالات جن کے جواب اصل سبق میں ملتے ہیں', topicArabic: 'الأسئلة التي يمكن الإجابة عنها من الدرس' },
+  { title: 'Compare the Details', titleUrdu: 'تفصیلات کا موازنہ', titleArabic: 'مقارنة التفاصيل', topic: 'how two details in the source are alike or different', topicUrdu: 'اصل سبق کی دو باتوں میں مماثلت یا فرق', topicArabic: 'أوجه الشبه والاختلاف بين فكرتين في الدرس' },
+  { title: 'Meaning in Context', titleUrdu: 'سیاق میں مفہوم', titleArabic: 'المعنى في السياق', topic: 'how the source explains the meaning of its key details', topicUrdu: 'اصل سبق اپنی اہم تفصیلات کا مفہوم کیسے بیان کرتا ہے', topicArabic: 'كيفية بيان الدرس لمعاني تفاصيله المهمة' },
+  { title: 'Source Reading', titleUrdu: 'اصل سبق کا مطالعہ', titleArabic: 'قراءة المصدر', topic: 'reading the linked source carefully and separating its facts from assumptions', topicUrdu: 'اصل سبق غور سے پڑھنا اور بیان کردہ حقائق کو اندازوں سے الگ رکھنا', topicArabic: 'قراءة المصدر المرتبط بعناية والتمييز بين معلوماته والافتراضات' },
+  { title: 'A Lesson for Today', titleUrdu: 'آج کے لیے سبق', titleArabic: 'درس للحياة اليوم', topic: 'a practical lesson for today that follows from the source', topicUrdu: 'اصل سبق سے حاصل ہونے والا آج کے لیے ایک عملی سبق', topicArabic: 'فائدة عملية لليوم مستخلصة من الدرس' },
+  { title: 'Explain the Main Point', titleUrdu: 'مرکزی بات سمجھائیں', titleArabic: 'شرح الفكرة الرئيسية', topic: 'explaining the source lesson’s main point accurately in your own words', topicUrdu: 'اصل سبق کی مرکزی بات اپنے الفاظ میں درست طور پر سمجھانا', topicArabic: 'شرح الفكرة الرئيسية للدرس بدقة وبكلماتك' },
+  { title: 'A Short Summary', titleUrdu: 'مختصر خلاصہ', titleArabic: 'ملخص قصير', topic: 'summarizing the source without adding details it does not contain', topicUrdu: 'غیر موجود تفصیلات شامل کیے بغیر اصل سبق کا خلاصہ', topicArabic: 'تلخيص الدرس دون إضافة معلومات غير واردة فيه' },
+  { title: 'Important Details', titleUrdu: 'اہم تفصیلات', titleArabic: 'التفاصيل المهمة', topic: 'the details the source emphasizes and why they matter to its topic', topicUrdu: 'اصل سبق کی نمایاں تفصیلات اور موضوع کے لیے ان کی اہمیت', topicArabic: 'التفاصيل التي يركز عليها الدرس وأهميتها لموضوعه' },
+  { title: 'A Closer Look', titleUrdu: 'مزید غور سے مطالعہ', titleArabic: 'نظرة متأنية', topic: 'looking closely at one detail and checking it against the full source', topicUrdu: 'ایک تفصیل کا گہرائی سے مطالعہ اور مکمل اصل سبق سے اس کی جانچ', topicArabic: 'دراسة تفصيل واحد ومراجعته في الدرس كاملاً' },
+  { title: 'Words and Expressions', titleUrdu: 'الفاظ اور تعبیرات', titleArabic: 'الألفاظ والتعبيرات', topic: 'the words and expressions that help explain the source’s subject', topicUrdu: 'وہ الفاظ اور تعبیرات جو اصل سبق کا موضوع سمجھاتے ہیں', topicArabic: 'الألفاظ والتعبيرات التي تساعد على فهم موضوع الدرس' },
+  { title: 'A Guided Discussion', titleUrdu: 'رہنمائی کے ساتھ گفتگو', titleArabic: 'نقاش موجّه', topic: 'discussing the source topic respectfully and checking answers in the lesson', topicUrdu: 'اصل موضوع پر احترام سے گفتگو اور سبق میں جوابات کی جانچ', topicArabic: 'مناقشة موضوع الدرس باحترام والتحقق من الإجابات فيه' },
+  { title: 'Connect the Ideas', titleUrdu: 'خیالات کو جوڑیں', titleArabic: 'ربط الأفكار', topic: 'connecting two ideas that the source presents together', topicUrdu: 'ان دو خیالات کو جوڑنا جنہیں اصل سبق ساتھ بیان کرتا ہے', topicArabic: 'الربط بين فكرتين يعرضهما الدرس معاً' },
+  { title: 'A Study Map', titleUrdu: 'مطالعے کا نقشہ', titleArabic: 'خريطة للدرس', topic: 'organizing the source’s topic, details, and explanation into a simple study map', topicUrdu: 'اصل سبق کے موضوع، تفصیلات اور وضاحت کو ایک آسان مطالعاتی نقشے میں ترتیب دینا', topicArabic: 'تنظيم موضوع الدرس وتفاصيله وشرحه في خريطة مبسطة' },
+  { title: 'What the Source Says', titleUrdu: 'اصل سبق کی بات', titleArabic: 'ما يذكره المصدر', topic: 'identifying what the source states clearly and what it leaves unexplained', topicUrdu: 'اصل سبق کی واضح باتوں اور غیر واضح امور میں فرق کرنا', topicArabic: 'تمييز ما يذكره المصدر بوضوح عما لا يشرحه' },
+  { title: 'Review with a Teacher', titleUrdu: 'استاد کے ساتھ مطالعہ', titleArabic: 'مراجعة مع المعلم', topic: 'reviewing the source with a trusted teacher and noting questions that remain', topicUrdu: 'قابلِ اعتماد استاد کے ساتھ اصل سبق دہرانا اور باقی سوالات لکھنا', topicArabic: 'مراجعة الدرس مع معلم موثوق وتدوين الأسئلة المتبقية' },
+  { title: 'A Family Study Topic', titleUrdu: 'گھر میں مطالعے کا موضوع', titleArabic: 'موضوع للدراسة العائلية', topic: 'sharing the source topic with family and checking together what the lesson says', topicUrdu: 'گھر والوں کے ساتھ موضوع پڑھنا اور مل کر اصل سبق کی باتیں جانچنا', topicArabic: 'مشاركة موضوع الدرس مع الأسرة ومراجعة ما يذكره معاً' },
+  { title: 'Make a Topic Outline', titleUrdu: 'موضوع کے نکات بنائیں', titleArabic: 'خطة للموضوع', topic: 'making a short outline from the source’s main point and supporting details', topicUrdu: 'اصل سبق کی مرکزی بات اور معاون تفصیلات سے مختصر خاکہ بنانا', topicArabic: 'إعداد مخطط قصير من الفكرة الرئيسية والتفاصيل الداعمة' },
+  { title: 'Check Understanding', titleUrdu: 'سمجھ کی جانچ', titleArabic: 'التحقق من الفهم', topic: 'checking understanding by finding evidence for each answer in the source', topicUrdu: 'ہر جواب کے لیے اصل سبق میں دلیل تلاش کر کے سمجھ کی جانچ', topicArabic: 'التحقق من الفهم بالعثور على ما يدعم كل إجابة في المصدر' },
+  { title: 'Respectful Reflection', titleUrdu: 'باادب غور و فکر', titleArabic: 'تأمل باحترام', topic: 'reflecting respectfully on the source while staying within what it teaches', topicUrdu: 'اصل سبق کی حدود میں رہتے ہوئے احترام سے غور و فکر کرنا', topicArabic: 'التأمل باحترام مع الالتزام بما يعلّمه المصدر' },
+  { title: 'Build a Topic Timeline', titleUrdu: 'موضوع کی ترتیب بنائیں', titleArabic: 'تسلسل الموضوع', topic: 'arranging the source’s dated or ordered details without guessing missing events', topicUrdu: 'غیر موجود واقعات کا اندازہ لگائے بغیر اصل سبق کی مرتب تفصیلات ترتیب دینا', topicArabic: 'ترتيب التفاصيل الواردة دون تخمين أحداث غير مذكورة' },
+  { title: 'Teach the Topic Clearly', titleUrdu: 'موضوع واضح انداز میں سکھائیں', titleArabic: 'تعليم الموضوع بوضوح', topic: 'teaching the source’s main idea clearly and checking each point with the lesson', topicUrdu: 'اصل سبق کے مرکزی خیال کو واضح طور پر سکھانا اور ہر نکتے کو سبق سے جانچنا', topicArabic: 'شرح الفكرة الرئيسية بوضوح ومراجعة كل نقطة في الدرس' },
 ];
 
-const REVIEW_ACTIVITY_TOTAL = 1000;
+const TOPICS_PER_TRACK = 100;
 
-const buildReviewActivities = (): IslamicTeaching[] => {
-  const activities: IslamicTeaching[] = [];
-  const baseItemsByCategory = new Map(
-    ISLAMIC_TRACKS.map((track) => [
-      track.id,
-      BASE_ISLAMIC_TEACHINGS.filter((item) => item.category === track.id),
-    ]),
-  );
-  const activitiesPerTrack = Math.floor(REVIEW_ACTIVITY_TOTAL / ISLAMIC_TRACKS.length);
-  const extraActivities = REVIEW_ACTIVITY_TOTAL % ISLAMIC_TRACKS.length;
+const buildTopicLessons = (): IslamicTeaching[] => {
+  const topicLessons: IslamicTeaching[] = [];
 
-  ISLAMIC_TRACKS.forEach((track, trackIndex) => {
-    const sourceLessons = baseItemsByCategory.get(track.id) || [];
+  ISLAMIC_TRACKS.forEach((track) => {
+    const sourceLessons = BASE_ISLAMIC_TEACHINGS.filter((item) => item.category === track.id);
     if (sourceLessons.length === 0) {
-      throw new Error(`Cannot create review activities without source lessons for ${track.id}.`);
+      throw new Error(`Cannot create topic lessons without source lessons for ${track.id}.`);
     }
 
-    const activityCount = activitiesPerTrack + Number(trackIndex < extraActivities);
-    for (let index = 0; index < activityCount; index += 1) {
+    for (let index = 0; index < TOPICS_PER_TRACK; index += 1) {
       const sourceLesson = sourceLessons[index % sourceLessons.length];
-      const prompt = REVIEW_ACTIVITY_PROMPTS[Math.floor(index / sourceLessons.length) % REVIEW_ACTIVITY_PROMPTS.length];
-      const activityNumber = String(index + 1).padStart(2, '0');
+      const focus = TOPIC_FOCUSES[Math.floor(index / sourceLessons.length) % TOPIC_FOCUSES.length];
 
-      activities.push({
-        id: `review-${track.id}-${activityNumber}`,
-        contentType: 'practice',
+      topicLessons.push({
+        id: `topic-${track.id}-${String(index + 1).padStart(3, '0')}`,
+        contentType: 'topic',
         sourceLessonId: sourceLesson.id,
-        title: `Review ${activityNumber}: ${prompt.title}`,
-        urduTitle: `سرگرمی ${activityNumber}: ${prompt.titleUrdu}`,
+        title: `${sourceLesson.title} — ${focus.title}`,
+        urduTitle: `${sourceLesson.urduTitle} — ${focus.titleUrdu}`,
+        arabicTitle: focus.titleArabic,
         category: track.id,
         categoryUrdu: sourceLesson.categoryUrdu,
-        translationUrdu: `یہ دہرائی کی سرگرمی موجودہ سبق "${sourceLesson.urduTitle}" پر مبنی ہے۔ ${prompt.instructionUrdu}`,
-        translationEng: `Review activity based on the existing lesson "${sourceLesson.title}". ${prompt.instruction}`,
-        explanation: `Use only the linked source lesson "${sourceLesson.title}" for lesson details. This is a review activity, not new Quran or Hadith text.`,
+        translationUrdu: `اس موضوع میں ${focus.topicUrdu} کا مطالعہ کریں۔ متعلقہ اصل سبق "${sourceLesson.urduTitle}" غور سے پڑھیں: ${sourceLesson.translationUrdu} پھر اپنی سمجھ کو اصل سبق سے جانچیں اور غیر واضح بات استاد سے پوچھیں۔`,
+        translationEng: `Study ${focus.topic} in the existing lesson "${sourceLesson.title}". Read the source carefully: ${sourceLesson.translationEng} Check your understanding against that lesson and ask a trusted teacher about anything unclear.`,
+        translationArabic: `ادرس ${focus.topicArabic} من خلال الدرس المرتبط به. اقرأ الشرح بعناية، وتحقق من المعلومات في المصدر، واسأل معلماً موثوقاً عما يحتاج إلى توضيح. هذه مادة تعليمية شارحة وليست اقتباساً قرآنياً أو حديثاً.`,
+        explanation: `This is a new study topic based on the existing lesson "${sourceLesson.title}". Use that lesson as its source; no new Quran or Hadith quotation is introduced.`,
         practicalTip: sourceLesson.practicalTip,
-        badge: 'Review Activity',
+        badge: 'New Topic',
         icon: sourceLesson.icon,
         color: sourceLesson.color,
       });
     }
   });
 
-  return activities;
+  return topicLessons;
 };
 
 const BASE_ISLAMIC_TEACHINGS: IslamicTeaching[] = [
@@ -2342,8 +2344,8 @@ const BASE_ISLAMIC_TEACHINGS: IslamicTeaching[] = [
   },
 ];
 
-export const ISLAMIC_PRACTICE_ACTIVITIES = buildReviewActivities();
+export const ISLAMIC_TOPIC_LESSONS = buildTopicLessons();
 export const ISLAMIC_TEACHINGS: IslamicTeaching[] = [
   ...BASE_ISLAMIC_TEACHINGS,
-  ...ISLAMIC_PRACTICE_ACTIVITIES,
+  ...ISLAMIC_TOPIC_LESSONS,
 ];
