@@ -49,10 +49,10 @@
 }
 
 
-/* Iconic Solid Deep Royal Blue Sidebar */
+/* Solid deep royal-blue sidebar background */
 .sidebar-royal-blue {
   background-color: #0c2e6b !important;
-  background-image: linear-gradient(180deg, #0c2e6b 0%, #103b87 50%, #082252 100%) !important;
+  background-image: none !important;
 }
 
 /* Custom smooth scrollbar */

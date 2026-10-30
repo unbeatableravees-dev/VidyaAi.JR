@@ -207,7 +207,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 aria-current={isActive ? 'page' : undefined}
                 className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl font-bold transition-all duration-300 text-left cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-blue-400/35 via-cyan-400/25 to-blue-500/35 backdrop-blur-xl text-white shadow-lg shadow-blue-300/20 translate-x-1 border border-white/35'
+                    ? 'bg-gradient-to-r from-blue-500/90 via-blue-500/85 to-cyan-500/85 backdrop-blur-xl text-white shadow-lg shadow-cyan-300/30 translate-x-1 border border-cyan-100/60 ring-1 ring-white/20'
                     : 'text-blue-100 hover:bg-white/10 hover:backdrop-blur-md hover:text-white hover:translate-x-0.5'
                 }`}
               >
