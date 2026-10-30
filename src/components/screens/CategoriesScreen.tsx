@@ -24,7 +24,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
       return ['numbers', 'mathematics', 'science', 'knowledge'].includes(cat.id);
     }
     if (selectedFilter === 'language') {
-      return ['alphabets', 'english', 'hindi', 'story-time', 'children-stories', 'rhymes'].includes(cat.id);
+      return ['alphabets', 'english', 'urdu', 'hindi', 'story-time', 'children-stories', 'rhymes'].includes(cat.id);
     }
     if (selectedFilter === 'creativity') {
       return ['art-craft', 'manners', 'history'].includes(cat.id);
@@ -39,10 +39,10 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
         <div className="space-y-2 max-w-lg">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-xs font-black backdrop-blur-sm">
             <Sparkles className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300" />
-            <span>Complete Syllabus • 13 Subjects</span>
+            <span>Complete Syllabus • 14 Subjects</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight drop-shadow-sm">
-            Explore All 13 Categories
+            Explore All 14 Categories
           </h1>
           <p className="text-blue-100 text-xs sm:text-sm font-semibold">
             Click on any subject to explore its full lessons, video episodes, interactive quizzes, and practice games!

@@ -11,6 +11,9 @@ import { ProgressScreen } from './components/screens/ProgressScreen';
 import { SettingsScreen } from './components/screens/SettingsScreen';
 import { WelcomeScreen } from './components/screens/WelcomeScreen';
 import { PracticeScreen } from './components/screens/PracticeScreen';
+import { HumanBodyGameScreen } from './components/screens/HumanBodyGameScreen';
+import { ExplorerScreen } from './components/screens/ExplorerScreen';
+import { IslamicTeachingsView } from './components/screens/IslamicTeachingsView';
 import { VideoPlayerModal, VideoData } from './components/modals/VideoPlayerModal';
 import { AnimatedBackground } from './components/layout/AnimatedBackground';
 import { sound } from './utils/audio';
@@ -158,10 +161,31 @@ export function App() {
               onSelectCategory={handleSelectCategory}
               onViewAllCategories={handleViewAllCategories}
               onOpenPractice={() => setCurrentTab('practice')}
+              onOpenBodyExplorer={() => setCurrentTab('explorer')}
+              onOpenIslamic={() => setCurrentTab('islamic')}
             />
           )}
 
-          {currentTab === 'practice' && <PracticeScreen userGrade={userGrade} />}
+          {(currentTab === 'islamic' || currentTab === 'islamic-teachings') && (
+            <IslamicTeachingsView
+              onBackToHome={handleBackToHome}
+            />
+          )}
+
+          {(currentTab === 'explorer' || currentTab === 'body-explorer') && (
+            <ExplorerScreen
+              onBackToHome={handleBackToHome}
+              onOpenPractice={() => setCurrentTab('practice')}
+              initialModule={currentTab === 'body-explorer' ? 'body' : 'hub'}
+            />
+          )}
+
+          {currentTab === 'practice' && (
+            <PracticeScreen
+              userGrade={userGrade}
+              onOpenBodyExplorer={() => setCurrentTab('explorer')}
+            />
+          )}
 
           {currentTab === 'category-detail' && (
             <CategoryDetailScreen

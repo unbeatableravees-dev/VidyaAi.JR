@@ -37,9 +37,79 @@ interface ChallengeQuestion {
 interface MemoryCard {
   id: number;
   pair: string;
-  label: string;
+  name: string;
+  urduName: string;
+  emoji: string;
+  quote: string;
   matched: boolean;
 }
+
+interface FruitVegItem {
+  id: string;
+  name: string;
+  urduName: string;
+  emoji: string;
+  quote: string;
+}
+
+const FRUIT_VEG_ITEMS: FruitVegItem[] = [
+  {
+    id: 'carrot',
+    name: 'Carrot',
+    urduName: 'گاجر',
+    emoji: '🥕',
+    quote: '🥕 Crunchy Carrots! "Carrots are packed with Vitamin A for superhero eyesight and glowing skin!" (گاجر کھائیں اور بینائی تیز بنائیں!)',
+  },
+  {
+    id: 'apple',
+    name: 'Apple',
+    urduName: 'سیب',
+    emoji: '🍎',
+    quote: '🍎 Sweet Apples! "An apple a day keeps the doctor away! Packed with vitamins and all-day energy!" (روزانہ ایک سیب کھائیں، ہمیشہ تندرست رہیں!)',
+  },
+  {
+    id: 'banana',
+    name: 'Banana',
+    urduName: 'کیلا',
+    emoji: '🍌',
+    quote: '🍌 Power Bananas! "Rich in potassium to power up your muscles and make you run super fast!" (میٹھے کیلے کھائیں، فوری طاقت پائیں!)',
+  },
+  {
+    id: 'broccoli',
+    name: 'Broccoli',
+    urduName: 'بروکلی',
+    emoji: '🥦',
+    quote: '🥦 Super Broccoli! "Tiny green trees packed with calcium and iron to make your bones rock-solid!" (بروکلی کھا کر ہڈیوں کو فولادی بنائیں!)',
+  },
+  {
+    id: 'tomato',
+    name: 'Tomato',
+    urduName: 'ٹماٹر',
+    emoji: '🍅',
+    quote: '🍅 Juicy Tomatoes! "Full of lycopene and vitamin C to keep your heart smiling and cheeks glowing red!" (سرخ ٹماٹر کھائیں اور صحت مند مسکراہٹ پائیں!)',
+  },
+  {
+    id: 'strawberry',
+    name: 'Strawberry',
+    urduName: 'سٹرابیری',
+    emoji: '🍓',
+    quote: '🍓 Ruby Strawberries! "Loaded with natural antioxidants to boost your immunity and keep your smile bright!" (لذیذ سٹرابیری کھائیں، تر و تازہ رہیں!)',
+  },
+  {
+    id: 'mango',
+    name: 'Mango',
+    urduName: 'آم',
+    emoji: '🥭',
+    quote: '🥭 King Mango! "The delicious king of fruits! Gives your body Vitamin A and sweet happy energy!" (پھلوں کا بادشاہ آم، صحت اور مٹھاس کا خاص تحفہ!)',
+  },
+  {
+    id: 'watermelon',
+    name: 'Watermelon',
+    urduName: 'تربوز',
+    emoji: '🍉',
+    quote: '🍉 Cool Watermelon! "92% pure hydration! Keeps you refreshed, hydrated, and smiling all day!" (ٹھنڈا میٹھا تربوز، پیاس اور گرمی کو دور بھگائے!)',
+  },
+];
 
 const getChallengeQuestions = (grade: string, fractionsOnly = false): ChallengeQuestion[] => {
   if (fractionsOnly && grade === 'Grade 3') {
@@ -89,16 +159,41 @@ const getChallengeQuestions = (grade: string, fractionsOnly = false): ChallengeQ
 };
 
 const makeMemoryCards = (grade: string): MemoryCard[] => {
-  const pairs = grade === 'Grade 3'
-    ? [['6 × 7', '42'], ['8 × 9', '72'], ['56 ÷ 7', '8'], ['3/6', '1/2']]
-    : grade === 'Grade 2'
-      ? [['4 × 3', '12'], ['5 × 6', '30'], ['24 ÷ 4', '6'], ['35 + 15', '50']]
-      : [['6 + 4', '10'], ['12 − 5', '7'], ['3 + 8', '11'], ['15 − 6', '9']];
+  // Use 4 pairs (8 cards total) or 6 pairs for Grade 3
+  const count = grade === 'Grade 3' ? 6 : 4;
+  // Pick random fruits & vegetables from the pool
+  const shuffledPool = [...FRUIT_VEG_ITEMS].sort(() => Math.random() - 0.5);
+  const selectedItems = shuffledPool.slice(0, count);
 
-  return pairs.flatMap(([equation, answer], index) => [
-    { id: index * 2, pair: `pair-${index}`, label: equation, matched: false },
-    { id: index * 2 + 1, pair: `pair-${index}`, label: answer, matched: false },
-  ]);
+  const cards: MemoryCard[] = [];
+  selectedItems.forEach((item, index) => {
+    cards.push({
+      id: index * 2,
+      pair: item.id,
+      name: item.name,
+      urduName: item.urduName,
+      emoji: item.emoji,
+      quote: item.quote,
+      matched: false,
+    });
+    cards.push({
+      id: index * 2 + 1,
+      pair: item.id,
+      name: item.name,
+      urduName: item.urduName,
+      emoji: item.emoji,
+      quote: item.quote,
+      matched: false,
+    });
+  });
+
+  // Fisher-Yates Shuffle algorithm for true randomness
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+
+  return cards;
 };
 
 export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
@@ -136,6 +231,7 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
   const [challengeAnswer, setChallengeAnswer] = useState<string | null>(null);
   const [memoryCards, setMemoryCards] = useState(() => makeMemoryCards(userGrade));
   const [selectedMemoryIds, setSelectedMemoryIds] = useState<number[]>([]);
+  const [matchedQuote, setMatchedQuote] = useState<{ emoji: string; name: string; urduName: string; quote: string } | null>(null);
 
   useEffect(() => {
     if (selectedMemoryIds.length !== 2) return;
@@ -178,8 +274,29 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
       ));
       setScore((previous) => previous + 1);
       sound.playSuccess();
+      try {
+        confetti({
+          particleCount: 30,
+          spread: 60,
+          origin: { y: 0.5 },
+          colors: ['#22c55e', '#f59e0b', '#ef4444', '#ec4899', '#3b82f6'],
+        });
+      } catch {
+        // Ignore
+      }
+
+      // Show immediate motivational/educational quote for this fruit or vegetable
+      setMatchedQuote({
+        emoji: card.emoji,
+        name: card.name,
+        urduName: card.urduName,
+        quote: card.quote,
+      });
+
       if (memoryCards.filter((item) => item.matched).length + 2 === memoryCards.length) {
-        triggerWin();
+        setTimeout(() => {
+          triggerWin();
+        }, 1400);
       }
     }
   };
@@ -360,6 +477,7 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
     setShapeStep(0);
     setChallengeStep(0);
     setChallengeAnswer(null);
+    setMatchedQuote(null);
     setMemoryCards(makeMemoryCards(userGrade));
     setSelectedMemoryIds([]);
   };
@@ -485,11 +603,30 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
               )}
 
               {type === 'memory-match' && (
-                <div className="w-full max-w-lg space-y-5 text-center">
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-100 text-violet-900 font-black text-xs">
-                    <span>Flip two cards and match each equation to its answer.</span>
+                <div className="w-full max-w-lg space-y-4 text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-900 font-black text-xs shadow-xs">
+                    <Sparkles className="w-4 h-4 text-amber-500 fill-amber-400" />
+                    <span>Flip two cards to match fresh Fruits & Vegetables! 🥕🍎</span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+
+                  {/* ACTIVE MATCHED QUOTE BANNER (Shows instant fruit/veg quote when paired!) */}
+                  {matchedQuote && (
+                    <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 via-orange-50 to-yellow-50 border-2 border-amber-400 shadow-lg animate-in zoom-in-95 duration-200 flex items-center gap-3 text-left">
+                      <span className="text-4xl shrink-0 animate-bounce">{matchedQuote.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 text-[11px] font-black uppercase text-amber-900 tracking-wider">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400 shrink-0" />
+                          <span>Match Found! {matchedQuote.name} ({matchedQuote.urduName}) Quote:</span>
+                        </div>
+                        <p className="text-xs sm:text-sm font-black text-slate-900 leading-snug mt-1">
+                          {matchedQuote.quote}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Shuffled Fruits & Veggies Memory Grid */}
+                  <div className={`grid ${memoryCards.length > 8 ? 'grid-cols-3 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-4'} gap-3`}>
                     {memoryCards.map((card) => {
                       const revealed = card.matched || selectedMemoryIds.includes(card.id);
                       return (
@@ -497,18 +634,37 @@ export const InteractiveGameModal: React.FC<InteractiveGameModalProps> = ({
                           key={card.id}
                           onClick={() => handleMemoryCardClick(card.id)}
                           disabled={card.matched || selectedMemoryIds.length === 2}
-                          className={`aspect-square rounded-2xl border-2 p-2 flex items-center justify-center font-black text-sm transition-all duration-300 hover:-translate-y-0.5 ${
+                          className={`aspect-square rounded-2xl border-2 p-2 flex flex-col items-center justify-center font-black transition-all duration-300 cursor-pointer ${
                             revealed
-                              ? 'bg-violet-100 border-violet-400 text-violet-900 rotate-0'
-                              : 'bg-gradient-to-br from-violet-500 to-indigo-600 border-white text-white shadow-md hover:scale-105'
+                              ? card.matched
+                                ? 'bg-emerald-50 border-emerald-400 text-emerald-950 scale-95 ring-2 ring-emerald-300/40 shadow-sm'
+                                : 'bg-amber-50 border-amber-400 text-amber-950 scale-102 shadow-md'
+                              : 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 border-white/60 text-white shadow-md hover:scale-105 hover:shadow-lg'
                           }`}
                         >
-                          {revealed ? card.label : '✦'}
+                          {revealed ? (
+                            <div className="flex flex-col items-center justify-center animate-in zoom-in-50 duration-150">
+                              <span className="text-3xl sm:text-4xl drop-shadow-sm mb-1">{card.emoji}</span>
+                              <span className="text-[11px] font-black leading-tight text-slate-900">{card.name}</span>
+                              <span className="text-[10px] font-bold text-slate-600 font-urdu">{card.urduName}</span>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center">
+                              <span className="text-2xl opacity-80">🌱</span>
+                              <span className="text-[10px] font-bold text-violet-200 mt-1">Tap me</span>
+                            </div>
+                          )}
                         </button>
                       );
                     })}
                   </div>
-                  <p className="text-xs font-bold text-slate-500">Pairs found: {score} / {memoryCards.length / 2}</p>
+
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-500 px-2 pt-1">
+                    <span>Pairs found: {score} / {memoryCards.length / 2}</span>
+                    <span className="text-emerald-600 font-black">
+                      {score === memoryCards.length / 2 ? 'All Matched! Great job! 🎉' : 'Find matching pairs! ⭐'}
+                    </span>
+                  </div>
                 </div>
               )}
 

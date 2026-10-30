@@ -72,12 +72,12 @@ const EXTENDED_GAMES: PracticeGame[] = [
   },
   {
     id: 'p-memory-match',
-    title: 'Brainy Memory Match',
+    title: 'Fruit & Veggie Memory Match 🥕🍎',
     iconType: 'p-pattern',
     bgColor: '#7c3aed',
     badgeColor: '#6d28d9',
     category: 'logic',
-    desc: 'Flip cards and match equations with their answers.',
+    desc: 'Flip cards to match tasty fruits & veggies and discover super healthy quotes!',
   },
   {
     id: 'p-fraction-factory',
@@ -90,7 +90,12 @@ const EXTENDED_GAMES: PracticeGame[] = [
   },
 ];
 
-export const PracticeScreen: React.FC<{ userGrade: string }> = ({ userGrade }) => {
+interface PracticeScreenProps {
+  userGrade: string;
+  onOpenBodyExplorer?: () => void;
+}
+
+export const PracticeScreen: React.FC<PracticeScreenProps> = ({ userGrade, onOpenBodyExplorer }) => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | GameCategory>('all');
   const [activeGame, setActiveGame] = useState<{ id: string; title: string } | null>(null);
   const [starsWon, setStarsWon] = useState(45);
@@ -144,6 +149,48 @@ export const PracticeScreen: React.FC<{ userGrade: string }> = ({ userGrade }) =
             alt="Arcade Character"
             className="w-full h-full object-contain filter drop-shadow-lg"
           />
+        </div>
+      </div>
+
+      {/* Explorer Discovery Hub Spotlight */}
+      <div
+        onClick={() => {
+          sound.playPop();
+          if (onOpenBodyExplorer) {
+            onOpenBodyExplorer();
+          }
+        }}
+        className="rounded-[2.5rem] bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600 text-white p-6 md:p-8 shadow-2xl border-2 border-white/60 flex flex-col md:flex-row items-center justify-between gap-6 cursor-pointer hover:shadow-3xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+      >
+        <div className="space-y-3 z-10 max-w-xl">
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 bg-yellow-400 text-slate-950 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm animate-pulse">
+              ⭐ EXPLORER HUB
+            </span>
+            <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[11px] font-black uppercase tracking-wider">
+              Interactive Cards & 3D Lab
+            </span>
+          </div>
+
+          <h2 className="text-2xl md:text-3xl font-black leading-tight drop-shadow">
+            Explorer Hub 🧭 (علم و دریافت کا مرکز)
+          </h2>
+
+          <p className="text-sm text-blue-100 font-extrabold leading-relaxed">
+            3D Human Body Anatomy with Drag & Drop Scanner, Islamic Teachings in Arabic & Urdu, Solar System, Animals of the Quran, and Botany!
+          </p>
+
+          <div className="pt-2 flex items-center gap-3">
+            <button className="px-5 py-2.5 rounded-2xl bg-white text-blue-800 font-black text-xs shadow-lg group-hover:scale-105 transition-all flex items-center gap-2">
+              <Play className="w-4 h-4 fill-blue-800" />
+              <span>Launch Explorer Hub →</span>
+            </button>
+            <span className="text-xs font-bold text-cyan-200">50+ Organs & Vessels • Duas • Cosmos</span>
+          </div>
+        </div>
+
+        <div className="w-28 h-28 md:w-36 md:h-36 rounded-3xl bg-white/20 backdrop-blur-md border-2 border-white/50 flex items-center justify-center text-6xl shadow-2xl shrink-0 group-hover:scale-110 transition-transform">
+          🧭
         </div>
       </div>
 

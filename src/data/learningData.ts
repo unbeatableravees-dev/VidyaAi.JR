@@ -92,6 +92,16 @@ export const ALL_CATEGORIES: Category[] = [
     count: '35 lessons',
   },
   {
+    id: 'urdu',
+    name: 'Urdu',
+    hindiName: 'اردو زبان',
+    iconType: 'urdu',
+    bgColor: '#dcfce7', // soft fresh green
+    textColor: '#15803d',
+    arrowBg: '#22c55e',
+    count: '24 lessons',
+  },
+  {
     id: 'hindi',
     name: 'Hindi',
     hindiName: 'हिन्दी',
@@ -163,6 +173,13 @@ export const PRACTICE_ACTIVITIES: PracticeActivity[] = [
     iconType: 'p-pop',
     bgColor: '#c084fc',
     badgeColor: '#7e22ce',
+  },
+  {
+    id: 'p-memory-match',
+    title: 'Fruit Memory 🥕',
+    iconType: 'p-pattern',
+    bgColor: '#7c3aed',
+    badgeColor: '#6d28d9',
   },
 ];
 

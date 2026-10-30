@@ -522,6 +522,63 @@ export const CATEGORY_DETAILS: Record<string, CategoryDetailData> = {
     ],
   },
 
+  urdu: {
+    id: 'urdu',
+    title: 'اردو سیکھیں (Urdu Learning)',
+    tagline: 'حروفِ تہجی، بنیادی الفاظ، جوڑ توڑ اور خوبصورت کہانیاں!',
+    bannerColor: '#10b981',
+    gradient: 'from-emerald-600 via-teal-600 to-green-700',
+    accentColor: '#059669',
+    funFact: 'اردو زبان دنیا کی سب سے میٹھی زبانوں میں شمار ہوتی ہے اور دائیں سے بائیں لکھی جاتی ہے!',
+    lessons: [
+      {
+        id: 'urd-1',
+        title: 'حروفِ تہجی: الف سے انار، ب سے بلی',
+        duration: '7:15',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '📖',
+        description: 'الف تا ے تمام ۳۷ حروف کی درست پہچان اور ادائیگی تصویری انداز میں سیکھیں۔',
+        isCompleted: true,
+      },
+      {
+        id: 'urd-2',
+        title: 'دو حرفی اور تین حرفی آسان الفاظ (اب، رب، گھر، پل)',
+        duration: '8:30',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '✍️',
+        description: 'حروف کو ملا کر دو حرفی اور تین حرفی الفاظ بنانا اور پڑھنا سیکھیں۔',
+      },
+      {
+        id: 'urd-3',
+        title: 'اردو گنتی: ۱ سے ۱۰ (ایک، دو، تین، چار...)',
+        duration: '6:20',
+        difficulty: 'Beginner',
+        thumbnailEmoji: '🔟',
+        description: 'ایک تا دس اردو گنتی گانا گاتے ہوئے انگلیوں پر گننا سیکھیں۔',
+      },
+      {
+        id: 'urd-4',
+        title: 'حرکات و اعراب: زبر، زیر اور پیش کی آوازیں',
+        duration: '7:45',
+        difficulty: 'Intermediate',
+        thumbnailEmoji: '🎶',
+        description: 'اعراب لگا کر حروف کی مختلف آوازیں نکالنا اور الفاظ درست پڑھنا۔',
+      },
+      {
+        id: 'urd-5',
+        title: 'بچوں کے پیارے اردو نغمے اور نظمیں',
+        duration: '6:10',
+        difficulty: 'Fun Activity',
+        thumbnailEmoji: '🦋',
+        description: 'تتلی، طوطا اور بلبل کی پیاری اور سریلی اردو نظمیں گائیں۔',
+      },
+    ],
+    practiceActivities: [
+      { title: 'حرف ملاؤ (Letter Match)', type: 'Game', icon: '🎯', description: 'تصویر دیکھ کر پہلا حرف تلاش کریں!' },
+      { title: 'الفاظ بناؤ (Word Builder)', type: 'Puzzle', icon: '🧩', description: 'حروف کو جوڑ کر نیا لفظ مکمل کریں۔' },
+    ],
+  },
+
   hindi: {
     id: 'hindi',
     title: 'हिन्दी सीखो (Hindi Learning)',

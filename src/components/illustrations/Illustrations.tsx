@@ -522,6 +522,21 @@ export const CategoryIcon: React.FC<{ type: string; size?: number }> = ({ type, 
           </text>
         </svg>
       );
+    case 'urdu':
+      return (
+        <svg width={size} height={size} viewBox="0 0 100 100">
+          {/* 3D Urdu letters 'ا' 'ب' 'ج' */}
+          <text x="12" y="72" fontFamily="sans-serif" fontWeight="900" fontSize="52" fill="#10b981" stroke="#047857" strokeWidth="1.5">
+            ا
+          </text>
+          <text x="36" y="72" fontFamily="sans-serif" fontWeight="900" fontSize="48" fill="#3b82f6" stroke="#1d4ed8" strokeWidth="1.5">
+            ب
+          </text>
+          <text x="64" y="72" fontFamily="sans-serif" fontWeight="900" fontSize="46" fill="#f59e0b" stroke="#d97706" strokeWidth="1.5">
+            ج
+          </text>
+        </svg>
+      );
     case 'hindi':
       return (
         <svg width={size} height={size} viewBox="0 0 100 100">

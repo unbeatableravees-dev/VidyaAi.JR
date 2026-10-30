@@ -1,9 +1,9 @@
 import React from 'react';
-import { Home, Grid, BookOpen, BarChart3, Settings, Sparkles, Gamepad2 } from 'lucide-react';
+import { Home, Grid, BookOpen, BarChart3, Settings, Sparkles, Gamepad2, Compass, Moon } from 'lucide-react';
 import { SidebarKidsIllustration } from '../illustrations/Illustrations';
 import { APP_IMAGES } from '../../assets/images';
 
-export type NavTab = 'home' | 'categories' | 'practice' | 'learning' | 'progress' | 'settings' | 'quiz' | 'quiz-results' | 'category-detail';
+export type NavTab = 'home' | 'islamic' | 'islamic-teachings' | 'explorer' | 'categories' | 'practice' | 'body-explorer' | 'learning' | 'progress' | 'settings' | 'quiz' | 'quiz-results' | 'category-detail';
 
 interface SidebarProps {
   currentTab: NavTab;
@@ -14,7 +14,9 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, onSwitchProfile }) => {
   const navItems = [
     { id: 'home' as NavTab, label: 'Home', icon: Home },
-    { id: 'categories' as NavTab, label: 'Categories (13)', icon: Grid },
+    { id: 'categories' as NavTab, label: 'Categories (14)', icon: Grid },
+    { id: 'islamic' as NavTab, label: 'Islamic Teachings 🕌', icon: Moon },
+    { id: 'explorer' as NavTab, label: 'Explorer 🧭', icon: Compass },
     { id: 'practice' as NavTab, label: 'Practice Games 🎮', icon: Gamepad2 },
     { id: 'learning' as NavTab, label: 'My Learning', icon: BookOpen },
     { id: 'progress' as NavTab, label: 'Progress', icon: BarChart3 },

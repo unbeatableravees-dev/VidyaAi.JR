@@ -14,6 +14,8 @@ interface HomeScreenProps {
   onSelectCategory: (categoryId: string) => void;
   onViewAllCategories: () => void;
   onOpenPractice?: () => void;
+  onOpenBodyExplorer?: () => void;
+  onOpenIslamic?: () => void;
 }
 
 const FEATURED_VIDEO_DETAILS: Record<string, VideoData> = {
@@ -120,6 +122,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onSelectCategory,
   onViewAllCategories,
   onOpenPractice,
+  onOpenBodyExplorer,
+  onOpenIslamic,
 }) => {
   const [selectedVideo, setSelectedVideo] = useState<VideoData | null>(null);
   const [activeGame, setActiveGame] = useState<{ id: string; title: string } | null>(null);
@@ -328,6 +332,111 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               alt="3D Science Discovery"
               className="w-full h-full object-cover"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Special Modules Spotlight */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Islamic Academy Spotlight */}
+        <div
+          onClick={() => {
+            sound.playPop();
+            if (onOpenIslamic) {
+              onOpenIslamic();
+            }
+          }}
+          className="rounded-[2.5rem] bg-gradient-to-r from-emerald-600 via-teal-700 to-green-700 text-white p-6 shadow-xl border-2 border-white/60 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+        >
+          <div className="space-y-2 z-10 max-w-[70%]">
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 bg-amber-400 text-slate-950 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
+                ⭐ ISLAMIC
+              </span>
+              <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
+                Academy
+              </span>
+            </div>
+            <h3 className="text-xl font-black leading-tight drop-shadow">
+              Islamic Teachings 🕌
+            </h3>
+            <p className="text-xs text-emerald-100 font-bold leading-relaxed font-urdu">
+              سیرتِ رسولِ پاک ﷺ، نماز و وضو، قرآن و حدیث، پیغمبران، صحابہ و اولیاء اللہ!
+            </p>
+            <span className="inline-flex items-center gap-1.5 text-xs font-black text-amber-300 pt-1 group-hover:translate-x-1 transition-transform">
+              Explore Teachings →
+            </span>
+          </div>
+
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-4xl shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+            🕌
+          </div>
+        </div>
+
+        {/* Explorer Hub Spotlight */}
+        <div
+          onClick={() => {
+            sound.playPop();
+            if (onOpenBodyExplorer) {
+              onOpenBodyExplorer();
+            } else if (onOpenPractice) {
+              onOpenPractice();
+            }
+          }}
+          className="rounded-[2.5rem] bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white p-6 shadow-xl border-2 border-white/60 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+        >
+          <div className="space-y-2 z-10 max-w-[70%]">
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 bg-yellow-400 text-slate-950 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm">
+                ⭐ 3D LAB
+              </span>
+              <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
+                Real Body
+              </span>
+            </div>
+            <h3 className="text-xl font-black leading-tight drop-shadow">
+              Explorer Hub 🧭
+            </h3>
+            <p className="text-xs text-blue-100 font-bold leading-relaxed">
+              Real 3D Human Body Anatomy with Drag & Drop Scanner & Cosmos!
+            </p>
+            <span className="inline-flex items-center gap-1.5 text-xs font-black text-amber-300 pt-1 group-hover:translate-x-1 transition-transform">
+              Open Explorer →
+            </span>
+          </div>
+
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-4xl shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+            🧭
+          </div>
+        </div>
+
+        {/* Fruit & Veggie Memory Match Spotlight */}
+        <div
+          onClick={() => handleOpenPracticeGame('p-memory-match', 'Fruit & Veggie Memory Match 🥕🍎')}
+          className="rounded-[2.5rem] bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white p-6 shadow-xl border-2 border-white/60 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+        >
+          <div className="space-y-2 z-10 max-w-[65%]">
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 bg-emerald-400 text-slate-950 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm">
+                ⭐ MEMORY MATCH
+              </span>
+              <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
+                Shuffled Cards
+              </span>
+            </div>
+            <h3 className="text-xl font-black leading-tight drop-shadow">
+              Fruit & Veggie Memory Match 🥕
+            </h3>
+            <p className="text-xs text-violet-100 font-bold leading-relaxed">
+              Match juicy carrots, apples, & broccoli in shuffled cards to unlock healthy superpower quotes!
+            </p>
+            <span className="inline-flex items-center gap-1.5 text-xs font-black text-emerald-300 pt-1 group-hover:translate-x-1 transition-transform">
+              Play Memory Match Now →
+            </span>
+          </div>
+
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-5xl shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+            🥕
           </div>
         </div>
       </section>
