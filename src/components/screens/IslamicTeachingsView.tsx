@@ -34,6 +34,8 @@ interface IslamicTeachingsViewProps {
   initialCategory?: string;
 }
 
+const TEACHINGS_PER_PAGE = 20;
+
 export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
   onBackToExplorerHub,
   onBackToHome,
@@ -46,6 +48,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'prophets');
   const [hubFilter, setHubFilter] = useState<'all' | 'prophets' | 'karbala' | 'quran-hadith' | 'manners-hobbies'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [activeItem, setActiveItem] = useState<IslamicTeaching | null>(() => {
     if (initialCategory && initialCategory !== 'all') {
       const match = ISLAMIC_TEACHINGS.find((i) => i.category === initialCategory);
@@ -92,31 +95,38 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
     return true;
   });
 
-  // Filtered lessons for the detail reader view
+  // Filtered lessons for the detail reader view (with guaranteed null-safety)
   const filteredTeachings = ISLAMIC_TEACHINGS.filter((item) => {
+    if (!item) return false;
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
 
     const matchesSearch =
       !searchQuery ||
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.urduTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.explanation.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.urduTitle && item.urduTitle.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.explanation && item.explanation.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (item.arabicText && item.arabicText.includes(searchQuery));
 
     return matchesCategory && matchesSearch;
   });
+  const pageCount = Math.max(1, Math.ceil(filteredTeachings.length / TEACHINGS_PER_PAGE));
+  const visibleTeachings = filteredTeachings.slice(
+    (currentPage - 1) * TEACHINGS_PER_PAGE,
+    currentPage * TEACHINGS_PER_PAGE,
+  );
 
   // Active or fallback current item guaranteed at top level
   const currentItem: IslamicTeaching | null =
     activeItem && (selectedCategory === 'all' || activeItem.category === selectedCategory)
       ? activeItem
-      : filteredTeachings[0] || ISLAMIC_TEACHINGS.find((i) => i.category === selectedCategory) || ISLAMIC_TEACHINGS[0] || null;
+      : filteredTeachings[0] || ISLAMIC_TEACHINGS.find((i) => i && i.category === selectedCategory) || ISLAMIC_TEACHINGS[0] || null;
 
   const handleOpenTrack = (trackId: IslamicTeaching['category']) => {
     sound.playPop();
     setSearchQuery('');
+    setCurrentPage(1);
     setSelectedCategory(trackId);
-    const firstInCat = ISLAMIC_TEACHINGS.find((i) => i.category === trackId);
+    const firstInCat = ISLAMIC_TEACHINGS.find((i) => i && i.category === trackId);
     if (firstInCat) setActiveItem(firstInCat);
     setViewMode('detail');
   };
@@ -351,7 +361,10 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
               placeholder="Search Prophets, Surahs, Hadiths, Manners..."
               className="w-full pl-9.5 pr-4 py-2.5 bg-white rounded-2xl border-2 border-emerald-100 focus:border-emerald-500 focus:outline-hidden text-xs font-bold text-slate-800 placeholder-slate-400 shadow-sm"
             />
@@ -511,6 +524,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                 onClick={() => {
                   sound.playPop();
                   setSearchQuery('');
+                  setCurrentPage(1);
                   setSelectedCategory(track.id);
                   const firstItem = ISLAMIC_TEACHINGS.find((i) => i.category === track.id);
                   if (firstItem) setActiveItem(firstItem);
@@ -534,7 +548,10 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="Search this track..."
             className="w-full pl-9.5 pr-4 py-2 bg-white rounded-2xl border-2 border-emerald-100 focus:border-emerald-500 focus:outline-hidden text-xs font-bold text-slate-800 placeholder-slate-400 shadow-sm"
           />
@@ -552,7 +569,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
               <p className="text-xs text-slate-400 mt-1">Try another search keyword.</p>
             </div>
           ) : (
-            filteredTeachings.map((item) => {
+            visibleTeachings.map((item) => {
               const isSelected = currentItem?.id === item.id;
               const isMemorized = memorizedIds.includes(item.id);
 
@@ -581,7 +598,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                         <div className="flex items-center gap-2">
                           <h3 className="text-sm font-black text-slate-900">{item.title}</h3>
                           <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                            {item.badge}
+                            {item.contentType === 'practice' ? 'Practice Activity' : item.badge}
                           </span>
                         </div>
                         {/* Human-readable Urdu title */}
@@ -618,6 +635,33 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                 </div>
               );
             })
+          )}
+          {filteredTeachings.length > TEACHINGS_PER_PAGE && (
+            <div className="sticky bottom-0 flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur-md">
+              <span className="text-[11px] font-bold text-slate-600">
+                Page {currentPage} of {pageCount} · {filteredTeachings.length} items
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={currentPage === 1}
+                  className="rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))}
+                  disabled={currentPage === pageCount}
+                  className="rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-40"
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           )}
         </div>
 
@@ -680,6 +724,16 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
               </div>
 
               {/* Crystal-clear Human-Readable Urdu Heading */}
+              {currentItem.contentType === 'practice' && (
+                <div className="rounded-2xl border border-blue-200 bg-blue-50 p-3 text-xs font-bold text-blue-900">
+                  Practice activity based on an existing lesson. No new Quran or Hadith text is added.
+                  {currentItem.sourceLessonId && (
+                    <span className="block mt-1 text-[11px] text-blue-700">
+                      Source lesson: {ISLAMIC_TEACHINGS.find((item) => item.id === currentItem.sourceLessonId)?.title}
+                    </span>
+                  )}
+                </div>
+              )}
               <div className="bg-gradient-to-r from-emerald-50/70 to-teal-50/70 p-4 rounded-2xl border border-emerald-200/80 text-right">
                 <h3 className="text-xl md:text-2xl font-bold text-emerald-950 font-urdu leading-loose">
                   {currentItem.urduTitle}
@@ -746,7 +800,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                     )}
                   </button>
                   <span className="text-[11px] font-black uppercase text-slate-600 tracking-wider">
-                    با محاورہ اردو ترجمہ و مفہوم
+                    {currentItem.contentType === 'practice' ? 'مشق کی ہدایات' : 'با محاورہ اردو ترجمہ و مفہوم'}
                   </span>
                 </div>
                 <p className="text-base md:text-lg font-medium text-slate-900 font-urdu leading-loose text-right">
@@ -758,7 +812,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
               <div className="space-y-2.5 p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-black uppercase text-slate-500 tracking-wider">
-                    English Meaning & Guidance
+                    {currentItem.contentType === 'practice' ? 'Practice Instructions' : 'English Meaning & Guidance'}
                   </span>
                   <button
                     onClick={() => handleSpeakPart('en', currentItem)}
@@ -790,7 +844,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200">
                   <span className="text-xs font-black text-amber-900 uppercase block mb-1 flex items-center gap-1">
-                    <span>💡</span> Deep Moral Wisdom
+                    <span>💡</span> {currentItem.contentType === 'practice' ? 'Activity Instructions' : 'Deep Moral Wisdom'}
                   </span>
                   <p className="text-xs font-bold text-slate-700 leading-relaxed">
                     {currentItem.explanation}
@@ -799,7 +853,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
 
                 <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200">
                   <span className="text-xs font-black text-emerald-900 uppercase block mb-1 flex items-center gap-1">
-                    <span>🌟</span> Daily Sunnah Action
+                    <span>🌟</span> {currentItem.contentType === 'practice' ? 'Source Lesson Tip' : 'Daily Sunnah Action'}
                   </span>
                   <p className="text-xs font-bold text-slate-700 leading-relaxed">
                     {currentItem.practicalTip}
