@@ -189,7 +189,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* Navigation Items - Compact, Sleek Padding & Sizing with Original Vibrant Route Pill */}
+        {/* Navigation Items - Original Glowing Blue Route Capsule */}
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -204,17 +204,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item.id)}
+                style={
+                  isActive
+                    ? {
+                        background: 'linear-gradient(135deg, #1d68ed 0%, #3b82f6 50%, #1d68ed 100%)',
+                        boxShadow: '0 4px 16px rgba(37, 99, 235, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.6)',
+                      }
+                    : undefined
+                }
                 className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl font-bold transition-all duration-150 text-left cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white shadow-md shadow-blue-950/50 border border-white/30 glossy-pill translate-x-1'
-                    : 'text-blue-100 hover:bg-white/10 hover:text-white hover:translate-x-0.5'
+                    ? 'text-white border border-white/40 ring-1 ring-blue-300/40 glossy-pill translate-x-1'
+                    : 'bg-white/8 hover:bg-white/18 text-white border border-white/10 hover:border-white/20 hover:translate-x-0.5'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-blue-200'}`} />
                   <div>
                     <span className="block leading-tight text-xs font-black text-white">{item.label}</span>
-                    <span className="text-[9px] font-bold text-blue-200/80 block leading-tight">
+                    <span className="text-[9px] font-bold text-blue-200/90 block leading-tight">
                       {item.secondary}
                     </span>
                   </div>
@@ -254,6 +262,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </div>
   );
 
+  const sidebarStyle: React.CSSProperties = {
+    backgroundColor: '#103b87',
+    backgroundImage: 'linear-gradient(180deg, #103b87 0%, #14479e 50%, #0f3475 100%)',
+  };
+
   return (
     <>
       {/* 1. MOBILE DRAWER (Only rendered when isOpenMobile is true on mobile screens) */}
@@ -268,10 +281,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Off-canvas Slide-out Drawer with SOLID DEEP ROYAL BLUE */}
           <aside
-            style={{
-              backgroundColor: '#0c2e6b',
-              backgroundImage: 'linear-gradient(180deg, #0d3b88 0%, #0c2e6b 50%, #082252 100%)',
-            }}
+            style={sidebarStyle}
             className="sidebar-royal-blue fixed inset-y-0 left-0 z-50 w-56 max-w-[80vw] text-white py-3 px-2.5 select-none shadow-2xl border-r border-blue-400/30 overflow-y-auto animate-in slide-in-from-left duration-200"
           >
             {renderContent(true)}
@@ -281,10 +291,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* 2. DESKTOP SIDEBAR - SOLID DEEP ROYAL BLUE, COMPACT w-52 / w-56 */}
       <aside
-        style={{
-          backgroundColor: '#0c2e6b',
-          backgroundImage: 'linear-gradient(180deg, #0d3b88 0%, #0c2e6b 50%, #082252 100%)',
-        }}
+        style={sidebarStyle}
         className="sidebar-royal-blue hidden md:flex flex-col justify-between shrink-0 w-52 lg:w-56 min-h-screen py-3 px-2.5 select-none shadow-2xl border-r border-blue-400/20"
       >
         {renderContent(false)}
