@@ -14,25 +14,27 @@ import { PracticeScreen } from './components/screens/PracticeScreen';
 import { HumanBodyGameScreen } from './components/screens/HumanBodyGameScreen';
 import { ExplorerScreen } from './components/screens/ExplorerScreen';
 import { IslamicTeachingsView } from './components/screens/IslamicTeachingsView';
+import { PunjabiLearningView } from './components/screens/PunjabiLearningView';
+import { HindiLearningView } from './components/screens/HindiLearningView';
 import { VideoPlayerModal, VideoData } from './components/modals/VideoPlayerModal';
 import { AnimatedBackground } from './components/layout/AnimatedBackground';
 import { sound } from './utils/audio';
+import { StudentProfile } from './types/student';
 
 export function App() {
-  // Stored name or null on first launch
-  const [userName, setUserName] = useState<string>(() => {
-    return localStorage.getItem('vidya_user_name') || '';
-  });
-  const [userAvatar, setUserAvatar] = useState<string>(() => {
-    return localStorage.getItem('vidya_user_avatar') || 'boy-aarav';
-  });
-  const [userGrade, setUserGrade] = useState<string>(() => {
-    return localStorage.getItem('vidya_user_grade') || 'Grade 1';
+  // Stored Student Profile (Multi-Faith, Multilingual, Age, Class, Game)
+  const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(() => {
+    try {
+      const saved = localStorage.getItem('vidya_student_profile_v2');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
 
-  // If no name is set yet, show WelcomeScreen
+  // Reset all users: if vidya_student_profile_v2 does not exist, ALWAYS show WelcomeScreen
   const [showWelcome, setShowWelcome] = useState<boolean>(() => {
-    return !localStorage.getItem('vidya_user_name');
+    return !localStorage.getItem('vidya_student_profile_v2');
   });
 
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
@@ -44,26 +46,36 @@ export function App() {
     total: number;
     subjectName?: string;
     grade?: string;
-  }>({ correct: 0, total: 10, subjectName: 'All Subjects Mix', grade: 'Grade 1' });
+  }>({ correct: 0, total: 10, subjectName: 'All Subjects Mix', grade: 'Class 2' });
 
   // Active modal video (if any clicked)
   const [activeVideoModal, setActiveVideoModal] = useState<VideoData | null>(null);
 
-  const handleNameSubmit = (name: string, avatar: string, grade: string) => {
-    setUserName(name);
-    setUserAvatar(avatar);
-    setUserGrade(grade);
-    localStorage.setItem('vidya_user_name', name);
-    localStorage.setItem('vidya_user_avatar', avatar);
-    localStorage.setItem('vidya_user_grade', grade);
+  const activeDisplayName = studentProfile?.name || 'Aarav';
+  const activeAvatar = studentProfile?.avatar || 'boy-aarav';
+  const activeGrade = studentProfile?.gradeClass || 'Class 2';
+
+  const handleProfileSubmit = (profile: StudentProfile) => {
+    setStudentProfile(profile);
+    localStorage.setItem('vidya_student_profile_v2', JSON.stringify(profile));
+    localStorage.setItem('vidya_user_name', profile.name);
+    localStorage.setItem('vidya_user_avatar', profile.avatar);
+    localStorage.setItem('vidya_user_grade', profile.gradeClass);
     setShowWelcome(false);
     setCurrentTab('home');
   };
 
   const handleUpdateProfile = (name: string, avatar: string, grade: string) => {
-    setUserName(name);
-    setUserAvatar(avatar);
-    setUserGrade(grade);
+    if (studentProfile) {
+      const updated: StudentProfile = {
+        ...studentProfile,
+        name,
+        avatar,
+        gradeClass: grade,
+      };
+      setStudentProfile(updated);
+      localStorage.setItem('vidya_student_profile_v2', JSON.stringify(updated));
+    }
     localStorage.setItem('vidya_user_name', name);
     localStorage.setItem('vidya_user_avatar', avatar);
     localStorage.setItem('vidya_user_grade', grade);
@@ -87,7 +99,7 @@ export function App() {
       correct: result.correct,
       total: result.total,
       subjectName: result.subjectName || 'All Subjects Mix',
-      grade: result.grade || userGrade,
+      grade: result.grade || activeGrade,
     });
     setCurrentTab('quiz-results');
   };
@@ -115,30 +127,29 @@ export function App() {
     setActiveVideoModal(video);
   };
 
-  // If user has not entered a name yet (or clicked Switch Profile), show Welcome/Name Entry page!
+  // If user has not completed the new profile onboarding yet, show Welcome/Setup page!
   if (showWelcome) {
     return (
       <WelcomeScreen
-        onNameSubmit={handleNameSubmit}
-        initialName={userName || ''}
+        onProfileSubmit={handleProfileSubmit}
+        initialProfile={studentProfile}
       />
     );
   }
-
-  const activeDisplayName = userName || 'Aarav';
 
   return (
     <div className="relative flex h-screen w-screen overflow-hidden text-slate-800 font-['Nunito',sans-serif] selection:bg-blue-200">
       {/* Magical Disney/Pixar Animated Sky Theme with drifting particles */}
       <AnimatedBackground />
 
-      {/* Deep Blue Left Sidebar with JR Logo */}
+      {/* Deep Blue Left Sidebar with JR Logo & Multilingual Tabs */}
       <Sidebar
         currentTab={currentTab}
         onTabChange={setCurrentTab}
         onSwitchProfile={handleSwitchProfile}
         isOpenMobile={isMobileMenuOpen}
         onCloseMobile={() => setIsMobileMenuOpen(false)}
+        studentProfile={studentProfile}
       />
 
       {/* Main Content Area - Locked to 100vh with non-scrolling Navbar */}
@@ -146,8 +157,8 @@ export function App() {
         {/* Fixed Non-Scrolling Top Header */}
         <Header
           userName={activeDisplayName}
-          userAvatar={userAvatar}
-          userGrade={userGrade}
+          userAvatar={activeAvatar}
+          userGrade={activeGrade}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onProfileClick={() => setCurrentTab('progress')}
@@ -155,6 +166,7 @@ export function App() {
           onSwitchProfile={handleSwitchProfile}
           onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
           isMobileMenuOpen={isMobileMenuOpen}
+          studentProfile={studentProfile}
         />
 
         {/* Dynamic Screen Rendering - Only this section scrolls! */}
@@ -168,13 +180,37 @@ export function App() {
               onOpenPractice={() => setCurrentTab('practice')}
               onOpenBodyExplorer={() => setCurrentTab('explorer')}
               onOpenIslamic={() => setCurrentTab('islamic')}
+              onOpenPunjabi={() => setCurrentTab('punjabi')}
+              onOpenHindi={() => setCurrentTab('hindi')}
+              studentProfile={studentProfile}
             />
           )}
 
+          {/* Islamic Teachings - ONLY visible to Muslim students */}
           {(currentTab === 'islamic' || currentTab === 'islamic-teachings') && (
-            <IslamicTeachingsView
-              onBackToHome={handleBackToHome}
-            />
+            studentProfile?.religion === 'muslim' || !studentProfile ? (
+              <IslamicTeachingsView onBackToHome={handleBackToHome} />
+            ) : (
+              <HomeScreen
+                userName={activeDisplayName}
+                onStartLearning={handleStartLearning}
+                onSelectCategory={handleSelectCategory}
+                onViewAllCategories={handleViewAllCategories}
+                onOpenPractice={() => setCurrentTab('practice')}
+                onOpenBodyExplorer={() => setCurrentTab('explorer')}
+                studentProfile={studentProfile}
+              />
+            )
+          )}
+
+          {/* Punjabi & Gurmukhi Academy - for Sikh students */}
+          {currentTab === 'punjabi' && (
+            <PunjabiLearningView onBackToHome={handleBackToHome} />
+          )}
+
+          {/* Hindi & Cultural Wisdom Academy - for Hindu students */}
+          {currentTab === 'hindi' && (
+            <HindiLearningView onBackToHome={handleBackToHome} />
           )}
 
           {(currentTab === 'explorer' || currentTab === 'body-explorer') && (
@@ -187,7 +223,7 @@ export function App() {
 
           {currentTab === 'practice' && (
             <PracticeScreen
-              userGrade={userGrade}
+              userGrade={activeGrade}
               onOpenBodyExplorer={() => setCurrentTab('explorer')}
             />
           )}
@@ -209,7 +245,7 @@ export function App() {
 
           {currentTab === 'quiz' && (
             <QuizScreen
-              userGrade={userGrade}
+              userGrade={activeGrade}
               selectedCategoryId={selectedCategoryId}
               onBackToLesson={handleBackToLearning}
               onCompleteQuiz={handleCompleteQuiz}
@@ -219,7 +255,7 @@ export function App() {
           {currentTab === 'quiz-results' && (
             <QuizResultsScreen
               userName={activeDisplayName}
-              userGrade={userGrade}
+              userGrade={activeGrade}
               quizResult={quizResult}
               onContinueLearning={handleStartLearning}
               onRetakeQuiz={() => setCurrentTab('quiz')}
@@ -239,12 +275,13 @@ export function App() {
           {currentTab === 'settings' && (
             <SettingsScreen
               userName={activeDisplayName}
-              userAvatar={userAvatar}
-              userGrade={userGrade}
+              userAvatar={activeAvatar}
+              userGrade={activeGrade}
               onUpdateProfile={handleUpdateProfile}
               onResetProgress={() => {
+                localStorage.removeItem('vidya_student_profile_v2');
                 localStorage.removeItem('vidya_user_name');
-                setUserName('');
+                setStudentProfile(null);
                 setShowWelcome(true);
               }}
             />
@@ -252,7 +289,7 @@ export function App() {
         </main>
       </div>
 
-      {/* Interactive Video Player Modal for fake screens */}
+      {/* Interactive Video Player Modal */}
       {activeVideoModal && (
         <VideoPlayerModal
           video={activeVideoModal}

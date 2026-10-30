@@ -5,6 +5,7 @@ import { HeroBannerIllustration, CategoryIcon, PracticeIcon } from '../illustrat
 import { VideoPlayerModal, VideoData } from '../modals/VideoPlayerModal';
 import { InteractiveGameModal } from '../modals/InteractiveGameModal';
 import { sound } from '../../utils/audio';
+import { StudentProfile } from '../../types/student';
 import { APP_IMAGES } from '../../assets/images';
 import { REAL_YOUTUBE_VIDEOS, RealVideoItem } from '../../data/youtubeVideos';
 
@@ -16,6 +17,9 @@ interface HomeScreenProps {
   onOpenPractice?: () => void;
   onOpenBodyExplorer?: () => void;
   onOpenIslamic?: () => void;
+  onOpenPunjabi?: () => void;
+  onOpenHindi?: () => void;
+  studentProfile?: StudentProfile | null;
 }
 
 const FEATURED_VIDEO_DETAILS: Record<string, VideoData> = {
@@ -124,6 +128,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onOpenPractice,
   onOpenBodyExplorer,
   onOpenIslamic,
+  onOpenPunjabi,
+  onOpenHindi,
+  studentProfile,
 }) => {
   const [selectedVideo, setSelectedVideo] = useState<VideoData | null>(null);
   const [activeGame, setActiveGame] = useState<{ id: string; title: string } | null>(null);
@@ -338,40 +345,132 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* Featured Special Modules Spotlight */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Islamic Academy Spotlight */}
-        <div
-          onClick={() => {
-            sound.playPop();
-            if (onOpenIslamic) {
-              onOpenIslamic();
-            }
-          }}
-          className="rounded-[2.5rem] bg-gradient-to-r from-emerald-600 via-teal-700 to-green-700 text-white p-6 shadow-xl border-2 border-white/60 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
-        >
-          <div className="space-y-2 z-10 max-w-[70%]">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-amber-400 text-slate-950 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
-                ⭐ ISLAMIC
-              </span>
-              <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
-                Academy
+        {/* Religious & Cultural Spotlight - Strictly conditional to student religion */}
+        {studentProfile?.religion === 'muslim' || !studentProfile ? (
+          <div
+            onClick={() => {
+              sound.playPop();
+              if (onOpenIslamic) onOpenIslamic();
+            }}
+            className="rounded-[2.5rem] bg-gradient-to-r from-emerald-600 via-teal-700 to-green-700 text-white p-6 shadow-xl border-2 border-white/60 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+          >
+            <div className="space-y-2 z-10 max-w-[70%]">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 bg-amber-400 text-slate-950 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
+                  ⭐ ISLAMIC
+                </span>
+                <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
+                  Academy
+                </span>
+              </div>
+              <h3 className="text-xl font-black leading-tight drop-shadow">
+                Islamic Teachings 🕌
+              </h3>
+              <p className="text-xs text-emerald-100 font-bold leading-relaxed font-urdu">
+                سیرتِ رسولِ پاک ﷺ، واقعہ کربلا، نماز و وضو، قرآن و حدیث اور ۲۳ انبیاء کرام!
+              </p>
+              <span className="inline-flex items-center gap-1.5 text-xs font-black text-amber-300 pt-1 group-hover:translate-x-1 transition-transform">
+                Explore Teachings →
               </span>
             </div>
-            <h3 className="text-xl font-black leading-tight drop-shadow">
-              Islamic Teachings 🕌
-            </h3>
-            <p className="text-xs text-emerald-100 font-bold leading-relaxed font-urdu">
-              سیرتِ رسولِ پاک ﷺ، نماز و وضو، قرآن و حدیث، پیغمبران، صحابہ و اولیاء اللہ!
-            </p>
-            <span className="inline-flex items-center gap-1.5 text-xs font-black text-amber-300 pt-1 group-hover:translate-x-1 transition-transform">
-              Explore Teachings →
-            </span>
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-4xl shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+              🕌
+            </div>
           </div>
-
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-4xl shadow-xl shrink-0 group-hover:scale-110 transition-transform">
-            🕌
+        ) : studentProfile.religion === 'sikh' ? (
+          <div
+            onClick={() => {
+              sound.playPop();
+              if (onOpenPunjabi) onOpenPunjabi();
+            }}
+            className="rounded-[2.5rem] bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 text-white p-6 shadow-xl border-2 border-white/60 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+          >
+            <div className="space-y-2 z-10 max-w-[70%]">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 bg-yellow-300 text-slate-950 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
+                  ⭐ PUNJABI
+                </span>
+                <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
+                  Gurmukhi
+                </span>
+              </div>
+              <h3 className="text-xl font-black leading-tight drop-shadow">
+                Punjabi Academy ☬
+              </h3>
+              <p className="text-xs text-amber-100 font-bold leading-relaxed font-punjabi">
+                ਗੁਰਮੁਖੀ ਪੈਂਤੀ ਅੱਖਰੀ, ਰੋਜ਼ਾਨਾ ਸ਼ਬਦ, ਸਿੱਖ ਕਦਰਾਂ-ਕੀਮਤਾਂ ਅਤੇ ਪ੍ਰੇਰਣਾਦਾਇਕ ਸਾਖੀਆਂ!
+              </p>
+              <span className="inline-flex items-center gap-1.5 text-xs font-black text-yellow-200 pt-1 group-hover:translate-x-1 transition-transform">
+                Explore Punjabi →
+              </span>
+            </div>
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-4xl shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+              ☬
+            </div>
           </div>
-        </div>
+        ) : studentProfile.religion === 'hindu' ? (
+          <div
+            onClick={() => {
+              sound.playPop();
+              if (onOpenHindi) onOpenHindi();
+            }}
+            className="rounded-[2.5rem] bg-gradient-to-r from-orange-600 via-amber-600 to-red-600 text-white p-6 shadow-xl border-2 border-white/60 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+          >
+            <div className="space-y-2 z-10 max-w-[70%]">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 bg-yellow-300 text-slate-950 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
+                  ⭐ HINDI
+                </span>
+                <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
+                  Culture
+                </span>
+              </div>
+              <h3 className="text-xl font-black leading-tight drop-shadow">
+                Hindi & Culture 🕉️
+              </h3>
+              <p className="text-xs text-orange-100 font-bold leading-relaxed font-hindi">
+                हिन्दी वर्णमाला, पंचतंत्र की प्रेरक कहानियां और नैतिक संस्कार!
+              </p>
+              <span className="inline-flex items-center gap-1.5 text-xs font-black text-yellow-200 pt-1 group-hover:translate-x-1 transition-transform">
+                Explore Hindi →
+              </span>
+            </div>
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-4xl shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+              🕉️
+            </div>
+          </div>
+        ) : (
+          <div
+            onClick={() => {
+              sound.playPop();
+              if (onOpenBodyExplorer) onOpenBodyExplorer();
+            }}
+            className="rounded-[2.5rem] bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white p-6 shadow-xl border-2 border-white/60 flex items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all relative overflow-hidden group select-none"
+          >
+            <div className="space-y-2 z-10 max-w-[70%]">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 bg-yellow-300 text-slate-950 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
+                  ⭐ GLOBAL
+                </span>
+                <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-wider">
+                  Science
+                </span>
+              </div>
+              <h3 className="text-xl font-black leading-tight drop-shadow">
+                World Discovery 🌍
+              </h3>
+              <p className="text-xs text-blue-100 font-bold leading-relaxed">
+                Cosmic Space, Nature & Universal Human Values!
+              </p>
+              <span className="inline-flex items-center gap-1.5 text-xs font-black text-yellow-200 pt-1 group-hover:translate-x-1 transition-transform">
+                Explore Science →
+              </span>
+            </div>
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-4xl shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+              🌍
+            </div>
+          </div>
+        )}
 
         {/* Explorer Hub Spotlight */}
         <div

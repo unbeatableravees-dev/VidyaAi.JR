@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, Menu } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
+import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
+import { getGreeting } from '../../utils/language';
 
 interface HeaderProps {
   userName: string;
@@ -14,6 +16,7 @@ interface HeaderProps {
   onSwitchProfile?: () => void;
   onToggleMobileMenu?: () => void;
   isMobileMenuOpen?: boolean;
+  studentProfile?: StudentProfile | null;
 }
 
 const AVATAR_STYLES: Record<string, { emoji: string; color: string }> = {
@@ -21,12 +24,16 @@ const AVATAR_STYLES: Record<string, { emoji: string; color: string }> = {
   'girl-ananya': { emoji: '👧', color: 'from-pink-400 to-rose-500' },
   'boy-kabir': { emoji: '🧑‍🚀', color: 'from-amber-400 to-orange-500' },
   'girl-meera': { emoji: '🐼', color: 'from-emerald-400 to-teal-500' },
+  'boy-sheru': { emoji: '🦁', color: 'from-yellow-400 to-amber-600' },
+  'girl-zehra': { emoji: '🎨', color: 'from-purple-400 to-violet-600' },
+  'boy-gurpreet': { emoji: '👳', color: 'from-orange-400 to-red-500' },
+  'girl-fatima': { emoji: '🧕', color: 'from-teal-400 to-emerald-600' },
 };
 
 export const Header: React.FC<HeaderProps> = ({
   userName,
   userAvatar = 'boy-aarav',
-  userGrade = 'Grade 1',
+  userGrade = 'Class 2',
   searchQuery,
   onSearchChange,
   onProfileClick,
@@ -34,9 +41,14 @@ export const Header: React.FC<HeaderProps> = ({
   onSwitchProfile,
   onToggleMobileMenu,
   isMobileMenuOpen,
+  studentProfile,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const activeAvatar = AVATAR_STYLES[userAvatar] || AVATAR_STYLES['boy-aarav'];
+
+  const religion = studentProfile?.religion || 'muslim';
+  const relConfig = RELIGION_CONFIGS[religion] || RELIGION_CONFIGS.muslim;
+  const greeting = getGreeting(religion, userName || 'Explorer');
 
   return (
     <header className="h-16 md:h-20 shrink-0 w-full px-3 sm:px-6 md:px-8 py-2.5 flex items-center justify-between border-b border-white/70 bg-white/75 backdrop-blur-2xl z-30 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden select-none">
@@ -65,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search lessons, surahs, topics..."
-            className="w-full pl-9 sm:pl-11 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-white/70 backdrop-blur-sm border border-white/80 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
+            className="w-full pl-9 sm:pl-11 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-white/70 backdrop-blur-sm border border-white/80 rounded-full focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
           />
         </div>
 
@@ -78,17 +90,27 @@ export const Header: React.FC<HeaderProps> = ({
           />
           <div className="text-left hidden sm:block">
             <span className="text-[10px] font-black uppercase tracking-wider text-blue-600 block leading-tight">
-              Jr Explorer
+              {relConfig.icon} {userGrade}
             </span>
             <span className="text-xs font-black text-slate-800 leading-tight">
-              {userGrade}
+              {relConfig.languageBadge}
             </span>
           </div>
         </div>
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
+        {/* Multilingual Tailored Greeting Pill */}
+        <div className="hidden lg:flex flex-col text-right">
+          <span className={`text-xs font-black text-slate-800 leading-tight ${relConfig.scriptFont}`}>
+            {greeting.text}
+          </span>
+          <span className="text-[10px] font-bold text-slate-400 leading-tight">
+            {relConfig.languageBadge}
+          </span>
+        </div>
+
         {/* Notification Bell */}
         <button
           onClick={() => sound.playPop()}
@@ -112,13 +134,13 @@ export const Header: React.FC<HeaderProps> = ({
             <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${activeAvatar.color} ring-2 ring-blue-300 flex items-center justify-center text-2xl shadow-sm transition-transform duration-300 hover:scale-110 hover:rotate-[-8deg]`}>
               <span role="img" aria-label="Selected character">{activeAvatar.emoji}</span>
             </div>
-            <span className="text-sm font-black text-slate-800">Hi, {userName}</span>
+            <span className="text-sm font-black text-slate-800 hidden sm:inline">Hi, {userName}</span>
             <ChevronDown className="w-4 h-4 text-slate-500" />
           </button>
 
           {/* Profile Dropdown */}
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 text-slate-700 animate-in fade-in slide-in-from-top-2 duration-150 select-none">
+            <div className="absolute right-0 mt-2 w-72 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 text-slate-700 animate-in fade-in slide-in-from-top-2 duration-150 select-none">
               <div className="px-5 py-2 border-b border-slate-100">
                 <div className="flex items-center gap-3">
                   <span className={`w-10 h-10 rounded-full bg-gradient-to-br ${activeAvatar.color} flex items-center justify-center text-2xl shadow-sm`}>
@@ -126,17 +148,27 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                   <div>
                     <p className="font-black text-sm text-slate-900">{userName}</p>
-                    <p className="text-xs font-bold text-blue-600">{userGrade} • Super Learner</p>
+                    <p className="text-xs font-bold text-blue-600">
+                      {userGrade} • {relConfig.label}
+                    </p>
                   </div>
                 </div>
               </div>
 
+              {/* Language & Religion Badge */}
+              <div className="px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 my-2 mx-3 rounded-2xl border border-blue-200 text-xs">
+                <span className="text-[10px] font-black text-blue-700 uppercase block tracking-wider">
+                  Active Languages
+                </span>
+                <span className="font-black text-slate-800">{relConfig.languageBadge}</span>
+              </div>
+
               <div className="px-4 py-2 flex items-center justify-between text-xs font-black text-slate-600 bg-amber-50/80 my-2 mx-3 rounded-2xl border border-amber-200/50">
                 <span className="flex items-center gap-1.5 text-amber-600">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" /> 140 Stars
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" /> {studentProfile?.stars || 150} Stars
                 </span>
                 <span className="flex items-center gap-1.5 text-blue-600">
-                  <Award className="w-4 h-4 text-blue-500" /> 8 Badges
+                  <Award className="w-4 h-4 text-blue-500" /> {studentProfile?.badges || 8} Badges
                 </span>
               </div>
 
@@ -167,7 +199,7 @@ export const Header: React.FC<HeaderProps> = ({
                 }}
                 className="w-full px-5 py-2.5 text-left text-xs font-black text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 cursor-pointer border-t border-slate-100"
               >
-                <LogOut className="w-4 h-4 text-rose-500" /> Switch / Change Name
+                <LogOut className="w-4 h-4 text-rose-500" /> Switch / Register New Student
               </button>
             </div>
           )}
