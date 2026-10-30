@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;600;700;800&display=swap');
 @import "tailwindcss";
 
 @layer base {
@@ -6,6 +7,26 @@
     background-color: #f0f4f9;
     overflow-x: hidden;
   }
+}
+
+/* Crystal-clear human-readable Urdu font with proper Nastaliq line-height & spacing */
+.font-urdu {
+  font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', Tahoma, serif;
+  line-height: 2.3;
+  direction: rtl;
+  letter-spacing: 0;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Quranic Arabic font with crisp Tashkeel & clear letter forms */
+.font-arabic {
+  font-family: 'Amiri', 'Noto Sans Arabic', 'Traditional Arabic', serif;
+  line-height: 2.2;
+  direction: rtl;
+  letter-spacing: 0.5px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Custom smooth scrollbar */

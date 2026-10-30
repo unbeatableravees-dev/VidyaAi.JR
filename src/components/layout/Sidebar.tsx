@@ -15,9 +15,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, onSwi
   const navItems = [
     { id: 'home' as NavTab, label: 'Home', icon: Home },
     { id: 'categories' as NavTab, label: 'Categories (14)', icon: Grid },
-    { id: 'islamic' as NavTab, label: 'Islamic Teachings 🕌', icon: Moon },
-    { id: 'explorer' as NavTab, label: 'Explorer 🧭', icon: Compass },
-    { id: 'practice' as NavTab, label: 'Practice Games 🎮', icon: Gamepad2 },
+    { id: 'islamic' as NavTab, label: 'Islamic Teachings', icon: Moon },
+    { id: 'explorer' as NavTab, label: 'Explorer', icon: Compass },
+    { id: 'practice' as NavTab, label: 'Practice Games', icon: Gamepad2 },
     { id: 'learning' as NavTab, label: 'My Learning', icon: BookOpen },
     { id: 'progress' as NavTab, label: 'Progress', icon: BarChart3 },
     { id: 'settings' as NavTab, label: 'Settings', icon: Settings },
@@ -77,6 +77,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, onSwi
             const Icon = item.icon;
             const isActive =
               currentTab === item.id ||
+              (item.id === 'islamic' && (currentTab === 'islamic' || currentTab === 'islamic-teachings')) ||
+              (item.id === 'explorer' && (currentTab === 'explorer' || currentTab === 'body-explorer')) ||
               (item.id === 'categories' && currentTab === 'category-detail') ||
               (item.id === 'learning' && (currentTab === 'learning' || currentTab === 'quiz' || currentTab === 'quiz-results'));
 
