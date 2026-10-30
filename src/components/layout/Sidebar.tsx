@@ -208,20 +208,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Bottom Switch Profile Button & 3D Mascot */}
       <div className="pt-2 border-t border-white/15 flex flex-col items-center">
-        {onSwitchProfile && (
-          <button
-            onClick={() => {
-              sound.playPop();
-              onSwitchProfile();
-            }}
-            className="w-full mb-1.5 py-1.5 px-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/25 active:scale-98 shadow-xs"
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>Switch Student Profile</span>
-          </button>
-        )}
-
-        <div className="relative w-16 h-16 flex items-center justify-center">
+        <div className="relative w-[4.5rem] h-[4.5rem] flex items-center justify-center">
           <img
             src={APP_IMAGES.explorerMascot}
             alt="VidyaAI Kid Explorer"
@@ -229,6 +216,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           />
         </div>
         <p className="text-[10px] font-black text-blue-200/90 mt-1">Young Minds ⭐</p>
+        {onSwitchProfile && (
+          <button
+            onClick={() => {
+              sound.playPop();
+              onSwitchProfile();
+            }}
+            className="w-full mt-2 py-1.5 px-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/25 active:scale-98 shadow-xs"
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>Switch Student Profile</span>
+          </button>
+        )}
       </div>
     </div>
   );
