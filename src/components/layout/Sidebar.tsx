@@ -120,8 +120,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const renderContent = () => (
-    <div className="flex min-h-full flex-col justify-between select-none text-white">
-      <div>
+    <div className="flex h-full min-h-0 flex-col select-none text-white">
+      <div className="flex min-h-0 flex-1 flex-col">
         {/* Brand Header - Compact & Sleek */}
         <div className="flex items-center justify-between px-1.5 mb-3 pt-1">
           <div
@@ -169,7 +169,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Navigation Items - Compact, Sleek Padding & Sizing */}
-        <nav className="space-y-0.5">
+        <nav className="min-h-0 flex-1 space-y-0.5 overflow-y-auto overscroll-contain pr-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -207,8 +207,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Bottom Switch Profile Button & 3D Mascot */}
-      <div className="pt-2 border-t border-white/15 flex flex-col items-center">
-        <div className="relative w-[4.5rem] h-[4.5rem] flex items-center justify-center">
+      <div className="shrink-0 pt-2 border-t border-white/15 flex flex-col items-center">
+        <div className="relative w-[10.5rem] h-[7.2rem] flex items-center justify-center">
           <img
             src={APP_IMAGES.explorerMascot}
             alt="VidyaAI Kid Explorer"
@@ -233,7 +233,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   );
 
   return (
-    <aside className="sidebar-royal-blue relative z-20 flex h-screen min-h-0 w-60 shrink-0 flex-col justify-between overflow-y-auto py-3 pl-4 pr-3 select-none shadow-2xl border-r border-blue-400/20 lg:w-64">
+    <aside className="sidebar-royal-blue relative z-20 flex h-screen min-h-0 w-60 shrink-0 flex-col overflow-hidden py-3 pl-4 pr-3 select-none shadow-2xl border-r border-blue-400/20 lg:w-64">
       {renderContent()}
     </aside>
   );
