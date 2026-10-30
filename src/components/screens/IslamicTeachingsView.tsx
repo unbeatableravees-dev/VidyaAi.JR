@@ -103,6 +103,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
 
   const handleOpenTrack = (trackId: IslamicTeaching['category']) => {
     sound.playPop();
+    setSearchQuery('');
     setSelectedCategory(trackId);
     const firstInCat = ISLAMIC_TEACHINGS.find((i) => i.category === trackId);
     if (firstInCat) setActiveItem(firstInCat);
@@ -159,7 +160,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
 
   const handleNavigateNext = () => {
     sound.playPop();
-    const currentIndex = filteredTeachings.findIndex((i) => i.id === activeItem?.id);
+    const currentIndex = filteredTeachings.findIndex((i) => i.id === currentItem?.id);
     if (currentIndex >= 0 && currentIndex < filteredTeachings.length - 1) {
       setActiveItem(filteredTeachings[currentIndex + 1]);
     }
@@ -167,7 +168,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
 
   const handleNavigatePrev = () => {
     sound.playPop();
-    const currentIndex = filteredTeachings.findIndex((i) => i.id === activeItem?.id);
+    const currentIndex = filteredTeachings.findIndex((i) => i.id === currentItem?.id);
     if (currentIndex > 0) {
       setActiveItem(filteredTeachings[currentIndex - 1]);
     }
@@ -338,7 +339,14 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                   <span className="text-amber-300 font-black">✦</span>
                   <span className="hidden sm:inline">{track.featureLabel}</span>
                 </span>
-                <button className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white text-slate-900 group-hover:bg-amber-300 font-black text-xs shadow-lg transition-all cursor-pointer">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenTrack(track.id);
+                  }}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white text-slate-900 group-hover:bg-amber-300 font-black text-xs shadow-lg transition-all cursor-pointer"
+                >
                   <span>{track.actionBtnLabel}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -418,6 +426,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                 key={track.id}
                 onClick={() => {
                   sound.playPop();
+                  setSearchQuery('');
                   setSelectedCategory(track.id);
                   const firstItem = ISLAMIC_TEACHINGS.find((i) => i.category === track.id);
                   if (firstItem) setActiveItem(firstItem);
@@ -460,7 +469,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
             </div>
           ) : (
             filteredTeachings.map((item) => {
-              const isSelected = activeItem?.id === item.id;
+              const isSelected = currentItem?.id === item.id;
               const isMemorized = memorizedIds.includes(item.id);
 
               return (
@@ -530,36 +539,42 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
 
         {/* Right Column: Full Interactive Reading & Audio Lesson Pane */}
         <div className="lg:col-span-7">
-          {activeItem ? (
+          {(() => {
+            const currentItem =
+              activeItem && (selectedCategory === 'all' || currentItem.category === selectedCategory)
+                ? activeItem
+                : filteredTeachings[0] || ISLAMIC_TEACHINGS.find((i) => i.category === selectedCategory) || ISLAMIC_TEACHINGS[0];
+
+            return currentItem ? (
             <div className="bg-white rounded-3xl border-2 border-emerald-200/90 shadow-xl overflow-hidden p-6 md:p-8 space-y-6">
               {/* Header of Active Item */}
               <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-md text-white bg-gradient-to-br ${activeItem.color}`}
+                    className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-md text-white bg-gradient-to-br ${currentItem.color}`}
                   >
-                    {activeItem.icon}
+                    {currentItem.icon}
                   </div>
                   <div>
                     <span className="text-[11px] font-black uppercase text-emerald-700 tracking-wider">
-                      {activeItem.categoryUrdu} • {activeItem.badge}
+                      {currentItem.categoryUrdu} • {currentItem.badge}
                     </span>
                     <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-                      {activeItem.title}
+                      {currentItem.title}
                     </h2>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => handleSpeak(activeItem)}
+                    onClick={() => handleSpeak(currentItem)}
                     className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center gap-2 font-black text-xs ${
-                      speakingId === activeItem.id
+                      speakingId === currentItem.id
                         ? 'bg-emerald-600 text-white border-emerald-700 animate-pulse'
                         : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border-emerald-200'
                     }`}
                   >
-                    {speakingId === activeItem.id ? (
+                    {speakingId === currentItem.id ? (
                       <>
                         <VolumeX className="w-4 h-4" />
                         <span>Stop Voice</span>
@@ -573,15 +588,15 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                   </button>
 
                   <button
-                    onClick={(e) => toggleMemorized(activeItem.id, e)}
+                    onClick={(e) => toggleMemorized(currentItem.id, e)}
                     className={`px-4 py-2.5 rounded-2xl border font-black text-xs transition-all cursor-pointer flex items-center gap-2 ${
-                      memorizedIds.includes(activeItem.id)
+                      memorizedIds.includes(currentItem.id)
                         ? 'bg-emerald-600 text-white border-emerald-700 shadow-md'
                         : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-300'
                     }`}
                   >
                     <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
-                    <span>{memorizedIds.includes(activeItem.id) ? 'Mastered ✓' : 'Mark as Learned'}</span>
+                    <span>{memorizedIds.includes(currentItem.id) ? 'Mastered ✓' : 'Mark as Learned'}</span>
                   </button>
                 </div>
               </div>
@@ -589,15 +604,15 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
               {/* Crystal-clear Human-Readable Urdu Heading */}
               <div className="bg-gradient-to-r from-emerald-50/70 to-teal-50/70 p-4 rounded-2xl border border-emerald-200/80 text-right">
                 <h3 className="text-xl md:text-2xl font-bold text-emerald-950 font-urdu leading-loose">
-                  {activeItem.urduTitle}
+                  {currentItem.urduTitle}
                 </h3>
               </div>
 
               {/* Sacred Arabic Quran / Hadith Text with Full Tashkeel */}
-              {activeItem.arabicText && (
+              {currentItem.arabicText && (
                 <div className="bg-gradient-to-b from-emerald-50/80 via-teal-50/40 to-white p-6 rounded-3xl border-2 border-emerald-300/80 text-right shadow-inner">
                   <p className="text-xl md:text-2xl lg:text-3xl font-bold text-emerald-950 font-arabic leading-loose tracking-wide">
-                    {activeItem.arabicText}
+                    {currentItem.arabicText}
                   </p>
                 </div>
               )}
@@ -608,7 +623,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                   با محاورہ اردو ترجمہ و مفہوم:
                 </span>
                 <p className="text-base md:text-lg font-medium text-slate-900 font-urdu leading-loose">
-                  {activeItem.translationUrdu}
+                  {currentItem.translationUrdu}
                 </p>
               </div>
 
@@ -618,7 +633,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                   English Meaning & Guidance:
                 </span>
                 <p className="text-sm font-bold text-slate-700 leading-relaxed">
-                  {activeItem.translationEng}
+                  {currentItem.translationEng}
                 </p>
               </div>
 
@@ -629,7 +644,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                     <span>💡</span> Deep Moral Wisdom
                   </span>
                   <p className="text-xs font-bold text-slate-700 leading-relaxed">
-                    {activeItem.explanation}
+                    {currentItem.explanation}
                   </p>
                 </div>
 
@@ -638,7 +653,7 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                     <span>🌟</span> Daily Sunnah Action
                   </span>
                   <p className="text-xs font-bold text-slate-700 leading-relaxed">
-                    {activeItem.practicalTip}
+                    {currentItem.practicalTip}
                   </p>
                 </div>
               </div>
@@ -662,12 +677,13 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
                 </button>
               </div>
             </div>
-          ) : (
-            <div className="p-12 text-center bg-white rounded-3xl border-2 border-slate-200 text-slate-400">
-              <p className="text-4xl mb-2">🕌</p>
-              <p className="font-black text-slate-700">Select a teaching from the left</p>
-            </div>
-          )}
+            ) : (
+              <div className="p-12 text-center bg-white rounded-3xl border-2 border-slate-200 text-slate-400">
+                <p className="text-4xl mb-2">🕌</p>
+                <p className="font-black text-slate-700">Select a teaching from the left</p>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>

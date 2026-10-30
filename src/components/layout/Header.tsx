@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, Menu } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 
@@ -12,6 +12,8 @@ interface HeaderProps {
   onProfileClick?: () => void;
   onSettingsClick?: () => void;
   onSwitchProfile?: () => void;
+  onToggleMobileMenu?: () => void;
+  isMobileMenuOpen?: boolean;
 }
 
 const AVATAR_STYLES: Record<string, { emoji: string; color: string }> = {
@@ -30,27 +32,45 @@ export const Header: React.FC<HeaderProps> = ({
   onProfileClick,
   onSettingsClick,
   onSwitchProfile,
+  onToggleMobileMenu,
+  isMobileMenuOpen,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const activeAvatar = AVATAR_STYLES[userAvatar] || AVATAR_STYLES['boy-aarav'];
 
   return (
-    <header className="h-20 shrink-0 w-full px-4 sm:px-6 md:px-8 py-3.5 flex items-center justify-between border-b border-white/70 bg-white/75 backdrop-blur-2xl z-30 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden select-none">
-      {/* Search Input & Navbar 3D Mascot */}
-      <div className="flex items-center gap-4 flex-1 max-w-xl">
+    <header className="h-16 md:h-20 shrink-0 w-full px-3 sm:px-6 md:px-8 py-2.5 flex items-center justify-between border-b border-white/70 bg-white/75 backdrop-blur-2xl z-30 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden select-none">
+      {/* Left side: Mobile Hamburger Button (Three Lines) + Search Bar */}
+      <div className="flex items-center gap-2.5 sm:gap-4 flex-1 max-w-xl">
+        {/* Mobile Hamburger Menu Button (Three Lines / ☰ icon) */}
+        {onToggleMobileMenu && (
+          <button
+            onClick={() => {
+              sound.playPop();
+              onToggleMobileMenu();
+            }}
+            className="md:hidden p-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0 border border-white/30 flex items-center justify-center"
+            title="Open Navigation Menu"
+            aria-label="Navigation Menu"
+          >
+            <Menu className="w-5 h-5 stroke-[2.5]" />
+          </button>
+        )}
+
+        {/* Search Input */}
         <div className="relative w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search for lessons, videos, or topics..."
-            className="w-full pl-11 pr-4 py-2 text-sm bg-white/70 backdrop-blur-sm border border-white/80 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
+            placeholder="Search lessons, surahs, topics..."
+            className="w-full pl-9 sm:pl-11 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-white/70 backdrop-blur-sm border border-white/80 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
           />
         </div>
 
-        {/* 3D Kid Explorer on Navbar (png1.png as requested) */}
-        <div className="flex items-center gap-2 px-3 py-1 bg-white/70 backdrop-blur-md rounded-full border border-white/80 shadow-sm shrink-0">
+        {/* 3D Kid Explorer on Navbar (Hidden on small mobile screens to prevent cramming) */}
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white/70 backdrop-blur-md rounded-full border border-white/80 shadow-sm shrink-0">
           <img
             src={APP_IMAGES.explorerMascot}
             alt="VidyaAI Explorer"

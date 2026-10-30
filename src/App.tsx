@@ -38,6 +38,7 @@ export function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('numbers');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [quizResult, setQuizResult] = useState<{
     correct: number;
     total: number;
@@ -136,10 +137,12 @@ export function App() {
         currentTab={currentTab}
         onTabChange={setCurrentTab}
         onSwitchProfile={handleSwitchProfile}
+        isOpenMobile={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main Content Area - Locked to 100vh with non-scrolling Navbar */}
-      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative z-10">
+      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative z-10 w-full">
         {/* Fixed Non-Scrolling Top Header */}
         <Header
           userName={activeDisplayName}
@@ -150,6 +153,8 @@ export function App() {
           onProfileClick={() => setCurrentTab('progress')}
           onSettingsClick={() => setCurrentTab('settings')}
           onSwitchProfile={handleSwitchProfile}
+          onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
+          isMobileMenuOpen={isMobileMenuOpen}
         />
 
         {/* Dynamic Screen Rendering - Only this section scrolls! */}
