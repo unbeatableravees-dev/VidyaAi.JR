@@ -1,10 +1,26 @@
 import React from 'react';
-import { Home, Grid, BookOpen, BarChart3, Settings, Sparkles, Gamepad2, Compass, Moon, X } from 'lucide-react';
-import { SidebarKidsIllustration } from '../illustrations/Illustrations';
+import { Home, Grid, BookOpen, BarChart3, Settings, Gamepad2, Compass, Moon, X, Sparkles } from 'lucide-react';
 import { APP_IMAGES } from '../../assets/images';
 import { sound } from '../../utils/audio';
+import { StudentProfile } from '../../types/student';
+import { getNavLabels } from '../../utils/language';
 
-export type NavTab = 'home' | 'islamic' | 'islamic-teachings' | 'explorer' | 'categories' | 'practice' | 'body-explorer' | 'learning' | 'progress' | 'settings' | 'quiz' | 'quiz-results' | 'category-detail';
+export type NavTab =
+  | 'home'
+  | 'islamic'
+  | 'islamic-teachings'
+  | 'punjabi'
+  | 'hindi'
+  | 'explorer'
+  | 'categories'
+  | 'practice'
+  | 'body-explorer'
+  | 'learning'
+  | 'progress'
+  | 'settings'
+  | 'quiz'
+  | 'quiz-results'
+  | 'category-detail';
 
 interface SidebarProps {
   currentTab: NavTab;
@@ -12,6 +28,7 @@ interface SidebarProps {
   onSwitchProfile?: () => void;
   isOpenMobile?: boolean;
   onCloseMobile?: () => void;
+  studentProfile?: StudentProfile | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -20,16 +37,90 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSwitchProfile,
   isOpenMobile = false,
   onCloseMobile,
+  studentProfile,
 }) => {
+  const religion = studentProfile?.religion || 'muslim';
+  const localized = getNavLabels(religion);
+
+  // Build nav items dynamically:
+  // - Islamic Teachings ONLY for Muslims
+  // - Punjabi & Gurmukhi for Sikhs
+  // - Hindi & Culture for Hindus
   const navItems = [
-    { id: 'home' as NavTab, label: 'Home', icon: Home },
-    { id: 'categories' as NavTab, label: 'Categories (14)', icon: Grid },
-    { id: 'islamic' as NavTab, label: 'Islamic Teachings', icon: Moon },
-    { id: 'explorer' as NavTab, label: 'Explorer', icon: Compass },
-    { id: 'practice' as NavTab, label: 'Practice Games', icon: Gamepad2 },
-    { id: 'learning' as NavTab, label: 'My Learning', icon: BookOpen },
-    { id: 'progress' as NavTab, label: 'Progress', icon: BarChart3 },
-    { id: 'settings' as NavTab, label: 'Settings', icon: Settings },
+    {
+      id: 'home' as NavTab,
+      label: localized.home.primary,
+      secondary: localized.home.secondary,
+      icon: Home,
+    },
+    {
+      id: 'categories' as NavTab,
+      label: localized.categories.primary,
+      secondary: localized.categories.secondary,
+      icon: Grid,
+    },
+    // Conditional religious/cultural track
+    ...(religion === 'muslim'
+      ? [
+          {
+            id: 'islamic' as NavTab,
+            label: localized.islamic?.primary || 'Islamic Teachings',
+            secondary: localized.islamic?.secondary || 'اسلامی تعلیمات',
+            icon: Moon,
+            badge: '🕌',
+          },
+        ]
+      : religion === 'sikh'
+      ? [
+          {
+            id: 'punjabi' as NavTab,
+            label: localized.punjabi?.primary || 'Punjabi & Gurmukhi',
+            secondary: localized.punjabi?.secondary || 'ਪੰਜਾਬੀ ਸਿੱਖਿਆ',
+            icon: BookOpen,
+            badge: '☬',
+          },
+        ]
+      : religion === 'hindu'
+      ? [
+          {
+            id: 'hindi' as NavTab,
+            label: localized.hindi?.primary || 'Hindi & Culture',
+            secondary: localized.hindi?.secondary || 'हिन्दी ज्ञान',
+            icon: BookOpen,
+            badge: '🕉️',
+          },
+        ]
+      : []),
+    {
+      id: 'explorer' as NavTab,
+      label: localized.explorer.primary,
+      secondary: localized.explorer.secondary,
+      icon: Compass,
+    },
+    {
+      id: 'practice' as NavTab,
+      label: localized.practice.primary,
+      secondary: localized.practice.secondary,
+      icon: Gamepad2,
+    },
+    {
+      id: 'learning' as NavTab,
+      label: localized.learning.primary,
+      secondary: localized.learning.secondary,
+      icon: BookOpen,
+    },
+    {
+      id: 'progress' as NavTab,
+      label: localized.progress.primary,
+      secondary: localized.progress.secondary,
+      icon: BarChart3,
+    },
+    {
+      id: 'settings' as NavTab,
+      label: localized.settings.primary,
+      secondary: localized.settings.secondary,
+      icon: Settings,
+    },
   ];
 
   const handleItemClick = (id: NavTab) => {
@@ -134,23 +225,44 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item.id)}
-                  className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm transition-all duration-200 text-left cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-2xl font-bold text-sm transition-all duration-200 text-left cursor-pointer ${
                     isActive
                       ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-900/50 translate-x-1.5 border border-white/20 glossy-pill'
                       : 'text-blue-100 hover:bg-white/10 hover:text-white hover:translate-x-1'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-blue-200'}`} />
-                  <span>{item.label}</span>
+                  <div className="flex items-center gap-3">
+                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-blue-200'}`} />
+                    <div>
+                      <span className="block leading-tight font-black">{item.label}</span>
+                      <span className="text-[10px] font-bold text-blue-200/80 block leading-tight">
+                        {item.secondary}
+                      </span>
+                    </div>
+                  </div>
+                  {item.badge && <span className="text-base shrink-0">{item.badge}</span>}
                 </button>
               );
             })}
           </nav>
         </div>
 
-        {/* Bottom 3D Mascot Character */}
+        {/* Bottom Switch Profile Shortcut & 3D Mascot Character */}
         <div className="pt-3 border-t border-white/10 flex flex-col items-center">
-          <div className="relative w-32 h-36 flex items-center justify-center">
+          {onSwitchProfile && (
+            <button
+              onClick={() => {
+                sound.playPop();
+                onSwitchProfile();
+              }}
+              className="w-full mb-3 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/20"
+            >
+              <span>👤</span>
+              <span>Switch Student Profile</span>
+            </button>
+          )}
+
+          <div className="relative w-28 h-32 flex items-center justify-center">
             <img
               src={APP_IMAGES.explorerMascot}
               alt="VidyaAI Kid Explorer"
