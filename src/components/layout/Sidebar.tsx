@@ -133,7 +133,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center justify-between px-1.5 mb-6 pt-1">
           <div
             onClick={() => handleItemClick('home')}
-            className="flex items-center gap-2.5 cursor-pointer group"
+            className="flex items-center gap-2 cursor-pointer group"
           >
             <div className="relative">
               <div className="w-11 h-11 bg-white/15 backdrop-blur-md rounded-2xl p-1.5 flex items-center justify-center shadow-md border border-white/30 group-hover:scale-105 transition-transform">
@@ -158,7 +158,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </g>
                 </svg>
               </div>
-              <span className="absolute -top-1 -right-1 px-1 py-0.2 bg-gradient-to-r from-yellow-300 to-amber-400 text-slate-950 text-[9px] font-black rounded-full border border-white shadow-xs">
+              <span className="absolute -top-1 -right-1 px-1 py-0.2 bg-gradient-to-r from-yellow-300 to-amber-400 text-slate-950 text-[8.5px] font-black rounded-full border border-white shadow-xs">
                 Jr
               </span>
             </div>
@@ -220,7 +220,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </span>
                   </div>
                 </div>
-                {item.badge && <span className="text-sm shrink-0">{item.badge}</span>}
+                {item.badge && <span className="text-xs shrink-0">{item.badge}</span>}
               </button>
             );
           })}
@@ -255,6 +255,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </div>
   );
 
+  const sidebarStyle: React.CSSProperties = {
+    backgroundColor: '#103b87',
+    backgroundImage: 'linear-gradient(180deg, #103b87 0%, #14479e 50%, #0f3475 100%)',
+  };
+
   return (
     <>
       {/* 1. MOBILE DRAWER (Only rendered when isOpenMobile is true on mobile screens) */}
@@ -277,7 +282,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       )}
 
-      {/* 2. DESKTOP SIDEBAR - SOLID DEEP ROYAL BLUE, COMPACT w-56 / w-60 */}
+      {/* 2. DESKTOP SIDEBAR - SOLID DEEP ROYAL BLUE, COMPACT w-52 / w-56 */}
       <aside
         style={{ backgroundColor: '#0c2e6b' }}
         className="sidebar-royal-blue hidden md:flex flex-col justify-between shrink-0 w-64 min-h-screen py-4 px-4 select-none shadow-2xl border-r border-blue-400/20"
