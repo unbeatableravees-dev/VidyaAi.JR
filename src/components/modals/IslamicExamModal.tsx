@@ -51,6 +51,15 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
       ? question.questionForGrade3Plus
       : question.question
   );
+  const englishQuestionText = (question: (typeof exam.questions)[number]) => (
+    isGrade3Plus && question.english?.questionForGrade3Plus
+      ? question.english.questionForGrade3Plus
+      : question.english?.question
+  );
+  const englishAnswer = (question: (typeof exam.questions)[number], answer: string) => {
+    const optionIndex = question.options.indexOf(answer);
+    return optionIndex >= 0 ? question.english?.options[optionIndex] : undefined;
+  };
 
   const completeExam = () => {
     sound.playSuccess();
@@ -102,7 +111,7 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
               {exam.subjectLabel || 'Islamic & Urdu Exam'} · {userGrade}
             </p>
             <h2 id="islamic-exam-title" className="truncate text-lg sm:text-xl font-black text-slate-900">
-              {exam.title}
+              {exam.title} {exam.titleUrdu && <span className="font-bold" dir="rtl">· {exam.titleUrdu}</span>}
             </h2>
           </div>
           <button
@@ -121,12 +130,8 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
               <div className="flex items-center justify-between gap-4">
                 <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-black text-emerald-800">
                   Question {questionIndex + 1} of {exam.questions.length} · {isGrade3Plus ? 'Challenge' : 'Foundation'}
+                  <span className="mr-2" dir="rtl">· سوال {questionIndex + 1} از {exam.questions.length} · {isGrade3Plus ? 'چیلنج' : 'بنیادی'}</span>
                 </span>
-                {exam.titleUrdu && (
-                  <span className="text-sm font-bold text-slate-500" dir="rtl">
-                    {exam.titleUrdu}
-                  </span>
-                )}
               </div>
 
               <div className="h-2 overflow-hidden rounded-full bg-emerald-100">
@@ -139,19 +144,26 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
               <div className="rounded-3xl border-2 border-emerald-100 bg-white p-5 sm:p-7 shadow-sm">
                 <div className="mb-4 flex items-center gap-2 text-sm font-bold text-emerald-700">
                   <BookOpen className="h-5 w-5" />
-                  Choose the best answer
+                  <span>Choose the best answer · <span dir="rtl">بہترین جواب منتخب کریں</span></span>
                 </div>
-                <h3
-                  className={`text-xl sm:text-2xl font-black leading-relaxed text-slate-900 ${
-                    exam.direction === 'rtl' ? 'text-right' : 'text-left'
-                  }`}
-                  dir={exam.direction || 'rtl'}
-                >
-                  {questionText(exam.questions[questionIndex])}
-                </h3>
+                <div className="space-y-3">
+                  {englishQuestionText(exam.questions[questionIndex]) && (
+                    <h3 className="text-left text-xl sm:text-2xl font-black leading-relaxed text-slate-900" dir="ltr">
+                      {englishQuestionText(exam.questions[questionIndex])}
+                    </h3>
+                  )}
+                  <h3
+                    className={`text-xl sm:text-2xl font-black leading-relaxed text-slate-900 ${
+                      exam.direction === 'rtl' || (!exam.direction && exam.titleUrdu) ? 'text-right' : 'text-left'
+                    }`}
+                    dir={exam.direction || (exam.titleUrdu ? 'rtl' : 'ltr')}
+                  >
+                    {questionText(exam.questions[questionIndex])}
+                  </h3>
+                </div>
                 <div
                   className="mt-6 grid gap-3 sm:grid-cols-2"
-                  dir={exam.direction || 'rtl'}
+                  dir={exam.direction || (exam.titleUrdu ? 'rtl' : 'ltr')}
                 >
                   {exam.questions[questionIndex].options.map((option, index) => {
                     const selected = answers[questionIndex] === option;
@@ -166,18 +178,28 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
                             answerIndex === questionIndex ? option : answer
                           )));
                         }}
-                        className={`min-h-16 rounded-2xl border-2 px-4 py-3 ${
-                          exam.direction === 'ltr' ? 'text-left' : 'text-right'
-                        } text-base font-bold transition-all ${
+                        className={`min-h-16 rounded-2xl border-2 px-4 py-3 text-base font-bold transition-all ${
                           selected
                             ? 'border-emerald-500 bg-emerald-100 text-emerald-950 shadow-md'
                             : 'border-slate-200 bg-slate-50 text-slate-800 hover:border-emerald-300 hover:bg-emerald-50'
                         }`}
                       >
-                        <span className="ml-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-sm font-black text-emerald-800 shadow-sm">
-                          {index + 1}
+                        <span className="flex items-start gap-3">
+                          <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-sm font-black text-emerald-800 shadow-sm">
+                            {index + 1}
+                          </span>
+                          <span className="min-w-0 flex-1 space-y-1">
+                            {exam.questions[questionIndex].english?.options[index] && (
+                              <span className="block text-left" dir="ltr">{exam.questions[questionIndex].english?.options[index]}</span>
+                            )}
+                            <span
+                              className={`block ${exam.direction === 'rtl' || (!exam.direction && exam.titleUrdu) ? 'text-right' : 'text-left'}`}
+                              dir={exam.direction || (exam.titleUrdu ? 'rtl' : 'ltr')}
+                            >
+                              {option}
+                            </span>
+                          </span>
                         </span>
-                        {option}
                       </button>
                     );
                   })}
@@ -191,7 +213,9 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
                   disabled={!answers[questionIndex]}
                   className="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3 font-black text-white shadow-lg transition-all hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {questionIndex === exam.questions.length - 1 ? 'Finish Exam' : 'Next Question'}
+                  {questionIndex === exam.questions.length - 1
+                    ? 'Finish Exam · امتحان مکمل کریں'
+                    : 'Next Question · اگلا سوال'}
                   <ArrowRight className="h-5 w-5" />
                 </button>
               </div>
@@ -200,12 +224,12 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
             <div className="space-y-6">
               <div className="rounded-3xl bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-center text-white shadow-lg">
                 <Trophy className="mx-auto mb-2 h-10 w-10 text-amber-200" />
-                <p className="text-sm font-black uppercase tracking-widest text-emerald-100">Exam complete</p>
+                <p className="text-sm font-black uppercase tracking-widest text-emerald-100">Exam complete · امتحان مکمل</p>
                 <h3 className="mt-1 text-3xl font-black">
                   {correctAnswers} / {exam.questions.length}
                 </h3>
                 <p className="mt-1 font-bold">
-                  {Math.round((correctAnswers / exam.questions.length) * 100)}% Score
+                  {Math.round((correctAnswers / exam.questions.length) * 100)}% Score · اسکور
                 </p>
               </div>
 
@@ -224,12 +248,12 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
 
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h4 className="text-lg font-black text-slate-900">Answer Scoreboard</h4>
+                  <h4 className="text-lg font-black text-slate-900">Answer Scoreboard · جوابات کا نتیجہ</h4>
                   <div className="flex gap-2">
                     {([
-                      ['all', 'All'],
-                      ['correct', 'Correct'],
-                      ['incorrect', 'Incorrect'],
+                      ['all', 'All · سب'],
+                      ['correct', 'Correct · درست'],
+                      ['incorrect', 'Incorrect · غلط'],
                     ] as const).map(([filter, label]) => (
                       <button
                         key={filter}
@@ -264,20 +288,31 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
                             {isCorrect ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />}
                           </span>
                           <div className="min-w-0 flex-1">
-                            <p className="text-right font-black leading-relaxed text-slate-900" dir="rtl">
-                              {index + 1}. {questionText(question)}
-                            </p>
-                            <p className="mt-2 text-sm font-bold text-slate-700" dir="rtl">
-                              Your answer: <span className={isCorrect ? 'text-emerald-800' : 'text-rose-800'}>{answer}</span>
-                            </p>
-                            {!isCorrect && (
-                              <p className="mt-1 text-sm font-bold text-emerald-800" dir="rtl">
-                                Correct answer: {question.answer}
+                            {englishQuestionText(question) && (
+                              <p className="text-left font-black leading-relaxed text-slate-900" dir="ltr">
+                                {index + 1}. {englishQuestionText(question)}
                               </p>
                             )}
-                            <p className="mt-2 text-sm leading-relaxed text-slate-600" dir="rtl">
-                              {question.explanation}
+                            <p
+                              className={`mt-1 font-black leading-relaxed text-slate-900 ${
+                                exam.direction === 'rtl' || (!exam.direction && exam.titleUrdu) ? 'text-right' : 'text-left'
+                              }`}
+                              dir={exam.direction || (exam.titleUrdu ? 'rtl' : 'ltr')}
+                            >
+                              {index + 1}. {questionText(question)}
                             </p>
+                            <p className="mt-2 text-sm font-bold text-slate-700" dir="ltr">
+                              Your answer: <span className={isCorrect ? 'text-emerald-800' : 'text-rose-800'}>{answer && englishAnswer(question, answer) ? `${englishAnswer(question, answer)} · ` : ''}{answer}</span>
+                            </p>
+                            {!isCorrect && (
+                              <p className="mt-1 text-sm font-bold text-emerald-800" dir="ltr">
+                                Correct answer: {englishAnswer(question, question.answer) || ''}{englishAnswer(question, question.answer) ? ' · ' : ''}{question.answer}
+                              </p>
+                            )}
+                            <div className="mt-2 space-y-1 text-sm leading-relaxed text-slate-600">
+                              {question.english?.explanation && <p dir="ltr">{question.english.explanation}</p>}
+                              <p dir={exam.direction || (exam.titleUrdu ? 'rtl' : 'ltr')}>{question.explanation}</p>
+                            </div>
                           </div>
                         </div>
                       </article>
@@ -285,7 +320,7 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
                   })}
                   {filteredQuestions.length === 0 && (
                     <p className="rounded-2xl bg-slate-100 p-6 text-center font-bold text-slate-600">
-                      No answers in this group.
+                      No answers in this group · <span dir="rtl">اس گروپ میں کوئی جواب نہیں</span>
                     </p>
                   )}
                 </div>
@@ -298,14 +333,14 @@ export const IslamicExamModal: React.FC<IslamicExamModalProps> = ({
                   className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-slate-200 bg-white px-5 py-3 font-black text-slate-700 hover:bg-slate-50"
                 >
                   <RotateCcw className="h-4 w-4" />
-                  Try Again
+                  Try Again · دوبارہ کوشش کریں
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
                   className="rounded-2xl bg-slate-900 px-6 py-3 font-black text-white hover:bg-slate-800"
                 >
-                  Back to Games
+                  Back to Games · کھیلوں پر واپس جائیں
                 </button>
               </div>
             </div>

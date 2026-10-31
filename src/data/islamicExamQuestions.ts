@@ -5,6 +5,12 @@ export interface IslamicExamQuestion {
   answer: string;
   explanation: string;
   sourceLessonId: string;
+  english?: {
+    question: string;
+    questionForGrade3Plus?: string;
+    options: string[];
+    explanation: string;
+  };
 }
 
 export interface IslamicExam {
@@ -26,6 +32,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['الحمد للہ', 'بسم اللہ', 'جزاک اللہ', 'سبحان اللہ'],
         answer: 'بسم اللہ',
         explanation: 'کھانا شروع کرتے وقت بسم اللہ کہنا سکھایا گیا ہے۔',
+        english: {
+          question: 'Which phrase should you say before you begin eating?',
+          questionForGrade3Plus: 'Ali forgot to say the phrase that begins with Allah’s name before eating. What should he say now?',
+          options: ['Alhamdulillah — All praise is for Allah', 'Bismillah — In the name of Allah', 'JazakAllahu khayran — May Allah reward you with goodness', 'SubhanAllah — Glory be to Allah'],
+          explanation: 'The lesson teaches saying Bismillah before eating.',
+        },
         sourceLessonId: 'good-talks-everyday-phrases',
       },
       {
@@ -34,6 +46,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['بائیں ہاتھ سے', 'دونوں ہاتھوں سے', 'دائیں ہاتھ سے', 'کسی بھی ہاتھ سے'],
         answer: 'دائیں ہاتھ سے',
         explanation: 'کھانے کے آداب میں دائیں ہاتھ سے کھانا شامل ہے۔',
+        english: {
+          question: 'Which hand are Muslims taught to use when eating?',
+          questionForGrade3Plus: 'According to table manners, which hand is preferred for picking up food?',
+          options: ['The left hand', 'Both hands', 'The right hand', 'Either hand'],
+          explanation: 'Eating with the right hand is part of the manners taught in this lesson.',
+        },
         sourceLessonId: 'manners-eating-right-hand',
       },
       {
@@ -42,6 +60,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['صبح بخیر', 'السلام علیکم', 'خدا حافظ', 'شب بخیر'],
         answer: 'السلام علیکم',
         explanation: 'السلام علیکم مسلمانوں کا سلام اور امن کی دعا ہے۔',
+        english: {
+          question: 'Which greeting should you use when you meet another Muslim?',
+          questionForGrade3Plus: 'Which words greet another Muslim and offer a prayer of peace?',
+          options: ['Good morning', 'As-salamu alaykum — Peace be upon you', 'Goodbye', 'Good night'],
+          explanation: 'As-salamu alaykum is a Muslim greeting and a prayer of peace.',
+        },
         sourceLessonId: 'manners-greeting-salam',
       },
       {
@@ -50,6 +74,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['ان شاء اللہ', 'ماشاء اللہ', 'الحمد للہ', 'استغفر اللہ'],
         answer: 'الحمد للہ',
         explanation: 'چھینک کے آداب میں الحمد للہ کہنا شامل ہے۔',
+        english: {
+          question: 'What does a Muslim say after sneezing?',
+          questionForGrade3Plus: 'Which phrase is said to give thanks after sneezing?',
+          options: ['InshaAllah — If Allah wills', 'MashaAllah — What Allah has willed', 'Alhamdulillah — All praise is for Allah', 'Astaghfirullah — I seek Allah’s forgiveness'],
+          explanation: 'Sneezing manners include saying Alhamdulillah.',
+        },
         sourceLessonId: 'manners-sneezing-yawning',
       },
       {
@@ -58,6 +88,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['دوسروں پر غصہ نکالنا', 'غصے پر قابو پانا', 'بات چیت بند کرنا', 'چیزیں پھینکنا'],
         answer: 'غصے پر قابو پانا',
         explanation: 'غصے کو قابو میں رکھنا ایک اچھی صفت ہے۔',
+        english: {
+          question: 'What is a better thing to do when you feel angry, according to Islamic teachings?',
+          questionForGrade3Plus: 'Which action helps you behave well when you feel angry?',
+          options: ['Take your anger out on others', 'Control your anger', 'Stop talking to everyone', 'Throw things'],
+          explanation: 'Controlling anger is a good quality.',
+        },
         sourceLessonId: 'hadith-controlling-anger',
       },
       {
@@ -66,6 +102,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['احترام اور نرمی سے', 'صرف ضرورت کے وقت', 'بے صبری سے', 'ان کی بات نظر انداز کرکے'],
         answer: 'احترام اور نرمی سے',
         explanation: 'والدین اور اساتذہ کے احترام کی تعلیم دی گئی ہے۔',
+        english: {
+          question: 'How should you treat parents and teachers?',
+          questionForGrade3Plus: 'Even if you disagree with a teacher, which way of behaving is right?',
+          options: ['With respect and gentleness', 'Only when you need something', 'Impatiently', 'By ignoring them'],
+          explanation: 'The lesson teaches respect for parents and teachers.',
+        },
         sourceLessonId: 'manners-respect-elders-teachers',
       },
       {
@@ -74,6 +116,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['صرف کھیل کا', 'ایمان کا', 'صرف لباس کا', 'صرف کھانے کا'],
         answer: 'ایمان کا',
         explanation: 'سبق میں پاکیزگی اور صفائی کی اہمیت بیان کی گئی ہے۔',
+        english: {
+          question: 'According to Islamic teaching, cleanliness is part of what?',
+          questionForGrade3Plus: 'What important foundation is cleanliness and purity connected to in Islamic teaching?',
+          options: ['Only games', 'Faith', 'Only clothing', 'Only food'],
+          explanation: 'The lesson explains the importance of cleanliness and purity.',
+        },
         sourceLessonId: 'hadith-cleanliness-purity',
       },
       {
@@ -82,6 +130,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['اس کی مدد کرنی چاہیے', 'اسے نظر انداز کرنا چاہیے', 'اس کا مذاق اڑانا چاہیے', 'اس سے چیزیں چھپا لینی چاہئیں'],
         answer: 'اس کی مدد کرنی چاہیے',
         explanation: 'پڑوسیوں کے ساتھ بھلائی اور ہمدردی کی تعلیم دی گئی ہے۔',
+        english: {
+          question: 'What should we do if a neighbor is having difficulty?',
+          questionForGrade3Plus: 'You learn that your neighbor is in trouble. What should you do next, following good Islamic manners?',
+          options: ['Help them', 'Ignore them', 'Make fun of them', 'Hide things from them'],
+          explanation: 'The lesson teaches kindness and compassion toward neighbors.',
+        },
         sourceLessonId: 'hadith-kindness-neighbors',
       },
       {
@@ -90,6 +144,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['استغفر اللہ', 'جزاک اللہ خیراً', 'ان شاء اللہ', 'اللہ اکبر'],
         answer: 'جزاک اللہ خیراً',
         explanation: 'جزاک اللہ خیراً کسی کی بھلائی پر دعا اور شکریے کے طور پر کہا جاتا ہے۔',
+        english: {
+          question: 'What is a good thing to say to thank someone for their help or kindness?',
+          questionForGrade3Plus: 'A friend helped you. Which words offer a prayer and thanks in return?',
+          options: ['Astaghfirullah — I seek Allah’s forgiveness', 'JazakAllahu khayran — May Allah reward you with goodness', 'InshaAllah — If Allah wills', 'Allahu Akbar — Allah is the Greatest'],
+          explanation: 'JazakAllahu khayran is a prayer and a way to thank someone for their kindness.',
+        },
         sourceLessonId: 'good-talks-everyday-phrases',
       },
       {
@@ -98,6 +158,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['صدقہ اور بھلائی', 'وقت کا ضیاع', 'خاموشی', 'آرام'],
         answer: 'صدقہ اور بھلائی',
         explanation: 'دوسروں کے لیے مسکراہٹ کو صدقہ اور بھلائی بتایا گیا ہے۔',
+        english: {
+          question: 'According to the hadith lesson, smiling is an example of what?',
+          questionForGrade3Plus: 'When you greet someone with a cheerful smile, what good deed does the hadith lesson describe?',
+          options: ['Charity and kindness', 'A waste of time', 'Silence', 'Rest'],
+          explanation: 'A smile for others is described as charity and kindness.',
+        },
         sourceLessonId: 'hadith-smiling-charity',
       },
     ],
@@ -112,6 +178,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['اللہ پاک ہے', 'تمام تعریفیں اللہ کے لیے ہیں', 'اللہ سب سے بڑا ہے', 'اللہ سے معافی مانگتا ہوں'],
         answer: 'تمام تعریفیں اللہ کے لیے ہیں',
         explanation: 'الحمد للہ کا مطلب ہے: تمام تعریفیں اللہ کے لیے ہیں۔',
+        english: {
+          question: 'What does the Arabic phrase Alhamdulillah mean?',
+          questionForGrade3Plus: 'After a meal, what does Alhamdulillah mean when thanking and praising Allah for His blessings?',
+          options: ['Allah is pure', 'All praise is for Allah', 'Allah is the Greatest', 'I seek Allah’s forgiveness'],
+          explanation: 'Alhamdulillah means “All praise is for Allah.”',
+        },
         sourceLessonId: 'good-talks-subhanallah-praise',
       },
       {
@@ -120,6 +192,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['اللہ پاک ہے', 'اگر اللہ نے چاہا', 'اللہ آپ کو اجر دے', 'میں توبہ کرتا ہوں'],
         answer: 'اللہ پاک ہے',
         explanation: 'سبحان اللہ اللہ کی پاکی بیان کرنے کا کلمہ ہے۔',
+        english: {
+          question: 'What does saying SubhanAllah mean?',
+          questionForGrade3Plus: 'Which phrase expresses that Allah is free from every imperfection?',
+          options: ['Allah is pure and perfect', 'If Allah wills', 'May Allah reward you', 'I repent'],
+          explanation: 'SubhanAllah is a phrase that declares Allah’s perfection.',
+        },
         sourceLessonId: 'good-talks-subhanallah-praise',
       },
       {
@@ -128,6 +206,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['اللہ مہربان ہے', 'اللہ سب سے بڑا ہے', 'اللہ سے معافی', 'اللہ کا شکر'],
         answer: 'اللہ سب سے بڑا ہے',
         explanation: 'اللہ اکبر کا مطلب ہے: اللہ سب سے بڑا ہے۔',
+        english: {
+          question: 'What does Allahu Akbar mean?',
+          questionForGrade3Plus: 'What is the correct meaning of Allahu Akbar, a phrase that expresses Allah’s greatness?',
+          options: ['Allah is Most Merciful', 'Allah is the Greatest', 'I seek Allah’s forgiveness', 'Thanks be to Allah'],
+          explanation: 'Allahu Akbar means “Allah is the Greatest.”',
+        },
         sourceLessonId: 'good-talks-subhanallah-praise',
       },
       {
@@ -136,6 +220,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['ماشاء اللہ', 'ان شاء اللہ', 'الحمد للہ', 'استغفر اللہ'],
         answer: 'ان شاء اللہ',
         explanation: 'ان شاء اللہ کا مطلب ہے: اگر اللہ نے چاہا۔',
+        english: {
+          question: 'Which phrase do you say when talking about something you plan to do in the future?',
+          questionForGrade3Plus: 'You tell a friend you will meet tomorrow and recognize that it is by Allah’s will. Which phrase should you use?',
+          options: ['MashaAllah — What Allah has willed', 'InshaAllah — If Allah wills', 'Alhamdulillah — All praise is for Allah', 'Astaghfirullah — I seek Allah’s forgiveness'],
+          explanation: 'InshaAllah means “If Allah wills.”',
+        },
         sourceLessonId: 'good-talks-everyday-phrases',
       },
       {
@@ -144,6 +234,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['ماشاء اللہ', 'استغفر اللہ', 'بسم اللہ', 'جزاک اللہ'],
         answer: 'ماشاء اللہ',
         explanation: 'ماشاء اللہ کسی اچھی یا خوبصورت چیز کی تعریف کرتے ہوئے کہا جاتا ہے۔',
+        english: {
+          question: 'Which phrase is appropriate when you see something beautiful?',
+          questionForGrade3Plus: 'You want to admire something beautiful while remembering Allah’s will. Which phrase should you say?',
+          options: ['MashaAllah — What Allah has willed', 'Astaghfirullah — I seek Allah’s forgiveness', 'Bismillah — In the name of Allah', 'JazakAllah — May Allah reward you'],
+          explanation: 'MashaAllah is said when admiring something good or beautiful.',
+        },
         sourceLessonId: 'good-talks-everyday-phrases',
       },
       {
@@ -152,6 +248,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['علم میں اضافہ', 'اللہ سے معافی', 'کسی کا شکریہ', 'کھانے میں برکت'],
         answer: 'اللہ سے معافی',
         explanation: 'استغفر اللہ کا مطلب ہے: میں اللہ سے معافی مانگتا ہوں۔',
+        english: {
+          question: 'What do we ask for when we say Astaghfirullah?',
+          questionForGrade3Plus: 'Which phrase means asking Allah for forgiveness after making a mistake?',
+          options: ['More knowledge', 'Forgiveness from Allah', 'To thank someone', 'Blessings in food'],
+          explanation: 'Astaghfirullah means “I seek forgiveness from Allah.”',
+        },
         sourceLessonId: 'good-talks-astaghfirullah-repentance',
       },
       {
@@ -160,6 +262,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['اللہ کے نام سے', 'اللہ کا شکر ہے', 'اللہ آپ کو اجر دے', 'اللہ پاک ہے'],
         answer: 'اللہ کے نام سے',
         explanation: 'بسم اللہ کا مطلب ہے: اللہ کے نام سے۔',
+        english: {
+          question: 'What does Bismillah mean?',
+          questionForGrade3Plus: 'What does Bismillah mean when beginning a good action in Allah’s name?',
+          options: ['In the name of Allah', 'Thanks be to Allah', 'May Allah reward you', 'Allah is pure'],
+          explanation: 'Bismillah means “In the name of Allah.”',
+        },
         sourceLessonId: 'good-talks-everyday-phrases',
       },
       {
@@ -168,6 +276,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['کسی کی بھلائی پر دعا دینے کے لیے', 'سونے سے پہلے', 'مستقبل کا ارادہ بتانے کے لیے', 'چھینک آنے پر'],
         answer: 'کسی کی بھلائی پر دعا دینے کے لیے',
         explanation: 'جزاک اللہ خیراً کا مطلب ہے: اللہ آپ کو بہترین بدلہ دے۔',
+        english: {
+          question: 'When do you say JazakAllahu khayran?',
+          questionForGrade3Plus: 'Which phrase offers someone a prayer for a good reward in return for their kindness?',
+          options: ['To pray for someone who has been kind', 'Before going to sleep', 'When sharing a future plan', 'After sneezing'],
+          explanation: 'JazakAllahu khayran means “May Allah reward you with goodness.”',
+        },
         sourceLessonId: 'good-talks-everyday-phrases',
       },
       {
@@ -176,6 +290,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['رزق', 'علم', 'صحت', 'دوست'],
         answer: 'علم',
         explanation: 'اس دعا کا مطلب ہے: اے میرے رب، میرے علم میں اضافہ فرما۔',
+        english: {
+          question: 'What does the dua Rabbi zidni ilma ask to increase?',
+          questionForGrade3Plus: 'In the dua Rabbi zidni ilma, what does the student ask Allah to increase?',
+          options: ['Provision', 'Knowledge', 'Health', 'Friends'],
+          explanation: 'The dua means “My Lord, increase me in knowledge.”',
+        },
         sourceLessonId: 'good-talks-dua-knowledge-rabbi-zidni',
       },
       {
@@ -184,6 +304,12 @@ export const ISLAMIC_EXAMS: Record<string, IslamicExam> = {
         options: ['اللہ کے سوا کوئی معبود نہیں', 'اللہ ہر جگہ سفر کرتا ہے', 'ہر انسان فرشتہ ہے', 'دن اور رات ایک جیسے ہیں'],
         answer: 'اللہ کے سوا کوئی معبود نہیں',
         explanation: 'کلمہ طیبہ اللہ کی وحدانیت اور رسول اللہ ﷺ کی رسالت کی گواہی دیتا ہے۔',
+        english: {
+          question: 'What basic belief about Allah is stated in the Kalima Tayyibah?',
+          questionForGrade3Plus: 'Which testimony about the oneness of Allah is given in the Kalima Tayyibah?',
+          options: ['There is no deity worthy of worship except Allah', 'Allah travels everywhere', 'Every person is an angel', 'Day and night are the same'],
+          explanation: 'The Kalima Tayyibah testifies to the oneness of Allah and the prophethood of Prophet Muhammad ﷺ.',
+        },
         sourceLessonId: 'good-talks-six-kalimas',
       },
     ],

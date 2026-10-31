@@ -66,7 +66,7 @@ The category directory supports text search and Math & Science, Languages, and A
 
 - General quiz rounds contain **10 randomly generated multiple-choice questions**, with explanations and visual prompts. Learners can choose from **14 quiz modes**: All Subjects Mix and 13 subject modes.
 - Question generators have difficulty patterns for Kindergarten and Grades 1–3. For onboarding classes outside those supported levels, the generator currently falls back to Grade 1 difficulty.
-- Two Islamic & Urdu exam rounds are available in Practice: **Islamic Manners Exam** and **Islamic Urdu Words Exam**. Each has 10 questions, answer explanations, a correct/incorrect review, filters, and retry. Class 3 and above use the more challenging question wording where provided.
+- Two Islamic & Urdu exam rounds are available in Practice: **Islamic Manners Exam** and **Islamic Urdu Words Exam**. Each has 10 questions, with English and Urdu question text, answer choices, and explanations shown together. Arabic duas and phrases remain in Arabic script with their English and Urdu meanings. The scoreboard, filters, and retry controls are bilingual. Class 3 and above use the more challenging question wording where provided.
 - Quizzes and exams run from question banks bundled with the app; they do not load questions from a server.
 - Completing a general quiz records correct and incorrect answers and awards 10 stars per correct answer. Completing an Islamic exam records the answer totals and awards one star per correct answer.
 
