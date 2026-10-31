@@ -66,8 +66,12 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       <div className="min-h-screen bg-gradient-to-br from-[#0c2e6b] via-[#14479e] to-[#0284c7] flex items-center justify-center p-4 sm:p-8">
         <section className="w-full max-w-3xl rounded-[2rem] bg-white p-6 sm:p-10 shadow-2xl">
           <div className="text-center">
-            <p className="text-sm font-black uppercase tracking-widest text-blue-600">Welcome back</p>
-            <h1 className="mt-2 text-3xl font-black text-slate-900">Who is learning today?</h1>
+            <div className="flex items-center justify-center gap-2 mb-1.5">
+              <span className="text-2xl font-black text-slate-900 font-['Nunito',sans-serif]">Vidya<span className="text-blue-600">AI</span></span>
+              <span className="px-2 py-0.5 bg-yellow-400 text-slate-950 font-black text-xs rounded-full shadow-xs">JR</span>
+            </div>
+            <p className="text-xs font-black uppercase tracking-widest text-blue-600">Kids Learning Galaxy</p>
+            <h1 className="mt-1.5 text-2xl sm:text-3xl font-black text-slate-900">Who is learning today? ⭐</h1>
             <p className="mt-2 text-sm font-semibold text-slate-500">
               Each student has their own lessons, games, stars, and progress.
             </p>

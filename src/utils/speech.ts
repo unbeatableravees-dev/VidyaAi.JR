@@ -1,9 +1,9 @@
 // =============================================================================
-// FEMALE VOICE SPEECH SYNTHESIS ENGINE (Arabic, Urdu, English)
+// FEMALE VOICE SPEECH SYNTHESIS ENGINE (Arabic, Urdu, Hindi, Punjabi, English)
 // Designed for clear, gentle, child-friendly recitation & guidance
 // =============================================================================
 
-export type SupportedLang = 'ar' | 'ur' | 'en';
+export type SupportedLang = 'ar' | 'ur' | 'hi' | 'pa' | 'en';
 
 class FemaleVoiceEngine {
   private voices: SpeechSynthesisVoice[] = [];
@@ -34,7 +34,7 @@ class FemaleVoiceEngine {
   }
 
   /**
-   * Finds the best female voice matching the requested language (Arabic, Urdu, English)
+   * Finds the best voice matching the requested language (Arabic, Urdu, Hindi, Punjabi, English)
    */
   public getFemaleVoice(lang: SupportedLang): SpeechSynthesisVoice | null {
     const all = this.getVoices();
@@ -45,16 +45,18 @@ class FemaleVoiceEngine {
       // Microsoft Windows female voices
       'zira', 'jenny', 'aria', 'sonia', 'natasha', 'libby', 'hazel',
       'salma', 'hoda', 'zeina',
-      'gul', 'uzma',
+      'gul', 'uzma', 'heera', 'kalpana', 'swara', 'neerja',
       // Apple / iOS female voices
-      'samantha', 'victoria', 'karen', 'moira', 'tessa', 'leila',
+      'samantha', 'victoria', 'karen', 'moira', 'tessa', 'leila', 'lekha',
       // Google Chrome female voices
-      'google uk english female', 'google us english female',
+      'google uk english female', 'google us english female', 'google हिन्दी',
     ];
 
     let langPrefix = 'en';
     if (lang === 'ar') langPrefix = 'ar';
     if (lang === 'ur') langPrefix = 'ur';
+    if (lang === 'hi') langPrefix = 'hi';
+    if (lang === 'pa') langPrefix = 'pa';
 
     // 1. Try finding a voice matching the specific language with female name
     const langVoices = all.filter((v) =>
@@ -67,25 +69,25 @@ class FemaleVoiceEngine {
     });
     if (femaleLangVoice) return femaleLangVoice;
 
-    // Prefer a recognizable female voice in a related language before an unknown-gender voice.
-    if (lang === 'ur') {
+    // Fallbacks for Urdu / Punjabi / Hindi interchangeability if not installed
+    if (lang === 'ur' || lang === 'pa') {
       const hindiVoices = all.filter((v) => v.lang.toLowerCase().startsWith('hi'));
       const femaleHindi = hindiVoices.find((v) => {
         const lowerName = v.name.toLowerCase();
-        return femaleKeywords.some((kw) => lowerName.includes(kw)) || lowerName.includes('swara') || lowerName.includes('kalpana') || lowerName.includes('madhur');
+        return femaleKeywords.some((kw) => lowerName.includes(kw));
       });
       if (femaleHindi) return femaleHindi;
       if (hindiVoices.length > 0) return hindiVoices[0];
     }
+
+    if (langVoices.length > 0) return langVoices[0];
 
     const anyFemale = all.find((v) => {
       const lowerName = v.name.toLowerCase();
       return femaleKeywords.some((kw) => lowerName.includes(kw));
     });
 
-    // Browsers do not expose voice gender; use the requested language if no
-    // installed voice can be identified as female.
-    return anyFemale || langVoices[0] || all[0] || null;
+    return anyFemale || all[0] || null;
   }
 
   public stop() {
@@ -100,7 +102,7 @@ class FemaleVoiceEngine {
   }
 
   /**
-   * Speaks text using a dedicated female voice with gentle pitch for kids
+   * Speaks text using a dedicated friendly voice with gentle pitch for kids
    */
   public speak(options: {
     text: string;
@@ -118,18 +120,25 @@ class FemaleVoiceEngine {
     if (!cleanText) return false;
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    const femaleVoice = this.getFemaleVoice(options.lang);
+    const voice = this.getFemaleVoice(options.lang);
 
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
-      utterance.lang = femaleVoice.lang;
+    if (voice) {
+      utterance.voice = voice;
+      utterance.lang = voice.lang;
     } else {
-      utterance.lang = options.lang === 'ar' ? 'ar-SA' : options.lang === 'ur' ? 'ur-PK' : 'en-US';
+      const langMap: Record<SupportedLang, string> = {
+        ar: 'ar-SA',
+        ur: 'ur-PK',
+        hi: 'hi-IN',
+        pa: 'pa-IN',
+        en: 'en-US',
+      };
+      utterance.lang = langMap[options.lang] || 'en-US';
     }
 
-    // Kid-friendly gentle female pitch and clear pacing
-    utterance.pitch = options.pitch ?? 1.18; // slightly higher pitch produces natural warm female tone
-    utterance.rate = options.rate ?? (options.lang === 'ar' ? 0.82 : 0.88); // deliberate pacing for recitation
+    // Kid-friendly gentle pitch and clear pacing
+    utterance.pitch = options.pitch ?? 1.15;
+    utterance.rate = options.rate ?? (options.lang === 'ar' ? 0.82 : 0.88);
 
     utterance.onend = () => {
       if (options.onEnd) options.onEnd();

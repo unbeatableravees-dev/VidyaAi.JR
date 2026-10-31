@@ -1,26 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Sidebar, NavTab } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { HomeScreen } from './components/screens/HomeScreen';
-import { VideoLessonScreen } from './components/screens/VideoLessonScreen';
-import { QuizScreen } from './components/screens/QuizScreen';
-import { QuizResultsScreen } from './components/screens/QuizResultsScreen';
-import { CategoriesScreen } from './components/screens/CategoriesScreen';
-import { CategoryDetailScreen } from './components/screens/CategoryDetailScreen';
-import { ProgressScreen } from './components/screens/ProgressScreen';
-import { SettingsScreen } from './components/screens/SettingsScreen';
 import { WelcomeScreen } from './components/screens/WelcomeScreen';
-import { PracticeScreen } from './components/screens/PracticeScreen';
-import { HumanBodyGameScreen } from './components/screens/HumanBodyGameScreen';
-import { ExplorerScreen } from './components/screens/ExplorerScreen';
-import { IslamicTeachingsView } from './components/screens/IslamicTeachingsView';
-import { PunjabiLearningView } from './components/screens/PunjabiLearningView';
-import { HindiLearningView } from './components/screens/HindiLearningView';
-import { VideoPlayerModal, VideoData } from './components/modals/VideoPlayerModal';
 import { AnimatedBackground } from './components/layout/AnimatedBackground';
 import { sound } from './utils/audio';
 import { StudentProfile } from './types/student';
 import { clearStudentProgress, recordQuizCompletion } from './utils/studentProgress';
+import type { VideoData } from './components/modals/VideoPlayerModal';
+
+// Code-split heavy views so the initial bundle stays lightweight & blazing fast
+const IslamicTeachingsView = React.lazy(() =>
+  import('./components/screens/IslamicTeachingsView').then((m) => ({ default: m.IslamicTeachingsView }))
+);
+const HindiLearningView = React.lazy(() =>
+  import('./components/screens/HindiLearningView').then((m) => ({ default: m.HindiLearningView }))
+);
+const PunjabiLearningView = React.lazy(() =>
+  import('./components/screens/PunjabiLearningView').then((m) => ({ default: m.PunjabiLearningView }))
+);
+const ExplorerScreen = React.lazy(() =>
+  import('./components/screens/ExplorerScreen').then((m) => ({ default: m.ExplorerScreen }))
+);
+const PracticeScreen = React.lazy(() =>
+  import('./components/screens/PracticeScreen').then((m) => ({ default: m.PracticeScreen }))
+);
+const VideoLessonScreen = React.lazy(() =>
+  import('./components/screens/VideoLessonScreen').then((m) => ({ default: m.VideoLessonScreen }))
+);
+const QuizScreen = React.lazy(() =>
+  import('./components/screens/QuizScreen').then((m) => ({ default: m.QuizScreen }))
+);
+const QuizResultsScreen = React.lazy(() =>
+  import('./components/screens/QuizResultsScreen').then((m) => ({ default: m.QuizResultsScreen }))
+);
+const CategoriesScreen = React.lazy(() =>
+  import('./components/screens/CategoriesScreen').then((m) => ({ default: m.CategoriesScreen }))
+);
+const CategoryDetailScreen = React.lazy(() =>
+  import('./components/screens/CategoryDetailScreen').then((m) => ({ default: m.CategoryDetailScreen }))
+);
+const ProgressScreen = React.lazy(() =>
+  import('./components/screens/ProgressScreen').then((m) => ({ default: m.ProgressScreen }))
+);
+const SettingsScreen = React.lazy(() =>
+  import('./components/screens/SettingsScreen').then((m) => ({ default: m.SettingsScreen }))
+);
+const VideoPlayerModal = React.lazy(() =>
+  import('./components/modals/VideoPlayerModal').then((m) => ({ default: m.VideoPlayerModal }))
+);
+
+const ScreenLoadingFallback = () => (
+  <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4 p-8 select-none">
+    <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-yellow-400 via-amber-400 to-sky-400 flex items-center justify-center text-3xl shadow-xl animate-bounce">
+      ⭐
+    </div>
+    <div className="text-center">
+      <h3 className="text-base font-black text-slate-800">VidyaAI Jr Loading...</h3>
+      <p className="text-xs font-bold text-blue-600 animate-pulse mt-1">Opening your magical learning galaxy</p>
+    </div>
+  </div>
+);
 
 const loadSavedProfiles = (): StudentProfile[] => {
   try {
@@ -64,7 +104,6 @@ const loadSavedProfiles = (): StudentProfile[] => {
 
 export function App() {
   const [studentProfiles, setStudentProfiles] = useState<StudentProfile[]>(loadSavedProfiles);
-  // Stored Student Profile (Multi-Faith, Multilingual, Age, Class, Game)
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(() => {
     try {
       const saved = localStorage.getItem('vidya_student_profile_v2');
@@ -74,7 +113,6 @@ export function App() {
     }
   });
 
-  // Reset all users: if vidya_student_profile_v2 does not exist, ALWAYS show WelcomeScreen
   const [showWelcome, setShowWelcome] = useState<boolean>(() => {
     return !localStorage.getItem('vidya_student_profile_v2');
   });
@@ -92,7 +130,6 @@ export function App() {
     grade?: string;
   }>({ correct: 0, total: 10, subjectName: 'All Subjects Mix', grade: 'Class 2' });
 
-  // Active modal video (if any clicked)
   const [activeVideoModal, setActiveVideoModal] = useState<VideoData | null>(null);
 
   const activeDisplayName = studentProfile?.name || 'Aarav';
@@ -206,13 +243,6 @@ export function App() {
     setCurrentTab('category-detail');
   };
 
-  // Launch simulated video modal
-  const handleOpenVideo = (video: VideoData) => {
-    sound.playPop();
-    setActiveVideoModal(video);
-  };
-
-  // If user has not completed the new profile onboarding yet, show Welcome/Setup page!
   if (showWelcome) {
     return (
       <WelcomeScreen
@@ -227,10 +257,10 @@ export function App() {
 
   return (
     <div className="relative flex h-screen w-screen overflow-hidden text-slate-800 font-['Nunito',sans-serif] selection:bg-blue-200">
-      {/* Magical Disney/Pixar Animated Sky Theme with drifting particles */}
+      {/* Optimized Lightweight Aurora & Twinkle Backdrop */}
       <AnimatedBackground />
 
-      {/* Deep Blue Left Sidebar with JR Logo & Multilingual Tabs */}
+      {/* Royal Blue Left Sidebar with Jr Identity & Multilingual Navigation */}
       <Sidebar
         currentTab={currentTab}
         onTabChange={setCurrentTab}
@@ -238,7 +268,7 @@ export function App() {
         studentProfile={studentProfile}
       />
 
-      {/* Main Content Area - Locked to 100vh with non-scrolling Navbar */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative z-10 w-full">
         {/* Fixed Non-Scrolling Top Header */}
         <Header
@@ -253,31 +283,10 @@ export function App() {
           studentProfile={studentProfile}
         />
 
-        {/* Dynamic Screen Rendering - Only this section scrolls! */}
+        {/* Dynamic Screen Area with Suspense for Instant Performance */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden">
-          {currentTab === 'home' && (
-            <HomeScreen
-              userName={activeDisplayName}
-              onStartLearning={handleStartLearning}
-              onSelectCategory={handleSelectCategory}
-              onViewAllCategories={handleViewAllCategories}
-              onOpenPractice={() => setCurrentTab('practice')}
-              onOpenBodyExplorer={() => setCurrentTab('explorer')}
-              onOpenIslamic={() => setCurrentTab('islamic')}
-              onOpenPunjabi={() => setCurrentTab('punjabi')}
-              onOpenHindi={() => setCurrentTab('hindi')}
-              studentProfile={studentProfile}
-            />
-          )}
-
-          {/* Islamic Teachings - ONLY visible to Muslim students */}
-          {(currentTab === 'islamic' || currentTab === 'islamic-teachings') && (
-            studentProfile?.religion === 'muslim' || !studentProfile ? (
-              <IslamicTeachingsView
-                studentId={studentProfile?.id}
-                onBackToHome={handleBackToHome}
-              />
-            ) : (
+          <Suspense fallback={<ScreenLoadingFallback />}>
+            {currentTab === 'home' && (
               <HomeScreen
                 userName={activeDisplayName}
                 onStartLearning={handleStartLearning}
@@ -285,120 +294,145 @@ export function App() {
                 onViewAllCategories={handleViewAllCategories}
                 onOpenPractice={() => setCurrentTab('practice')}
                 onOpenBodyExplorer={() => setCurrentTab('explorer')}
+                onOpenIslamic={() => setCurrentTab('islamic')}
+                onOpenPunjabi={() => setCurrentTab('punjabi')}
+                onOpenHindi={() => setCurrentTab('hindi')}
                 studentProfile={studentProfile}
               />
-            )
-          )}
+            )}
 
-          {/* Punjabi & Gurmukhi Academy - for Sikh students */}
-          {currentTab === 'punjabi' && (
-            <PunjabiLearningView
-              studentId={studentProfile?.id}
-              onBackToHome={handleBackToHome}
-            />
-          )}
+            {/* Islamic Teachings - ONLY visible to Muslim students */}
+            {(currentTab === 'islamic' || currentTab === 'islamic-teachings') && (
+              studentProfile?.religion === 'muslim' || !studentProfile ? (
+                <IslamicTeachingsView
+                  studentId={studentProfile?.id}
+                  onBackToHome={handleBackToHome}
+                />
+              ) : (
+                <HomeScreen
+                  userName={activeDisplayName}
+                  onStartLearning={handleStartLearning}
+                  onSelectCategory={handleSelectCategory}
+                  onViewAllCategories={handleViewAllCategories}
+                  onOpenPractice={() => setCurrentTab('practice')}
+                  onOpenBodyExplorer={() => setCurrentTab('explorer')}
+                  studentProfile={studentProfile}
+                />
+              )
+            )}
 
-          {/* Hindi & Cultural Wisdom Academy - for Hindu students */}
-          {currentTab === 'hindi' && (
-            <HindiLearningView
-              studentId={studentProfile?.id}
-              onBackToHome={handleBackToHome}
-            />
-          )}
+            {/* Punjabi & Gurmukhi Academy - for Sikh students */}
+            {currentTab === 'punjabi' && (
+              <PunjabiLearningView
+                studentId={studentProfile?.id}
+                onBackToHome={handleBackToHome}
+              />
+            )}
 
-          {(currentTab === 'explorer' || currentTab === 'body-explorer') && (
-            <ExplorerScreen
-              onBackToHome={handleBackToHome}
-              onOpenPractice={() => setCurrentTab('practice')}
-              initialModule={currentTab === 'body-explorer' ? 'body' : undefined}
-              studentId={studentProfile?.id}
-            />
-          )}
+            {/* Hindi & Cultural Wisdom Academy - for Hindu students */}
+            {currentTab === 'hindi' && (
+              <HindiLearningView
+                studentId={studentProfile?.id}
+                onBackToHome={handleBackToHome}
+              />
+            )}
 
-          {currentTab === 'practice' && (
-            <PracticeScreen
-              studentId={studentProfile?.id}
-              userGrade={activeGrade}
-              userAge={studentProfile?.age || 7}
-              religion={studentProfile?.religion || 'other'}
-              onOpenBodyExplorer={() => setCurrentTab('explorer')}
-            />
-          )}
+            {(currentTab === 'explorer' || currentTab === 'body-explorer') && (
+              <ExplorerScreen
+                onBackToHome={handleBackToHome}
+                onOpenPractice={() => setCurrentTab('practice')}
+                initialModule={currentTab === 'body-explorer' ? 'body' : undefined}
+                studentId={studentProfile?.id}
+              />
+            )}
 
-          {currentTab === 'category-detail' && (
-            <CategoryDetailScreen
-              categoryId={selectedCategoryId}
-              onBack={() => setCurrentTab('categories')}
-              onStartLesson={(_lessonId) => setCurrentTab('learning')}
-            />
-          )}
+            {currentTab === 'practice' && (
+              <PracticeScreen
+                studentId={studentProfile?.id}
+                userGrade={activeGrade}
+                userAge={studentProfile?.age || 7}
+                religion={studentProfile?.religion || 'other'}
+                onOpenBodyExplorer={() => setCurrentTab('explorer')}
+              />
+            )}
 
-          {currentTab === 'learning' && (
-            <VideoLessonScreen
-              onBack={handleBackToHome}
-              onContinueToQuiz={handleContinueToQuiz}
-            />
-          )}
+            {currentTab === 'category-detail' && (
+              <CategoryDetailScreen
+                categoryId={selectedCategoryId}
+                onBack={() => setCurrentTab('categories')}
+                onStartLesson={(_lessonId) => setCurrentTab('learning')}
+              />
+            )}
 
-          {currentTab === 'quiz' && (
-            <QuizScreen
-              userGrade={activeGrade}
-              selectedCategoryId={selectedCategoryId}
-              onBackToLesson={handleBackToLearning}
-              onCompleteQuiz={handleCompleteQuiz}
-            />
-          )}
+            {currentTab === 'learning' && (
+              <VideoLessonScreen
+                onBack={handleBackToHome}
+                onContinueToQuiz={handleContinueToQuiz}
+              />
+            )}
 
-          {currentTab === 'quiz-results' && (
-            <QuizResultsScreen
-              userName={activeDisplayName}
-              userGrade={activeGrade}
-              quizResult={quizResult}
-              onContinueLearning={handleStartLearning}
-              onRetakeQuiz={() => setCurrentTab('quiz')}
-              onSelectLesson={(_lessonId) => setCurrentTab('learning')}
-            />
-          )}
+            {currentTab === 'quiz' && (
+              <QuizScreen
+                userGrade={activeGrade}
+                selectedCategoryId={selectedCategoryId}
+                onBackToLesson={handleBackToLearning}
+                onCompleteQuiz={handleCompleteQuiz}
+              />
+            )}
 
-          {currentTab === 'categories' && (
-            <CategoriesScreen
-              onSelectCategory={handleSelectCategory}
-              onStartLearning={handleStartLearning}
-            />
-          )}
+            {currentTab === 'quiz-results' && (
+              <QuizResultsScreen
+                userName={activeDisplayName}
+                userGrade={activeGrade}
+                quizResult={quizResult}
+                onContinueLearning={handleStartLearning}
+                onRetakeQuiz={() => setCurrentTab('quiz')}
+                onSelectLesson={(_lessonId) => setCurrentTab('learning')}
+              />
+            )}
 
-          {currentTab === 'progress' && (
-            <ProgressScreen
-              studentId={studentProfile?.id}
-              userName={activeDisplayName}
-              userGrade={activeGrade}
-            />
-          )}
+            {currentTab === 'categories' && (
+              <CategoriesScreen
+                onSelectCategory={handleSelectCategory}
+                onStartLearning={handleStartLearning}
+              />
+            )}
 
-          {currentTab === 'settings' && (
-            <SettingsScreen
-              userName={activeDisplayName}
-              userAvatar={activeAvatar}
-              userGrade={activeGrade}
-              onUpdateProfile={handleUpdateProfile}
-              onResetProgress={() => {
-                handleResetActiveProfile();
-              }}
-            />
-          )}
+            {currentTab === 'progress' && (
+              <ProgressScreen
+                studentId={studentProfile?.id}
+                userName={activeDisplayName}
+                userGrade={activeGrade}
+              />
+            )}
+
+            {currentTab === 'settings' && (
+              <SettingsScreen
+                userName={activeDisplayName}
+                userAvatar={activeAvatar}
+                userGrade={activeGrade}
+                onUpdateProfile={handleUpdateProfile}
+                onResetProgress={() => {
+                  handleResetActiveProfile();
+                }}
+              />
+            )}
+          </Suspense>
         </main>
       </div>
 
-      {/* Interactive Video Player Modal */}
+      {/* Interactive Video Player Modal with Suspense */}
       {activeVideoModal && (
-        <VideoPlayerModal
-          video={activeVideoModal}
-          onClose={() => setActiveVideoModal(null)}
-          onTakeQuiz={() => {
-            setActiveVideoModal(null);
-            setCurrentTab('quiz');
-          }}
-        />
+        <Suspense fallback={null}>
+          <VideoPlayerModal
+            video={activeVideoModal}
+            onClose={() => setActiveVideoModal(null)}
+            onTakeQuiz={() => {
+              setActiveVideoModal(null);
+              setCurrentTab('quiz');
+            }}
+          />
+        </Suspense>
       )}
     </div>
   );

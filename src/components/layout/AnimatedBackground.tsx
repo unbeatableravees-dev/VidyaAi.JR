@@ -46,6 +46,7 @@ export const AnimatedBackground: React.FC = () => {
     let animId: number;
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
+    let isVisible = true;
 
     const handleResize = () => {
       if (!canvas) return;
@@ -54,7 +55,19 @@ export const AnimatedBackground: React.FC = () => {
       initStars();
       initBubbles();
     };
+
+    const handleVisibilityChange = () => {
+      isVisible = !document.hidden;
+      if (isVisible) {
+        lastTime = performance.now();
+        animId = requestAnimationFrame(render);
+      } else {
+        cancelAnimationFrame(animId);
+      }
+    };
+
     window.addEventListener('resize', handleResize);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // Color palettes for stars
     const starColors = [
@@ -71,33 +84,35 @@ export const AnimatedBackground: React.FC = () => {
 
     const initStars = () => {
       stars = [];
-      const count = Math.floor((width * height) / 18000) + 35;
+      // Keep count lightweight and calm for ultra performance
+      const count = Math.min(36, Math.floor((width * height) / 36000) + 16);
       for (let i = 0; i < count; i++) {
         stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          size: Math.random() * 2.8 + 1.2,
-          baseAlpha: Math.random() * 0.5 + 0.35,
+          size: Math.random() * 2.2 + 1.2,
+          baseAlpha: Math.random() * 0.4 + 0.35,
           alpha: 0.5,
-          twinkleSpeed: Math.random() * 0.04 + 0.015,
+          twinkleSpeed: Math.random() * 0.03 + 0.012,
           twinklePhase: Math.random() * Math.PI * 2,
           color: starColors[Math.floor(Math.random() * starColors.length)],
-          isFourPoint: Math.random() > 0.45,
+          isFourPoint: Math.random() > 0.6,
         });
       }
     };
 
     const initBubbles = () => {
       bubbles = [];
-      const count = Math.min(18, Math.floor(width / 90) + 6);
+      // Lightweight bubble count
+      const count = Math.min(8, Math.floor(width / 180) + 3);
       for (let i = 0; i < count; i++) {
         bubbles.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: Math.random() * 22 + 12,
-          speedY: Math.random() * 0.7 + 0.35,
-          wobbleSpeed: Math.random() * 0.03 + 0.015,
-          wobbleAmp: Math.random() * 25 + 10,
+          radius: Math.random() * 16 + 10,
+          speedY: Math.random() * 0.5 + 0.25,
+          wobbleSpeed: Math.random() * 0.02 + 0.01,
+          wobbleAmp: Math.random() * 18 + 8,
           wobbleOffset: Math.random() * Math.PI * 2,
           hue: Math.random() * 360,
         });
@@ -107,89 +122,87 @@ export const AnimatedBackground: React.FC = () => {
     initStars();
     initBubbles();
 
-    // Shooting star spawn timer
-    let nextShootingStarTime = Date.now() + 1500;
-
+    let nextShootingStarTime = Date.now() + 2500;
     let time = 0;
-    const render = () => {
-      time += 0.02;
+    let lastTime = performance.now();
+
+    const render = (now: number) => {
+      if (!isVisible) return;
+
+      const delta = Math.min(0.05, (now - lastTime) / 1000);
+      lastTime = now;
+      time += delta * 1.5;
+
       ctx.clearRect(0, 0, width, height);
 
-      // 1. Draw Twinkling Stars
-      stars.forEach((s) => {
-        s.alpha = s.baseAlpha + Math.sin(time * 2 + s.twinklePhase) * 0.35;
-        if (s.alpha < 0.1) s.alpha = 0.1;
-        if (s.alpha > 0.95) s.alpha = 0.95;
+      // 1. Draw Twinkling Stars (Clean, zero shadowBlur for 60fps)
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        s.alpha = s.baseAlpha + Math.sin(time * 2 + s.twinklePhase) * 0.3;
+        if (s.alpha < 0.15) s.alpha = 0.15;
+        if (s.alpha > 0.9) s.alpha = 0.9;
 
         ctx.save();
         ctx.globalAlpha = s.alpha;
 
-        if (s.isFourPoint && s.size > 2.2) {
-          // Draw 4-point twinkling star
+        if (s.isFourPoint && s.size > 2.0) {
           ctx.translate(s.x, s.y);
-          ctx.rotate(time * 0.2 + s.twinklePhase);
+          ctx.rotate(time * 0.15 + s.twinklePhase);
+          const r = s.size * 2.2;
 
-          const r = s.size * 2.5;
-          ctx.fillStyle = s.color;
-
-          // Glowing radial halo
-          const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 2.5);
-          halo.addColorStop(0, s.color);
-          halo.addColorStop(1, 'transparent');
-          ctx.fillStyle = halo;
-          ctx.beginPath();
-          ctx.arc(0, 0, r * 2.5, 0, Math.PI * 2);
-          ctx.fill();
-
-          // 4-point cross
-          ctx.fillStyle = s.color;
+          // Cross sparkle
+          ctx.strokeStyle = s.color;
+          ctx.lineWidth = 1.4;
           ctx.beginPath();
           ctx.moveTo(-r, 0);
           ctx.lineTo(r, 0);
           ctx.moveTo(0, -r);
           ctx.lineTo(0, r);
-          ctx.strokeStyle = s.color;
-          ctx.lineWidth = 1.5;
           ctx.stroke();
 
-          // Center bright core
+          // Bright center
           ctx.beginPath();
-          ctx.arc(0, 0, s.size * 0.8, 0, Math.PI * 2);
+          ctx.arc(0, 0, s.size * 0.7, 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
           ctx.fill();
         } else {
-          // Draw circular glowing star
+          // Circular star with soft halo
           ctx.beginPath();
-          ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+          ctx.arc(s.x, s.y, s.size * 1.6, 0, Math.PI * 2);
           ctx.fillStyle = s.color;
-          ctx.shadowColor = s.color;
-          ctx.shadowBlur = 8;
+          ctx.globalAlpha = s.alpha * 0.35;
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.size * 0.8, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffffff';
+          ctx.globalAlpha = s.alpha;
           ctx.fill();
         }
         ctx.restore();
-      });
+      }
 
-      // 2. Spawn & Draw Shooting Stars (Comets)
-      const now = Date.now();
-      if (now > nextShootingStarTime) {
+      // 2. Shooting Stars (Lightweight comet streak)
+      const currentTime = Date.now();
+      if (currentTime > nextShootingStarTime) {
         shootingStars.push({
           x: Math.random() * (width * 0.7) + 50,
-          y: Math.random() * (height * 0.4),
-          len: Math.random() * 140 + 90,
-          speed: Math.random() * 7 + 9,
-          angle: (Math.PI / 4) + (Math.random() * 0.2 - 0.1),
-          alpha: 1.0,
-          thickness: Math.random() * 1.5 + 2.0,
+          y: Math.random() * (height * 0.35),
+          len: Math.random() * 110 + 70,
+          speed: Math.random() * 6 + 7,
+          angle: Math.PI / 4 + (Math.random() * 0.2 - 0.1),
+          alpha: 0.9,
+          thickness: 1.8,
           color: Math.random() > 0.5 ? '#facc15' : '#38bdf8',
         });
-        nextShootingStarTime = now + Math.random() * 3500 + 2000;
+        nextShootingStarTime = currentTime + Math.random() * 4500 + 3500;
       }
 
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const cs = shootingStars[i];
         cs.x += Math.cos(cs.angle) * cs.speed;
         cs.y += Math.sin(cs.angle) * cs.speed;
-        cs.alpha -= 0.016;
+        cs.alpha -= 0.015;
 
         if (cs.alpha <= 0) {
           shootingStars.splice(i, 1);
@@ -214,24 +227,20 @@ export const AnimatedBackground: React.FC = () => {
         ctx.lineTo(cs.x, cs.y);
         ctx.stroke();
 
-        // Glowing Comet Head
         ctx.beginPath();
-        ctx.arc(cs.x, cs.y, cs.thickness * 1.8, 0, Math.PI * 2);
+        ctx.arc(cs.x, cs.y, cs.thickness * 1.5, 0, Math.PI * 2);
         ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = cs.color;
-        ctx.shadowBlur = 12;
         ctx.fill();
-
         ctx.restore();
       }
 
-      // 3. Draw Floating Soap Bubbles with Refraction
-      bubbles.forEach((b) => {
+      // 3. Floating Soap Bubbles (Silky soft pastel circles)
+      for (let i = 0; i < bubbles.length; i++) {
+        const b = bubbles[i];
         b.y -= b.speedY;
-        const wobble = Math.sin(time * 2 + b.wobbleOffset) * b.wobbleAmp;
+        const wobble = Math.sin(time * 1.8 + b.wobbleOffset) * b.wobbleAmp;
         const curX = b.x + wobble;
 
-        // Reset bubble when floats off top
         if (b.y + b.radius < -20) {
           b.y = height + b.radius + 10;
           b.x = Math.random() * width;
@@ -240,56 +249,24 @@ export const AnimatedBackground: React.FC = () => {
         ctx.save();
         ctx.translate(curX, b.y);
 
-        // Bubble shell with iridescent gradient
-        const rimGrad = ctx.createRadialGradient(
-          -b.radius * 0.3,
-          -b.radius * 0.3,
-          b.radius * 0.2,
-          0,
-          0,
-          b.radius
-        );
-        rimGrad.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
-        rimGrad.addColorStop(0.7, `hsla(${b.hue}, 85%, 75%, 0.18)`);
-        rimGrad.addColorStop(0.95, `hsla(${(b.hue + 80) % 360}, 90%, 65%, 0.45)`);
-        rimGrad.addColorStop(1, 'rgba(255, 255, 255, 0.65)');
-
-        ctx.fillStyle = rimGrad;
+        // Soft iridescent bubble shell
         ctx.beginPath();
         ctx.arc(0, 0, b.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${b.hue}, 80%, 75%, 0.12)`;
         ctx.fill();
 
-        // Thin outer bubble ring
-        ctx.strokeStyle = `hsla(${b.hue}, 90%, 75%, 0.4)`;
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = `hsla(${b.hue}, 85%, 70%, 0.35)`;
+        ctx.lineWidth = 1.0;
         ctx.stroke();
 
-        // Highlight glint (top left)
+        // Highlight sheen
         ctx.beginPath();
-        ctx.arc(
-          -b.radius * 0.4,
-          -b.radius * 0.4,
-          b.radius * 0.22,
-          0,
-          Math.PI * 2
-        );
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-        ctx.fill();
-
-        // Second subtle highlight (bottom right)
-        ctx.beginPath();
-        ctx.arc(
-          b.radius * 0.35,
-          b.radius * 0.35,
-          b.radius * 0.1,
-          0,
-          Math.PI * 2
-        );
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.arc(-b.radius * 0.35, -b.radius * 0.35, b.radius * 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
         ctx.fill();
 
         ctx.restore();
-      });
+      }
 
       animId = requestAnimationFrame(render);
     };
@@ -299,22 +276,45 @@ export const AnimatedBackground: React.FC = () => {
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden bg-gradient-to-br from-[#dbeafe] via-[#ede9fe] to-[#fed7aa]/50">
-      {/* Dynamic Glowing Aurora Backdrops */}
-      <div className="absolute -top-36 -left-36 w-[36rem] h-[36rem] bg-sky-400/30 rounded-full blur-[110px] animate-aurora" />
-      <div className="absolute top-1/4 -right-32 w-[34rem] h-[34rem] bg-indigo-400/25 rounded-full blur-[100px] animate-aurora-reverse" />
-      <div className="absolute bottom-10 left-1/4 w-[30rem] h-[30rem] bg-amber-300/35 rounded-full blur-[90px] animate-aurora" />
-      <div className="absolute -bottom-36 right-1/4 w-[38rem] h-[38rem] bg-pink-300/30 rounded-full blur-[120px] animate-aurora-reverse" />
-      <div className="absolute top-2/3 -left-20 w-[26rem] h-[26rem] bg-emerald-300/25 rounded-full blur-[90px] animate-aurora" />
+    <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden bg-gradient-to-br from-[#dbeafe] via-[#ede9fe] to-[#fed7aa]/40">
+      {/* Zero-Lag Aurora Glows using CSS radial gradients directly (NO blur filter penalties) */}
+      <div
+        className="absolute -top-32 -left-32 w-[34rem] h-[34rem] rounded-full pointer-events-none opacity-60"
+        style={{
+          background: 'radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(56, 189, 248, 0) 70%)',
+        }}
+      />
+      <div
+        className="absolute top-1/4 -right-28 w-[32rem] h-[32rem] rounded-full pointer-events-none opacity-50"
+        style={{
+          background: 'radial-gradient(circle, rgba(129, 140, 248, 0.25) 0%, rgba(129, 140, 248, 0) 70%)',
+        }}
+      />
+      <div
+        className="absolute bottom-10 left-1/4 w-[28rem] h-[28rem] rounded-full pointer-events-none opacity-55"
+        style={{
+          background: 'radial-gradient(circle, rgba(251, 191, 36, 0.28) 0%, rgba(251, 191, 36, 0) 70%)',
+        }}
+      />
+      <div
+        className="absolute -bottom-32 right-1/4 w-[36rem] h-[36rem] rounded-full pointer-events-none opacity-50"
+        style={{
+          background: 'radial-gradient(circle, rgba(244, 114, 182, 0.24) 0%, rgba(244, 114, 182, 0) 70%)',
+        }}
+      />
+      <div
+        className="absolute top-2/3 -left-20 w-[26rem] h-[26rem] rounded-full pointer-events-none opacity-45"
+        style={{
+          background: 'radial-gradient(circle, rgba(52, 211, 153, 0.22) 0%, rgba(52, 211, 153, 0) 70%)',
+        }}
+      />
 
-      {/* Subtle Pastel Rainbow Arc in Top-Right Corner */}
-      <div className="absolute -top-16 -right-16 w-96 h-96 rounded-full border-[18px] border-transparent opacity-40 animate-rainbow pointer-events-none [border-top-color:#f472b6] [border-left-color:#facc15] [border-right-color:#38bdf8] [border-bottom-color:#a855f7] blur-[1px]" />
-
-      {/* Floating Whimsical Cartoon Clouds (Drifting smoothly across screen) */}
+      {/* Floating Cartoon Clouds */}
       <div className="absolute top-16 animate-cloud-slow opacity-60">
         <svg width="220" height="90" viewBox="0 0 220 90" fill="none">
           <path
@@ -325,41 +325,28 @@ export const AnimatedBackground: React.FC = () => {
         </svg>
       </div>
 
-      <div className="absolute top-44 animate-cloud-fast opacity-45">
+      <div className="absolute top-44 animate-cloud-fast opacity-40">
         <svg width="170" height="70" viewBox="0 0 170 70" fill="none">
           <path
             d="M 25 58 C 8 58 0 45 4 34 C 6 24 20 18 30 22 C 35 8 55 3 75 8 C 90 3 110 7 118 18 C 132 13 148 20 152 34 C 168 38 172 58 148 58 Z"
             fill="white"
-            fillOpacity="0.9"
+            fillOpacity="0.85"
           />
         </svg>
       </div>
 
-      <div className="absolute top-3/4 animate-cloud-slow opacity-40">
-        <svg width="240" height="95" viewBox="0 0 240 95" fill="none">
-          <path
-            d="M 32 80 C 12 80 0 64 6 48 C 9 34 27 27 41 32 C 48 13 75 6 102 13 C 124 6 151 11 162 27 C 182 20 205 30 211 48 C 232 54 238 80 206 80 Z"
-            fill="white"
-            fillOpacity="0.8"
-          />
-        </svg>
-      </div>
-
-      {/* Cute Hot Air Balloon gently sailing horizontally across sky */}
+      {/* Cute Hot Air Balloon gently sailing horizontally */}
       <div className="absolute top-28 animate-balloon opacity-75">
-        <div className="relative w-16 h-20 filter drop-shadow-md">
-          {/* Balloon Envelope */}
-          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-rose-400 via-amber-400 to-sky-400 shadow-inner flex items-center justify-center border border-white/60">
-            <span className="text-xl">⭐</span>
+        <div className="relative w-14 h-18 filter drop-shadow-md">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-r from-rose-400 via-amber-400 to-sky-400 shadow-inner flex items-center justify-center border border-white/60">
+            <span className="text-lg">⭐</span>
           </div>
-          {/* Strings */}
-          <div className="w-8 h-2 mx-auto border-x border-slate-500/60" />
-          {/* Basket */}
-          <div className="w-5 h-4 mx-auto rounded-sm bg-amber-800 shadow-sm border border-amber-900" />
+          <div className="w-7 h-2 mx-auto border-x border-slate-500/60" />
+          <div className="w-4 h-3 mx-auto rounded-sm bg-amber-800 shadow-sm border border-amber-900" />
         </div>
       </div>
 
-      {/* Fullscreen HTML5 Particle Canvas (Twinkles, Shooting Stars, Bubbles) */}
+      {/* Fullscreen HTML5 Particle Canvas */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none"
