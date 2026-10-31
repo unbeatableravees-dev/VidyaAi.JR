@@ -7,6 +7,7 @@ import { IslamicExamModal } from '../modals/IslamicExamModal';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { ReligionType } from '../../types/student';
+import { getStudentContentGrade } from '../../utils/studentLevel';
 import {
   getStudentProgress,
   recordActivityCompletion,
@@ -181,24 +182,6 @@ const COMMUNITY_GAMES: Record<ReligionType, PracticeGame[]> = {
   ],
 };
 
-type ClassBand = 'nursery-kg' | 'class-1-3' | 'class-4-5' | 'class-6-8';
-type AgeBand = 'age-4-6' | 'age-7-9' | 'age-10-12' | 'age-13-14';
-
-const getClassBand = (grade: string): ClassBand => {
-  const gradeNumber = Number(grade.match(/\d+/)?.[0] ?? 0);
-  if (gradeNumber >= 6) return 'class-6-8';
-  if (gradeNumber >= 4) return 'class-4-5';
-  if (gradeNumber >= 1) return 'class-1-3';
-  return 'nursery-kg';
-};
-
-const getAgeBand = (age: number): AgeBand => {
-  if (age >= 13) return 'age-13-14';
-  if (age >= 10) return 'age-10-12';
-  if (age >= 7) return 'age-7-9';
-  return 'age-4-6';
-};
-
 interface PracticeScreenProps {
   studentId?: string;
   userGrade: string;
@@ -215,9 +198,6 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
   onOpenBodyExplorer,
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | GameCategory>('all');
-  const [selectedClassBand, setSelectedClassBand] = useState<ClassBand>(() => getClassBand(userGrade));
-  const [selectedAgeBand, setSelectedAgeBand] = useState<AgeBand>(() => getAgeBand(userAge));
-  const [filtersCustomized, setFiltersCustomized] = useState(false);
   const [activeGame, setActiveGame] = useState<{ id: string; title: string } | null>(null);
   const [progress, setProgress] = useState(() => getStudentProgress(studentId));
   const earnedBadges = [
@@ -234,30 +214,7 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
   const visibleGames = games.filter((game) =>
     selectedFilter === 'all' || game.category === selectedFilter
   );
-  const profileGrade = Number(userGrade.match(/\d+/)?.[0] ?? 0);
-  const selectedGradeBand = selectedClassBand === 'class-6-8' || selectedClassBand === 'class-4-5'
-    ? 'Grade 3'
-    : selectedClassBand === 'class-1-3'
-      ? selectedAgeBand === 'age-4-6' ? 'Grade 1' : 'Grade 2'
-      : 'Grade 1';
-  const contentGrade = filtersCustomized
-    ? selectedAgeBand === 'age-10-12' ||
-      selectedAgeBand === 'age-13-14' ||
-      selectedClassBand === 'class-4-5' ||
-      selectedClassBand === 'class-6-8'
-      ? 'Grade 3'
-      : selectedGradeBand
-    : profileGrade >= 3 || userAge >= 10
-      ? 'Grade 3'
-      : profileGrade >= 2
-        ? 'Grade 2'
-        : 'Grade 1';
-
-  const resetFiltersToProfile = () => {
-    setSelectedClassBand(getClassBand(userGrade));
-    setSelectedAgeBand(getAgeBand(userAge));
-    setFiltersCustomized(false);
-  };
+  const contentGrade = getStudentContentGrade(userGrade, userAge);
 
   const handleLaunchGame = (id: string, title: string) => {
     sound.playPop();
@@ -280,7 +237,7 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
         <div className="space-y-3 max-w-xl text-center md:text-left relative z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-black shadow-sm">
             <Gamepad2 className="w-4 h-4 text-amber-300" />
-            <span>{userGrade} · Age {userAge} · Interactive Game Arcade</span>
+            <span>{userGrade} · Age {userAge} · {contentGrade}{contentGrade === 'Grade 3' ? '+' : ''} Level Arcade</span>
           </div>
 
           <h1 className="text-3xl md:text-4xl font-black tracking-tight drop-shadow-sm">
@@ -353,56 +310,8 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-end gap-3 rounded-2xl bg-white/80 p-4 border border-slate-200 shadow-sm">
-          <label className="flex flex-col gap-1 text-xs font-black text-slate-600">
-            Class level
-            <select
-              value={selectedClassBand}
-              onChange={(event) => {
-                setSelectedClassBand(event.target.value as ClassBand);
-                setFiltersCustomized(true);
-              }}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
-            >
-              <option value="nursery-kg">Nursery / KG</option>
-              <option value="class-1-3">Classes 1–3</option>
-              <option value="class-4-5">Classes 4–5</option>
-              <option value="class-6-8">Classes 6–8</option>
-            </select>
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-black text-slate-600">
-            Age group
-            <select
-              value={selectedAgeBand}
-              onChange={(event) => {
-                setSelectedAgeBand(event.target.value as AgeBand);
-                setFiltersCustomized(true);
-              }}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
-            >
-              <option value="age-4-6">Ages 4–6</option>
-              <option value="age-7-9">Ages 7–9</option>
-              <option value="age-10-12">Ages 10–12</option>
-              <option value="age-13-14">Ages 13–14</option>
-            </select>
-          </label>
-          <p className="text-xs font-semibold text-slate-500">
-            Defaults match the student profile. Changing either filter updates the challenge level.
-          </p>
-          {filtersCustomized && (
-            <button
-              type="button"
-              onClick={resetFiltersToProfile}
-              className="rounded-xl bg-blue-50 px-3 py-2 text-xs font-black text-blue-700 hover:bg-blue-100"
-            >
-              Reset to profile
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between gap-4">
+      {/* Subject filters; the learning level comes from class and age selected during onboarding. */}
+      <div className="flex items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2">
           {[
             { id: 'all', label: 'All Mini-Games' },
@@ -436,7 +345,6 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
         <span className="text-xs font-black text-slate-500 hidden sm:inline">
           Showing {visibleGames.length} Interactive Activities
         </span>
-      </div>
       </div>
 
       {/* Playable Games Grid */}

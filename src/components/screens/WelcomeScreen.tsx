@@ -4,6 +4,7 @@ import { Sparkles, ArrowRight, Star, Heart, Check } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, ReligionType, LanguagePair, RELIGION_CONFIGS } from '../../types/student';
+import { getStudentContentGrade } from '../../utils/studentLevel';
 
 interface WelcomeScreenProps {
   onProfileSubmit: (profile: StudentProfile) => void;
@@ -58,6 +59,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [creatingNewStudent, setCreatingNewStudent] = useState(false);
 
   const religionConfig = RELIGION_CONFIGS[selectedReligion];
+  const contentGrade = getStudentContentGrade(selectedClass, selectedAge);
 
   if (showProfilePicker && savedProfiles.length > 0 && !creatingNewStudent) {
     return (
@@ -319,6 +321,22 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                     {age} yrs
                   </button>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="sm:col-span-2 rounded-2xl border-2 border-indigo-100 bg-indigo-50 p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">🎯</span>
+              <div>
+                <p className="text-sm font-black text-indigo-950">
+                  Learning level: {contentGrade}{contentGrade === 'Grade 3' ? '+' : ''}
+                  {' · '}
+                  {contentGrade === 'Grade 1' ? 'Foundation' : contentGrade === 'Grade 2' ? 'Growing' : 'Challenge'}
+                </p>
+                <p className="mt-1 text-xs font-semibold leading-relaxed text-indigo-800">
+                  This is selected automatically from {selectedClass} and age {selectedAge}. Games and quizzes use this level after the student profile is created.
+                </p>
               </div>
             </div>
           </div>
