@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, ShieldCheck } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
@@ -15,6 +15,7 @@ interface HeaderProps {
   onProfileClick?: () => void;
   onSettingsClick?: () => void;
   onSwitchProfile?: () => void;
+  onOpenAdmin?: () => void;
   studentProfile?: StudentProfile | null;
 }
 
@@ -38,6 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
   onProfileClick,
   onSettingsClick,
   onSwitchProfile,
+  onOpenAdmin,
   studentProfile,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -102,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3 sm:gap-4">
+      <div className="flex items-center gap-2.5 sm:gap-3.5">
         {/* Multilingual Tailored Greeting Pill */}
         <div className="hidden lg:flex flex-col text-right">
           <span className={`text-xs font-black text-slate-800 leading-tight ${relConfig.scriptFont}`}>
@@ -112,6 +114,21 @@ export const Header: React.FC<HeaderProps> = ({
             {relConfig.languageBadge}
           </span>
         </div>
+
+        {/* Super Admin Quick Access Button */}
+        {onOpenAdmin && (
+          <button
+            onClick={() => {
+              sound.playPop();
+              onOpenAdmin();
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-yellow-400 text-xs font-black transition-all shadow-xs cursor-pointer hover:scale-102"
+            title="Open Super Admin Portal (admin@vidyaai.jr.in)"
+          >
+            <ShieldCheck className="w-4 h-4 text-yellow-400" />
+            <span className="hidden sm:inline">Admin Portal</span>
+          </button>
+        )}
 
         {/* Notification Bell */}
         <button
@@ -193,6 +210,18 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <Settings className="w-4 h-4 text-slate-400" /> Edit Profile & Settings
               </button>
+
+              {onOpenAdmin && (
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    onOpenAdmin();
+                  }}
+                  className="w-full px-5 py-2.5 text-left text-xs font-black text-amber-900 bg-amber-50/60 hover:bg-amber-100/80 flex items-center gap-2.5 cursor-pointer border-t border-slate-100"
+                >
+                  <ShieldCheck className="w-4 h-4 text-amber-600" /> Super Admin Portal 🔐
+                </button>
+              )}
 
               <button
                 onClick={() => {

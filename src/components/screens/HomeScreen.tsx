@@ -20,6 +20,7 @@ interface HomeScreenProps {
   onStartLearning: () => void;
   onSelectCategory: (categoryId: string) => void;
   onViewAllCategories: () => void;
+  onOpenCurriculum?: () => void;
   onOpenPractice?: () => void;
   onOpenBodyExplorer?: () => void;
   onOpenIslamic?: () => void;
@@ -131,6 +132,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onStartLearning,
   onSelectCategory,
   onViewAllCategories,
+  onOpenCurriculum,
   onOpenPractice,
   onOpenBodyExplorer,
   onOpenIslamic,
@@ -221,6 +223,43 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             className="w-full h-full object-contain filter drop-shadow-2xl"
           />
         </div>
+      </div>
+
+      {/* Smart Age & Class Personalized LMS Banner */}
+      <div
+        onClick={() => {
+          sound.playPop();
+          if (onOpenCurriculum) onOpenCurriculum();
+          else onStartLearning();
+        }}
+        className="rounded-[2.2rem] bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white p-5 sm:p-6 shadow-xl border-2 border-white/60 flex flex-col sm:flex-row items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all select-none"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl shadow-sm border border-white/30 shrink-0">
+            🎯
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-yellow-400 text-slate-950 font-black text-[10px] uppercase tracking-wider">
+                {studentProfile?.gradeClass || 'Class 2'} Smart LMS
+              </span>
+              <span className="text-xs font-bold text-blue-100">
+                Personalized Age-Based Curriculum
+              </span>
+            </div>
+            <h3 className="text-base sm:text-lg font-black text-white">
+              Open {studentProfile?.gradeClass || 'Class'} Materials, Videos & Quizzes
+            </h3>
+            <p className="text-xs text-blue-100 font-semibold mt-0.5">
+              Personalized materials, interest tracking, teacher notes & class promotion requests.
+            </p>
+          </div>
+        </div>
+
+        <button className="px-5 py-2.5 rounded-2xl bg-white text-slate-900 font-black text-xs hover:bg-yellow-300 transition-colors shadow-md shrink-0 flex items-center gap-1.5 cursor-pointer">
+          <span>Explore Curriculum</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Popular Categories Section - ALL 13 CATEGORIES with glossy card look */}

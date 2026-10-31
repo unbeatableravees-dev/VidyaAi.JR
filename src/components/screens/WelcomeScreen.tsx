@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
-import { Sparkles, ArrowRight, Star, Heart, Check } from 'lucide-react';
+import { Sparkles, ArrowRight, Star, Heart, Check, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, ReligionType, LanguagePair, RELIGION_CONFIGS } from '../../types/student';
 import { getStudentContentGrade } from '../../utils/studentLevel';
+import { ALL_CLASSES, getExpectedAgeForClass, getStageForClass, STAGE_CONFIGS } from '../../types/lms';
 
 interface WelcomeScreenProps {
   onProfileSubmit: (profile: StudentProfile) => void;
@@ -12,6 +13,7 @@ interface WelcomeScreenProps {
   savedProfiles?: StudentProfile[];
   showProfilePicker?: boolean;
   onChooseProfile?: (profile: StudentProfile) => void;
+  onOpenAdmin?: () => void;
 }
 
 const AVATARS = [
@@ -25,46 +27,52 @@ const AVATARS = [
   { id: 'girl-fatima', name: 'Fatima', emoji: '🧕', label: 'Bright Mind', bg: 'from-teal-400 to-emerald-600' },
 ];
 
-const CLASSES = [
-  { id: 'Nursery / KG', label: 'Nursery / KG', age: 'Ages 3-5', icon: '🐣' },
-  { id: 'Class 1', label: 'Class 1', age: 'Ages 5-6', icon: '🎒' },
-  { id: 'Class 2', label: 'Class 2', age: 'Ages 6-7', icon: '🎒' },
-  { id: 'Class 3', label: 'Class 3', age: 'Ages 7-8', icon: '⭐' },
-  { id: 'Class 4', label: 'Class 4', age: 'Ages 8-9', icon: '⭐' },
-  { id: 'Class 5', label: 'Class 5', age: 'Ages 9-10', icon: '🚀' },
-  { id: 'Class 6-8', label: 'Class 6 - 8', age: 'Ages 11-14', icon: '🎓' },
-];
-
-const FAVORITE_GAMES = [
-  { id: 'body', label: 'Real Human Body 3D', icon: '🧬', desc: 'Anatomy, organs, pulsing heart & X-ray slider' },
-  { id: 'cosmos', label: 'Cosmic Space & Stars', icon: '🚀', desc: 'Planets, burning Sun & galaxy facts' },
-  { id: 'math', label: 'Math Puzzles & Logic', icon: '🧮', desc: 'Shapes, numbers & mental agility' },
-  { id: 'words', label: 'Word Quests & Spelling', icon: '📚', desc: 'Vocabulary, phonics & storytelling' },
-];
-
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onProfileSubmit,
   initialProfile,
   savedProfiles = [],
   showProfilePicker = false,
   onChooseProfile,
+  onOpenAdmin,
 }) => {
   const [name, setName] = useState(initialProfile?.name || '');
   const [selectedAvatar, setSelectedAvatar] = useState(initialProfile?.avatar || AVATARS[0].id);
   const [selectedAge, setSelectedAge] = useState<number>(initialProfile?.age || 7);
   const [selectedClass, setSelectedClass] = useState(initialProfile?.gradeClass || 'Class 2');
   const [selectedReligion, setSelectedReligion] = useState<ReligionType>(initialProfile?.religion || 'muslim');
-  const [selectedGame, setSelectedGame] = useState(initialProfile?.favoriteGame || 'body');
   const [error, setError] = useState(false);
   const [creatingNewStudent, setCreatingNewStudent] = useState(false);
 
   const religionConfig = RELIGION_CONFIGS[selectedReligion];
-  const contentGrade = getStudentContentGrade(selectedClass, selectedAge);
+
+  // Age & Class stage checks
+  const expectedAge = getExpectedAgeForClass(selectedClass);
+  const isMismatch = selectedAge < expectedAge.min || selectedAge > expectedAge.max;
+  const currentStage = getStageForClass(selectedClass);
+  const stageInfo = STAGE_CONFIGS[currentStage];
 
   if (showProfilePicker && savedProfiles.length > 0 && !creatingNewStudent) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0c2e6b] via-[#14479e] to-[#0284c7] flex items-center justify-center p-4 sm:p-8">
-        <section className="w-full max-w-3xl rounded-[2rem] bg-white p-6 sm:p-10 shadow-2xl">
+      <div className="min-h-screen bg-gradient-to-br from-[#0c2e6b] via-[#14479e] to-[#0284c7] flex flex-col items-center justify-center p-4 sm:p-8 relative">
+        {/* Top Bar with Admin Login */}
+        <div className="w-full max-w-3xl flex items-center justify-between mb-4 px-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-black text-white font-['Nunito',sans-serif]">
+              Vidya<span className="text-yellow-400">AI</span> Jr
+            </span>
+          </div>
+          {onOpenAdmin && (
+            <button
+              onClick={onOpenAdmin}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-black hover:bg-white/25 border border-white/30 transition-all cursor-pointer shadow-sm hover:scale-102"
+            >
+              <ShieldCheck className="w-4 h-4 text-yellow-400" />
+              <span>Admin Login 🔐</span>
+            </button>
+          )}
+        </div>
+
+        <section className="w-full max-w-3xl rounded-[2.5rem] bg-white p-6 sm:p-10 shadow-2xl">
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-1.5">
               <span className="text-2xl font-black text-slate-900 font-['Nunito',sans-serif]">Vidya<span className="text-blue-600">AI</span></span>
@@ -73,7 +81,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             <p className="text-xs font-black uppercase tracking-widest text-blue-600">Kids Learning Galaxy</p>
             <h1 className="mt-1.5 text-2xl sm:text-3xl font-black text-slate-900">Who is learning today? ⭐</h1>
             <p className="mt-2 text-sm font-semibold text-slate-500">
-              Each student has their own lessons, games, stars, and progress.
+              Each student has their own personalized curriculum, stars, and progress dossier.
             </p>
           </div>
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
@@ -82,7 +90,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 key={profile.id}
                 type="button"
                 onClick={() => onChooseProfile?.(profile)}
-                className="flex items-center gap-4 rounded-2xl border-2 border-slate-200 bg-slate-50 p-4 text-left transition hover:border-blue-400 hover:bg-blue-50"
+                className="flex items-center gap-4 rounded-2xl border-2 border-slate-200 bg-slate-50 p-4 text-left transition hover:border-blue-400 hover:bg-blue-50 cursor-pointer"
               >
                 <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow">
                   {AVATARS.find((avatar) => avatar.id === profile.avatar)?.emoji || '👦'}
@@ -90,7 +98,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 <span>
                   <span className="block text-lg font-black text-slate-900">{profile.name}</span>
                   <span className="block text-xs font-bold text-slate-500">
-                  {profile.gradeClass} · {RELIGION_CONFIGS[profile.religion]?.label || 'Universal / All'}
+                    {profile.gradeClass} ({profile.age} yrs) · {RELIGION_CONFIGS[profile.religion]?.label || 'Universal'}
                   </span>
                 </span>
               </button>
@@ -99,9 +107,9 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           <button
             type="button"
             onClick={() => setCreatingNewStudent(true)}
-            className="mt-6 w-full rounded-2xl bg-blue-600 px-5 py-3 font-black text-white shadow-lg transition hover:bg-blue-700"
+            className="mt-6 w-full rounded-2xl bg-blue-600 px-5 py-3 font-black text-white shadow-lg transition hover:bg-blue-700 cursor-pointer"
           >
-            + Add a new student
+            + Register a new student
           </button>
         </section>
       </div>
@@ -126,7 +134,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       gradeClass: selectedClass,
       religion: selectedReligion,
       languages: languageMode,
-      favoriteGame: selectedGame,
+      favoriteGame: 'body',
       createdAt: initialProfile?.createdAt || new Date().toISOString(),
       stars: initialProfile?.stars ?? 0,
       badges: initialProfile?.badges ?? 0,
@@ -150,10 +158,33 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0c2e6b] via-[#14479e] to-[#0284c7] flex items-center justify-center p-3 sm:p-6 md:p-8 relative overflow-y-auto select-none py-12">
+    <div className="min-h-screen bg-gradient-to-br from-[#0c2e6b] via-[#14479e] to-[#0284c7] flex flex-col items-center justify-center p-3 sm:p-6 md:p-8 relative overflow-y-auto select-none py-10">
       {/* Animated Floating Background Elements */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-cyan-300/20 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Top Navbar Section with Admin Login Button */}
+      <div className="w-full max-w-2xl flex items-center justify-between mb-4 z-20 px-2">
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-black text-white font-['Nunito',sans-serif]">
+            Vidya<span className="text-yellow-400">AI</span> Jr
+          </span>
+          <span className="px-2 py-0.5 bg-yellow-400 text-slate-950 font-black text-[10px] rounded-full">
+            KIDS PORTAL
+          </span>
+        </div>
+
+        {onOpenAdmin && (
+          <button
+            type="button"
+            onClick={onOpenAdmin}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-black hover:bg-white/25 border border-white/30 transition-all cursor-pointer shadow-sm hover:scale-102"
+          >
+            <ShieldCheck className="w-4 h-4 text-yellow-400" />
+            <span>Admin Login 🔐</span>
+          </button>
+        )}
+      </div>
 
       {/* Main Glassmorphism Card */}
       <div className="relative z-10 w-full max-w-2xl bg-white/95 backdrop-blur-2xl rounded-[3rem] p-6 sm:p-10 md:p-12 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.45)] border-2 border-white/90 animate-in zoom-in-95 duration-300 my-auto">
@@ -192,11 +223,12 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           <button
             type="button"
             onClick={() => setCreatingNewStudent(false)}
-            className="w-full rounded-xl bg-blue-50 px-4 py-2 text-sm font-black text-blue-700 hover:bg-blue-100"
+            className="w-full mb-4 rounded-xl bg-blue-50 px-4 py-2 text-sm font-black text-blue-700 hover:bg-blue-100 cursor-pointer"
           >
-            ← Choose a saved student instead
+            ← Choose an existing saved student instead
           </button>
         )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Step 1: Student Name */}
           <div>
@@ -250,7 +282,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                       ? 'border-blue-500 bg-blue-50 shadow-md scale-105 ring-2 ring-blue-300'
                       : 'border-slate-200 bg-slate-50 hover:bg-white hover:scale-102'
                   }`}
-                  title={`${av.name} (${av.label})`}
+                  title={`${av.name}`}
                 >
                   <span className={`w-11 h-11 rounded-full bg-gradient-to-br ${av.bg} flex items-center justify-center text-2xl filter drop-shadow-xs transition-transform group-hover:scale-110`}>
                     {av.emoji}
@@ -268,47 +300,61 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             </div>
           </div>
 
-          {/* Step 3: Class / Grade & Age */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Step 3: Class / Grade (Nursery to Class 10) & Age */}
+          <div className="space-y-4">
             <div>
-              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
-                3. Select your Class / Grade
-              </label>
-              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
-                {CLASSES.map((cl) => (
-                  <button
-                    type="button"
-                    key={cl.id}
-                    onClick={() => {
-                      sound.playPop();
-                      setSelectedClass(cl.id);
-                    }}
-                    className={`p-2.5 rounded-2xl border-2 transition-all cursor-pointer text-left flex items-center gap-2 ${
-                      selectedClass === cl.id
-                        ? 'border-blue-600 bg-blue-600 text-white shadow-sm scale-102'
-                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                    }`}
-                  >
-                    <span className="text-lg">{cl.icon}</span>
-                    <div>
-                      <span className="text-xs font-black block leading-tight">{cl.label}</span>
-                      <span className={`text-[10px] font-bold block ${selectedClass === cl.id ? 'text-blue-100' : 'text-slate-400'}`}>
-                        {cl.age}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                  3. Select your Class / Grade (Nursery to Class 10)
+                </label>
+                <span className="text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                  {stageInfo.badge}
+                </span>
+              </div>
+
+              {/* Class Grid: 13 levels */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-52 overflow-y-auto p-1 border border-slate-100 rounded-2xl bg-slate-50/50">
+                {ALL_CLASSES.map((cl) => {
+                  const isSelected = selectedClass === cl.id;
+                  return (
+                    <button
+                      type="button"
+                      key={cl.id}
+                      onClick={() => {
+                        sound.playPop();
+                        setSelectedClass(cl.id);
+                      }}
+                      className={`p-2.5 rounded-2xl border-2 transition-all cursor-pointer text-left flex items-center gap-2 ${
+                        isSelected
+                          ? 'border-blue-600 bg-blue-600 text-white shadow-sm scale-102'
+                          : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                      }`}
+                    >
+                      <span className="text-xl shrink-0">{cl.icon}</span>
+                      <div className="min-w-0">
+                        <span className="text-xs font-black block leading-tight truncate">{cl.label}</span>
+                        <span className={`text-[10px] font-bold block ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
+                          {cl.ageRange}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
+            {/* Student Age Selector (3 to 16 Years) */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="text-xs font-black text-slate-700 uppercase tracking-wider">
                   Student Age: <span className="text-blue-600 font-black">{selectedAge} Years</span>
                 </label>
+                <span className="text-[10px] font-bold text-slate-400">
+                  Expected for {selectedClass}: {expectedAge.label}
+                </span>
               </div>
-              <div className="grid grid-cols-4 gap-1.5 pt-1">
-                {[4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((age) => (
+              <div className="grid grid-cols-7 gap-1.5 pt-1">
+                {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((age) => (
                   <button
                     type="button"
                     key={age}
@@ -322,30 +368,37 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                         : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
                     }`}
                   >
-                    {age} yrs
+                    {age}y
                   </button>
                 ))}
               </div>
             </div>
-          </div>
 
-          <div className="sm:col-span-2 rounded-2xl border-2 border-indigo-100 bg-indigo-50 p-4">
-            <div className="flex items-start gap-3">
+            {/* Age Mismatch Advisory Flag */}
+            {isMismatch && (
+              <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-3 flex items-start gap-2.5">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-xs font-semibold text-amber-900 leading-relaxed">
+                  <strong>Notice:</strong> Your age ({selectedAge} yrs) differs from the standard {selectedClass} age range ({expectedAge.label}). Our curriculum adapts to your chosen level, and admin will be notified to ensure optimal learning support.
+                </div>
+              </div>
+            )}
+
+            {/* Stage Info Card */}
+            <div className="rounded-2xl border-2 border-indigo-100 bg-indigo-50/80 p-3.5 flex items-start gap-3">
               <span className="text-2xl" aria-hidden="true">🎯</span>
               <div>
-                <p className="text-sm font-black text-indigo-950">
-                  Learning level: {contentGrade}{contentGrade === 'Grade 3' ? '+' : ''}
-                  {' · '}
-                  {contentGrade === 'Grade 1' ? 'Foundation' : contentGrade === 'Grade 2' ? 'Growing' : 'Challenge'}
+                <p className="text-xs sm:text-sm font-black text-indigo-950">
+                  {stageInfo.title} ({stageInfo.subtitle})
                 </p>
-                <p className="mt-1 text-xs font-semibold leading-relaxed text-indigo-800">
-                  This is selected automatically from {selectedClass} and age {selectedAge}. Games and quizzes use this level after the student profile is created.
+                <p className="mt-0.5 text-xs font-semibold text-indigo-800 leading-relaxed">
+                  {stageInfo.desc}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Step 4: Community & Faith Selection (Crucial for Tailored Islamic vs Punjabi vs Hindi View) */}
+          {/* Step 4: Community & Faith Selection */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">
@@ -358,8 +411,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {(['muslim', 'sikh', 'hindu', 'other'] as ReligionType[]).map((rel) => {
                 const conf = RELIGION_CONFIGS[rel];
-                const isSelected = selectedReligion === rel;
-
                 return (
                   <button
                     type="button"
@@ -368,27 +419,19 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                       sound.playPop();
                       setSelectedReligion(rel);
                     }}
-                    className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer text-left relative flex items-start gap-3 ${
-                      isSelected
-                        ? `bg-gradient-to-r ${conf.bgGradient} border-blue-500 shadow-md ring-2 ring-blue-300 scale-102`
-                        : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                    className={`p-3 rounded-2xl border-2 text-left transition-all cursor-pointer flex items-center gap-3 ${
+                      selectedReligion === rel
+                        ? 'border-emerald-600 bg-emerald-50 shadow-sm'
+                        : 'border-slate-200 bg-white hover:bg-slate-50'
                     }`}
                   >
-                    <span className="text-2xl mt-0.5">{conf.icon}</span>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-black text-slate-900">{conf.label}</span>
-                        {isSelected && (
-                          <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">
-                            <Check className="w-3 h-3 stroke-[3]" />
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-[11px] font-black text-blue-700 block mt-0.5">
-                        {conf.languageBadge}
+                    <span className="text-2xl">{conf.icon}</span>
+                    <div className="min-w-0">
+                      <span className="text-xs font-black text-slate-900 block truncate">
+                        {conf.label}
                       </span>
-                      <span className="text-[10px] font-bold text-slate-500 block leading-tight mt-0.5">
-                        {conf.culturalFocus}
+                      <span className="text-[10px] font-bold text-slate-500 block truncate">
+                        {conf.languageBadge}
                       </span>
                     </div>
                   </button>
@@ -397,63 +440,15 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             </div>
           </div>
 
-          {/* Step 5: Favorite Game */}
-          <div>
-            <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
-              5. Pick your Favorite Starting Game
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {FAVORITE_GAMES.map((game) => (
-                <button
-                  type="button"
-                  key={game.id}
-                  onClick={() => {
-                    sound.playPop();
-                    setSelectedGame(game.id);
-                  }}
-                  className={`p-2.5 rounded-2xl border-2 transition-all cursor-pointer text-center flex flex-col items-center justify-center ${
-                    selectedGame === game.id
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-950 shadow-sm scale-102 ring-2 ring-emerald-300'
-                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                  }`}
-                >
-                  <span className="text-xl mb-1">{game.icon}</span>
-                  <span className="text-xs font-black leading-tight">{game.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Dynamic Language Preview Banner */}
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 flex items-center justify-between gap-3">
-            <div>
-              <span className="text-[10px] font-black text-blue-800 uppercase block tracking-wider">
-                Assigned Languages & Greeting
-              </span>
-              <p className="text-xs font-black text-slate-900 mt-0.5">
-                {religionConfig.greeting} • {religionConfig.greetingTransliteration} ({religionConfig.languageBadge})
-              </p>
-            </div>
-            <span className="px-3 py-1 rounded-full bg-white text-blue-800 font-black text-xs shadow-xs border border-blue-200">
-              Active Mode
-            </span>
-          </div>
-
-          {/* Big Glossy CTA Submit Button */}
+          {/* Submit Action */}
           <button
             type="submit"
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 hover:from-yellow-300 hover:to-amber-400 active:scale-98 text-slate-950 font-black text-base shadow-xl shadow-amber-400/30 flex items-center justify-center gap-2 cursor-pointer transition-all glossy-pill shimmer-effect"
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-black text-sm uppercase tracking-wider shadow-xl hover:shadow-2xl transition-all cursor-pointer hover:scale-101 flex items-center justify-center gap-2"
           >
-            <span>Save & Enter VidyaAI Jr!</span>
-            <ArrowRight className="w-5 h-5 stroke-[3]" />
+            <span>Launch My Personalized Learning Galaxy</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
         </form>
-
-        {/* Footer */}
-        <div className="mt-6 text-center text-xs font-bold text-slate-400 flex items-center justify-center gap-1">
-          <span>Personalized educational fun made with</span>
-          <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />
-        </div>
       </div>
     </div>
   );

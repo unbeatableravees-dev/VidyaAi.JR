@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Grid, BookOpen, BarChart3, Settings, Gamepad2, Compass, Moon, User } from 'lucide-react';
+import { Home, Grid, BookOpen, BarChart3, Settings, Gamepad2, Compass, Moon, User, GraduationCap, ShieldCheck } from 'lucide-react';
 import { APP_IMAGES } from '../../assets/images';
 import { sound } from '../../utils/audio';
 import { StudentProfile } from '../../types/student';
@@ -7,6 +7,7 @@ import { getNavLabels } from '../../utils/language';
 
 export type NavTab =
   | 'home'
+  | 'curriculum'
   | 'islamic'
   | 'islamic-teachings'
   | 'punjabi'
@@ -26,6 +27,7 @@ interface SidebarProps {
   currentTab: NavTab;
   onTabChange: (tab: NavTab) => void;
   onSwitchProfile?: () => void;
+  onOpenAdmin?: () => void;
   studentProfile?: StudentProfile | null;
 }
 
@@ -33,6 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentTab,
   onTabChange,
   onSwitchProfile,
+  onOpenAdmin,
   studentProfile,
 }) => {
   const religion = studentProfile?.religion || 'muslim';
@@ -44,6 +47,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: localized.home.primary,
       secondary: localized.home.secondary,
       icon: Home,
+    },
+    {
+      id: 'curriculum' as NavTab,
+      label: 'Class Curriculum',
+      secondary: `${studentProfile?.gradeClass || 'Nursery - 10'} LMS`,
+      icon: GraduationCap,
+      badge: '🎯',
     },
     {
       id: 'categories' as NavTab,
@@ -138,45 +148,62 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     strokeWidth="3"
                     strokeLinejoin="round"
                   />
-                  <circle cx="42" cy="50" r="3" fill="#1E293B" />
-                  <circle cx="58" cy="50" r="3" fill="#1E293B" />
-                  <ellipse cx="36" cy="56" rx="3.5" ry="2" fill="#F87171" opacity="0.6" />
-                  <ellipse cx="64" cy="56" rx="3.5" ry="2" fill="#F87171" opacity="0.6" />
-                  <path d="M 44 57 Q 50 63 56 57" fill="none" stroke="#1E293B" strokeWidth="2.5" strokeLinecap="round" />
-                  <g transform="translate(18, -4) rotate(-8 32 30)">
-                    <polygon points="32,15 58,25 32,35 6,25" fill="#0f172a" />
-                    <path d="M 18 28 Q 32 34 46 28 L 46 33 Q 32 38 18 33 Z" fill="#0f172a" />
-                    <path d="M 32 25 Q 48 30 50 42" fill="none" stroke="#F59E0B" strokeWidth="2.5" />
-                    <circle cx="50" cy="44" r="2.5" fill="#D97706" />
-                  </g>
+                  <circle cx="50" cy="50" r="16" fill="#3B82F6" />
+                  <path
+                    d="M 50 38 L 54 46 L 62 48 L 56 54 L 58 62 L 50 58 L 42 62 L 44 54 L 38 48 L 46 46 Z"
+                    fill="#FFFFFF"
+                  />
                 </svg>
               </div>
-              <span className="absolute -top-1 -right-1 px-1 py-0.2 bg-gradient-to-r from-yellow-300 to-amber-400 text-slate-950 text-[8.5px] font-black rounded-full border border-white shadow-xs">
+              <span className="absolute -top-1 -right-1 px-1.5 py-0.2 bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 font-black text-[9px] rounded-full shadow-xs border border-white/40">
                 Jr
               </span>
             </div>
+            <div>
+              <div className="flex items-center gap-1">
+                <h1 className="text-lg font-black tracking-tight text-white font-['Nunito',sans-serif] leading-tight">
+                  Vidya<span className="text-yellow-300 drop-shadow-xs">AI</span>
+                </h1>
+                <span className="px-1.5 py-0.2 bg-amber-400 text-slate-950 font-black text-[9px] rounded-full shadow-xs">
+                  JR
+                </span>
+              </div>
+              <p className="text-[10px] font-bold text-blue-200/90 leading-tight">
+                Personalized Learning
+              </p>
+            </div>
+          </div>
+        </div>
 
-            <div className="flex items-center gap-1">
-              <span className="text-2xl font-black tracking-tight text-white flex items-center font-['Nunito',sans-serif]">
-                Vidya<span className="text-cyan-300">AI</span>
+        {/* Quick Profile Summary Card */}
+        {studentProfile && (
+          <div className="mx-1 mb-2.5 px-3 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center gap-2.5">
+            <span className="text-xl">
+              {studentProfile.avatar?.includes('girl') ? '👧' : '👦'}
+            </span>
+            <div className="min-w-0 flex-1">
+              <span className="text-xs font-black block truncate text-white">
+                {studentProfile.name}
               </span>
-              <span className="px-2 py-0.5 rounded-lg bg-yellow-400 text-slate-950 text-[11px] font-black shadow-xs tracking-wide">
-                JR
+              <span className="text-[10px] font-bold block text-blue-200 truncate">
+                {studentProfile.gradeClass} ({studentProfile.age}y)
               </span>
             </div>
           </div>
+        )}
 
-        </div>
-
-        {/* Navigation Items - Compact, Sleek Padding & Sizing */}
-        <nav className="min-h-0 flex-1 space-y-0.5 overflow-y-auto overscroll-contain pr-1">
+        {/* Navigation list */}
+        <nav
+          className="flex-1 space-y-1 overflow-y-auto pr-1 overflow-x-hidden min-h-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Sidebar Navigation"
+        >
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive =
               currentTab === item.id ||
-              (item.id === 'islamic' && (currentTab === 'islamic' || currentTab === 'islamic-teachings')) ||
-              (item.id === 'explorer' && (currentTab === 'explorer' || currentTab === 'body-explorer')) ||
+              (item.id === 'islamic' && currentTab === 'islamic-teachings') ||
               (item.id === 'categories' && currentTab === 'category-detail') ||
+              (item.id === 'explorer' && currentTab === 'body-explorer') ||
               (item.id === 'learning' && (currentTab === 'learning' || currentTab === 'quiz' || currentTab === 'quiz-results'));
 
             return (
@@ -206,9 +233,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Bottom Switch Profile Button & 3D Mascot */}
+      {/* Bottom Profile & Admin Actions */}
       <div className="shrink-0 pt-2 border-t border-white/15 flex flex-col items-center">
-        <div className="relative w-[10.5rem] h-[7.2rem] flex items-center justify-center">
+        <div className="relative w-[10.5rem] h-[6.5rem] flex items-center justify-center">
           <img
             src={APP_IMAGES.explorerMascot}
             alt="VidyaAI Kid Explorer"
@@ -216,6 +243,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           />
         </div>
         <p className="text-[10px] font-black text-blue-200/90 mt-1">Young Minds ⭐</p>
+
         {onSwitchProfile && (
           <button
             onClick={() => {
@@ -225,7 +253,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="w-full mt-2 py-1.5 px-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-white/25 active:scale-98 shadow-xs"
           >
             <User className="w-3.5 h-3.5" />
-            <span>Switch Student Profile</span>
+            <span>Switch Student</span>
+          </button>
+        )}
+
+        {onOpenAdmin && (
+          <button
+            onClick={() => {
+              sound.playPop();
+              onOpenAdmin();
+            }}
+            className="w-full mt-1.5 py-1.5 px-2 rounded-xl bg-slate-900/80 hover:bg-slate-900 text-yellow-300 text-[11px] font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-yellow-400/30 active:scale-98 shadow-xs"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-yellow-400" />
+            <span>Super Admin Portal 🔐</span>
           </button>
         )}
       </div>
