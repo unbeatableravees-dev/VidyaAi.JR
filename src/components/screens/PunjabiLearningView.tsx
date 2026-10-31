@@ -3,15 +3,21 @@ import confetti from 'canvas-confetti';
 import { ArrowLeft, BookOpen, Volume2, CheckCircle2, Sparkles, Award } from 'lucide-react';
 import { PUNJABI_TRACKS, PUNJABI_LESSONS, PunjabiLesson } from '../../data/punjabiData';
 import { sound } from '../../utils/audio';
+import { getStudentProgress, setLessonCompleted } from '../../utils/studentProgress';
 
 interface PunjabiLearningViewProps {
+  studentId?: string;
   onBackToHome?: () => void;
 }
 
-export const PunjabiLearningView: React.FC<PunjabiLearningViewProps> = ({ onBackToHome }) => {
+export const PunjabiLearningView: React.FC<PunjabiLearningViewProps> = ({ studentId, onBackToHome }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('gurmukhi-alphabet');
   const [activeLesson, setActiveLesson] = useState<PunjabiLesson>(PUNJABI_LESSONS[0]);
-  const [completedIds, setCompletedIds] = useState<string[]>(['gur-ura']);
+  const [completedIds, setCompletedIds] = useState<string[]>(() =>
+    getStudentProgress(studentId).completedLessonIds
+      .filter((id) => id.startsWith('punjabi:'))
+      .map((id) => id.slice('punjabi:'.length))
+  );
 
   const filteredLessons = PUNJABI_LESSONS.filter(
     (l) => selectedCategory === 'all' || l.category === selectedCategory
@@ -19,22 +25,23 @@ export const PunjabiLearningView: React.FC<PunjabiLearningViewProps> = ({ onBack
 
   const toggleLearned = (id: string) => {
     sound.playSuccess();
-    setCompletedIds((prev) => {
-      const next = prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id];
-      if (!prev.includes(id)) {
-        try {
-          confetti({
-            particleCount: 40,
-            spread: 70,
-            origin: { y: 0.5 },
-            colors: ['#f59e0b', '#3b82f6', '#10b981', '#ec4899'],
-          });
-        } catch {
-          // Ignore
-        }
+    const isCompleted = completedIds.includes(id);
+    setCompletedIds((previous) =>
+      isCompleted ? previous.filter((item) => item !== id) : [...previous, id]
+    );
+    setLessonCompleted(studentId, `punjabi:${id}`, !isCompleted);
+    if (!isCompleted) {
+      try {
+        confetti({
+          particleCount: 40,
+          spread: 70,
+          origin: { y: 0.5 },
+          colors: ['#f59e0b', '#3b82f6', '#10b981', '#ec4899'],
+        });
+      } catch {
+        // Ignore
       }
-      return next;
-    });
+    }
   };
 
   return (

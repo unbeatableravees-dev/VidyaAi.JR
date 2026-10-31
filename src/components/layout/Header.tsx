@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
 import { getGreeting } from '../../utils/language';
+import { getStudentProgress } from '../../utils/studentProgress';
 
 interface HeaderProps {
   userName: string;
@@ -40,7 +41,27 @@ export const Header: React.FC<HeaderProps> = ({
   studentProfile,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [, setProgressVersion] = useState(0);
   const activeAvatar = AVATAR_STYLES[userAvatar] || AVATAR_STYLES['boy-aarav'];
+  const studentId = studentProfile?.id;
+  const progress = getStudentProgress(studentId);
+  const earnedBadges = [
+    progress.completedLessonIds.length > 0,
+    progress.quizAttempts > 0,
+    progress.examAttempts > 0,
+    progress.activityCompletions > 0,
+    progress.discoveredOrganIds.length > 0,
+  ].filter(Boolean).length;
+
+  useEffect(() => {
+    const handleProgressChange = (event: Event) => {
+      if ((event as CustomEvent<string>).detail === studentId) {
+        setProgressVersion((version) => version + 1);
+      }
+    };
+    window.addEventListener('studentprogresschange', handleProgressChange);
+    return () => window.removeEventListener('studentprogresschange', handleProgressChange);
+  }, [studentId]);
 
   const religion = studentProfile?.religion || 'muslim';
   const relConfig = RELIGION_CONFIGS[religion] || RELIGION_CONFIGS.muslim;
@@ -146,10 +167,10 @@ export const Header: React.FC<HeaderProps> = ({
 
               <div className="px-4 py-2 flex items-center justify-between text-xs font-black text-slate-600 bg-amber-50/80 my-2 mx-3 rounded-2xl border border-amber-200/50">
                 <span className="flex items-center gap-1.5 text-amber-600">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" /> {studentProfile?.stars || 150} Stars
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" /> {progress.starsEarned} Stars
                 </span>
                 <span className="flex items-center gap-1.5 text-blue-600">
-                  <Award className="w-4 h-4 text-blue-500" /> {studentProfile?.badges || 8} Badges
+                  <Award className="w-4 h-4 text-blue-500" /> {earnedBadges} Badges
                 </span>
               </div>
 
