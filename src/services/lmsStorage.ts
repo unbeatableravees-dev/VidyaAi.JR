@@ -9,6 +9,7 @@ import {
   StudentActivity,
   StudentInterest,
   PromotionRequest,
+  ContactTicket,
   AdminUser,
   ClassGrade,
   LearningStage,
@@ -24,12 +25,94 @@ const STORAGE_KEYS = {
   ADMIN_SESSION: 'vidya_admin_session_v1',
   STUDENT_PROFILES: 'vidya_student_profiles_v1',
   ACTIVE_PROFILE: 'vidya_student_profile_v2',
+  TICKETS: 'vidya_lms_tickets_v1',
 };
 
 // =============================================================================
 // SEED CONTENT LIBRARY (NURSERY TO CLASS 10 ACROSS ALL 4 LEARNING STAGES)
 // =============================================================================
 const INITIAL_CONTENT_LIBRARY: ContentItem[] = [
+  // --- USER REQUESTED YOUTUBE EDUCATIONAL MATERIALS ---
+  {
+    id: 'cnt-alphabet-hq3yfQnllfQ',
+    title: 'A to Z Alphabet Phonics Song & Letter Adventure',
+    description: 'Catchy and colorful alphabetical phonics with singing animals and letter sounds for toddlers and preschoolers.',
+    type: 'video',
+    subject: 'English',
+    targetClass: ['Nursery', 'LKG', 'UKG', 'Class 1'],
+    targetAgeGroup: '3-5',
+    learningStage: 'play-based',
+    difficulty: 'beginner',
+    chapter: 'Alphabet & Phonics Fun',
+    thumbnail: '🔤',
+    mediaUrl: 'https://www.youtube.com/embed/hq3yfQnllfQ',
+    contentBody: 'Sing along to learn the magical sounds of letters A through Z with bright visual animations!',
+    status: 'published',
+    publishedAt: '2026-10-25',
+    views: 890,
+    likes: 245,
+    durationMinutes: 4,
+  },
+  {
+    id: 'cnt-alphabet-TF1loU8bJaM',
+    title: 'Phonics Letter Tracing & ABC Sounds Masterclass',
+    description: 'Learn handwriting strokes and vocal sounds for every letter with fun interactive phonics animations.',
+    type: 'video',
+    subject: 'English',
+    targetClass: ['Nursery', 'LKG', 'UKG', 'Class 1', 'Class 2'],
+    targetAgeGroup: '3-5',
+    learningStage: 'play-based',
+    difficulty: 'beginner',
+    chapter: 'Phonics Tracing Mastery',
+    thumbnail: '✏️',
+    mediaUrl: 'https://www.youtube.com/embed/TF1loU8bJaM',
+    contentBody: 'Watch how letters connect to words, phonics blends, and early vocabulary building.',
+    status: 'published',
+    publishedAt: '2026-10-26',
+    views: 730,
+    likes: 198,
+    durationMinutes: 5,
+  },
+  {
+    id: 'cnt-magicimals-stories',
+    title: 'Magicimals: The Brave Little Elephant & Forest Friends',
+    description: 'Enchanting animated animal bedtime and moral stories from Magicimals teaching empathy, friendship, and curiosity.',
+    type: 'video',
+    subject: 'Stories & Rhymes',
+    targetClass: ['Nursery', 'LKG', 'UKG', 'Class 1', 'Class 2', 'Class 3'],
+    targetAgeGroup: '3-5',
+    learningStage: 'play-based',
+    difficulty: 'beginner',
+    chapter: 'Magicimals Forest Adventures',
+    thumbnail: '🐘',
+    mediaUrl: 'https://www.youtube.com/embed/hq3yfQnllfQ',
+    contentBody: 'Once upon a time in the whispering forest, little Ellie the elephant learned that small acts of kindness bring big smiles to every friend.',
+    status: 'published',
+    publishedAt: '2026-10-28',
+    views: 1250,
+    likes: 380,
+    durationMinutes: 6,
+  },
+  {
+    id: 'cnt-mastitoons-rhymes',
+    title: 'Masti Toons by Varda: Chanda Mama & Joyful Nursery Rhymes',
+    description: 'Musical rhythm, joyful nursery rhymes, and colorful dance songs from Masti Toons by Varda for toddlers.',
+    type: 'video',
+    subject: 'Stories & Rhymes',
+    targetClass: ['Nursery', 'LKG', 'UKG', 'Class 1'],
+    targetAgeGroup: '3-5',
+    learningStage: 'play-based',
+    difficulty: 'beginner',
+    chapter: 'Musical Rhymes Jamboree',
+    thumbnail: '🎵',
+    mediaUrl: 'https://www.youtube.com/embed/TF1loU8bJaM',
+    contentBody: 'Sing along with cute cartoon characters and enjoy traditional rhymes with sweet musical melodies!',
+    status: 'published',
+    publishedAt: '2026-10-29',
+    views: 1420,
+    likes: 410,
+    durationMinutes: 4,
+  },
   // --- STAGE 1: NURSERY - KG (3-5 Years) ---
   {
     id: 'cnt-nur-abc-phonics',
@@ -43,7 +126,7 @@ const INITIAL_CONTENT_LIBRARY: ContentItem[] = [
     difficulty: 'beginner',
     chapter: 'Alphabet Wonders',
     thumbnail: '🔤',
-    mediaUrl: 'https://www.youtube.com/embed/HQStJ1Vz4cM',
+    mediaUrl: 'https://www.youtube.com/embed/hq3yfQnllfQ',
     contentBody: 'A is for Apple, B is for Ball, C is for Cat! Learn how each letter makes a unique phonics sound with fun rhymes.',
     status: 'published',
     publishedAt: '2026-10-15',
@@ -619,4 +702,155 @@ export class LmsStorageService {
       // Ignore
     }
   }
+
+  // 6. Contact & Support Tickets Management
+  public static submitContactTicket(
+    ticket: Omit<ContactTicket, 'id' | 'ticketNumber' | 'status' | 'createdAt'>
+  ): ContactTicket {
+    const existing = this.getAllContactTickets();
+    const count = existing.length + 1040;
+    const newTicket: ContactTicket = {
+      ...ticket,
+      id: `tkt-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      ticketNumber: `TKT-${count}`,
+      status: 'open',
+      createdAt: new Date().toISOString(),
+    };
+    existing.unshift(newTicket);
+    try {
+      localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(existing));
+      window.dispatchEvent(new CustomEvent('vidya_lms_ticket_submitted', { detail: newTicket }));
+    } catch {
+      // Ignore
+    }
+    return newTicket;
+  }
+
+  public static getAllContactTickets(): ContactTicket[] {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.TICKETS);
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  public static getTicketsForStudent(studentId: string): ContactTicket[] {
+    return this.getAllContactTickets().filter((t) => t.studentId === studentId);
+  }
+
+  public static updateContactTicket(
+    ticketId: string,
+    status: 'open' | 'in_progress' | 'resolved',
+    adminResponse?: string
+  ): boolean {
+    const tickets = this.getAllContactTickets();
+    const t = tickets.find((item) => item.id === ticketId);
+    if (!t) return false;
+
+    t.status = status;
+    if (adminResponse !== undefined) {
+      t.adminResponse = adminResponse;
+    }
+    if (status === 'resolved') {
+      t.resolvedAt = new Date().toISOString();
+    }
+    try {
+      localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(tickets));
+      window.dispatchEvent(new CustomEvent('vidya_lms_ticket_updated', { detail: t }));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  public static deleteContactTicket(ticketId: string): boolean {
+    let tickets = this.getAllContactTickets();
+    tickets = tickets.filter((t) => t.id !== ticketId);
+    try {
+      localStorage.setItem(STORAGE_KEYS.TICKETS, JSON.stringify(tickets));
+      window.dispatchEvent(new CustomEvent('vidya_lms_ticket_deleted', { detail: ticketId }));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // 7. Admin Student Profile Management (Delete and Update)
+  public static deleteStudentProfile(studentId: string): boolean {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.STUDENT_PROFILES);
+      if (!raw) return false;
+      const profiles: StudentProfile[] = JSON.parse(raw);
+      const filtered = profiles.filter((p) => p.id !== studentId);
+      localStorage.setItem(STORAGE_KEYS.STUDENT_PROFILES, JSON.stringify(filtered));
+
+      // If active profile matches, fallback to another or null
+      const activeRaw = localStorage.getItem(STORAGE_KEYS.ACTIVE_PROFILE);
+      if (activeRaw) {
+        const active: StudentProfile = JSON.parse(activeRaw);
+        if (active.id === studentId) {
+          if (filtered.length > 0) {
+            localStorage.setItem(STORAGE_KEYS.ACTIVE_PROFILE, JSON.stringify(filtered[0]));
+            localStorage.setItem('vidya_user_name', filtered[0].name);
+            localStorage.setItem('vidya_user_avatar', filtered[0].avatar);
+            localStorage.setItem('vidya_user_grade', filtered[0].gradeClass);
+          } else {
+            localStorage.removeItem(STORAGE_KEYS.ACTIVE_PROFILE);
+            localStorage.removeItem('vidya_user_name');
+            localStorage.removeItem('vidya_user_avatar');
+            localStorage.removeItem('vidya_user_grade');
+          }
+        }
+      }
+      window.dispatchEvent(new CustomEvent('vidya_student_profile_deleted', { detail: studentId }));
+      return true;
+    } catch (e) {
+      console.error('Failed to delete student', e);
+      return false;
+    }
+  }
+
+  public static updateStudentProfile(
+    studentId: string,
+    updates: Partial<StudentProfile>
+  ): boolean {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.STUDENT_PROFILES);
+      if (!raw) return false;
+      const profiles: StudentProfile[] = JSON.parse(raw);
+      let updatedProfile: StudentProfile | null = null;
+
+      const updatedProfiles = profiles.map((p) => {
+        if (p.id === studentId) {
+          updatedProfile = { ...p, ...updates };
+          return updatedProfile;
+        }
+        return p;
+      });
+
+      if (!updatedProfile) return false;
+      localStorage.setItem(STORAGE_KEYS.STUDENT_PROFILES, JSON.stringify(updatedProfiles));
+
+      // If active profile matches, update active too
+      const activeRaw = localStorage.getItem(STORAGE_KEYS.ACTIVE_PROFILE);
+      if (activeRaw) {
+        const active: StudentProfile = JSON.parse(activeRaw);
+        if (active.id === studentId) {
+          const mergedActive = { ...active, ...updates };
+          localStorage.setItem(STORAGE_KEYS.ACTIVE_PROFILE, JSON.stringify(mergedActive));
+          if (updates.name) localStorage.setItem('vidya_user_name', updates.name);
+          if (updates.avatar) localStorage.setItem('vidya_user_avatar', updates.avatar);
+          if (updates.gradeClass) localStorage.setItem('vidya_user_grade', updates.gradeClass);
+        }
+      }
+
+      window.dispatchEvent(new CustomEvent('vidya_student_profile_updated', { detail: updatedProfile }));
+      return true;
+    } catch (e) {
+      console.error('Failed to update student profile', e);
+      return false;
+    }
+  }
+
 }

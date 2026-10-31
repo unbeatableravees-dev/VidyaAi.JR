@@ -42,7 +42,8 @@ export type SubjectCategory =
   | 'Punjabi & Gurmukhi'
   | 'Urdu & Islamic'
   | 'Arts & Creativity'
-  | 'Moral & Sanskar';
+  | 'Moral & Sanskar'
+  | 'Stories & Rhymes';
 
 export interface ContentItem {
   id: string;
@@ -109,6 +110,48 @@ export interface PromotionRequest {
   requestedAt: string;
   reviewedAt?: string;
   adminNote?: string;
+}
+
+export type TicketIssueCategory =
+  | 'class_promotion'
+  | 'content_violation'
+  | 'misleading_info'
+  | 'bug_glitch'
+  | 'audio_video_issue'
+  | 'quiz_mistake'
+  | 'request_topic'
+  | 'account_profile'
+  | 'other';
+
+export type TicketIssueArea =
+  | 'General Platform'
+  | 'Mathematics'
+  | 'Science'
+  | 'English & Phonics'
+  | 'Hindi & Sanskrit'
+  | 'Punjabi & Gurmukhi'
+  | 'Urdu & Islamic'
+  | '3D Explorers'
+  | 'Quizzes & Tests'
+  | 'Badges & Progress';
+
+export interface ContactTicket {
+  id: string;
+  ticketNumber: string; // e.g. TKT-1042
+  studentId: string;
+  studentName: string;
+  studentClass: string;
+  category: TicketIssueCategory;
+  categoryLabel: string;
+  issueArea: TicketIssueArea | string;
+  severity: 'low' | 'medium' | 'high';
+  title: string;
+  description: string;
+  contactEmailPhone?: string;
+  status: 'open' | 'in_progress' | 'resolved';
+  createdAt: string;
+  resolvedAt?: string;
+  adminResponse?: string;
 }
 
 export interface AdminUser {

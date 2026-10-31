@@ -30,6 +30,9 @@ const PracticeScreen = React.lazy(() =>
 const SmartCurriculumView = React.lazy(() =>
   import('./components/screens/SmartCurriculumView').then((m) => ({ default: m.SmartCurriculumView }))
 );
+const ContactView = React.lazy(() =>
+  import('./components/screens/ContactView').then((m) => ({ default: m.ContactView }))
+);
 const AdminPortal = React.lazy(() =>
   import('./components/admin/AdminPortal').then((m) => ({ default: m.AdminPortal }))
 );
@@ -140,7 +143,7 @@ export function App() {
 
   const [activeVideoModal, setActiveVideoModal] = useState<VideoData | null>(null);
 
-  // Super Admin Portal State
+  // Super Admin Portal State (Only accessible from Welcome Screen or secret shortcut)
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
 
@@ -148,13 +151,16 @@ export function App() {
   const activeAvatar = studentProfile?.avatar || 'boy-aarav';
   const activeGrade = studentProfile?.gradeClass || 'Class 2';
 
-  // Listen for admin promotion approvals & profile updates in real-time
+  // Listen for admin changes (promotions, updates, deletions)
   useEffect(() => {
-    const handlePromoted = () => {
+    const handleProfileSync = () => {
       try {
         const saved = localStorage.getItem('vidya_student_profile_v2');
         if (saved) {
           setStudentProfile(JSON.parse(saved));
+        } else {
+          setStudentProfile(null);
+          setShowWelcome(true);
         }
         setStudentProfiles(loadSavedProfiles());
       } catch {
@@ -162,9 +168,24 @@ export function App() {
       }
     };
 
-    window.addEventListener('vidya_student_class_promoted', handlePromoted);
+    window.addEventListener('vidya_student_class_promoted', handleProfileSync);
+    window.addEventListener('vidya_student_profile_updated', handleProfileSync);
+    window.addEventListener('vidya_student_profile_deleted', handleProfileSync);
+
+    // Optional keyboard shortcut for admins: Ctrl+Shift+A
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        handleOpenAdmin();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
-      window.removeEventListener('vidya_student_class_promoted', handlePromoted);
+      window.removeEventListener('vidya_student_class_promoted', handleProfileSync);
+      window.removeEventListener('vidya_student_profile_updated', handleProfileSync);
+      window.removeEventListener('vidya_student_profile_deleted', handleProfileSync);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -292,6 +313,7 @@ export function App() {
     );
   }
 
+  // Welcome / Student Registration Screen (Contains the only Admin Login trigger)
   if (showWelcome) {
     return (
       <>
@@ -320,18 +342,17 @@ export function App() {
       {/* Optimized Lightweight Aurora & Twinkle Backdrop */}
       <AnimatedBackground />
 
-      {/* Royal Blue Left Sidebar with Jr Identity & Multilingual Navigation */}
+      {/* Royal Blue Left Sidebar with Jr Identity (Admin Portal removed from student view) */}
       <Sidebar
         currentTab={currentTab}
         onTabChange={setCurrentTab}
         onSwitchProfile={handleSwitchProfile}
-        onOpenAdmin={handleOpenAdmin}
         studentProfile={studentProfile}
       />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative z-10 w-full">
-        {/* Fixed Non-Scrolling Top Header */}
+        {/* Fixed Non-Scrolling Top Header (Admin Portal removed from student view, profile dropdown fixed on top) */}
         <Header
           userName={activeDisplayName}
           userAvatar={activeAvatar}
@@ -341,7 +362,6 @@ export function App() {
           onProfileClick={() => setCurrentTab('progress')}
           onSettingsClick={() => setCurrentTab('settings')}
           onSwitchProfile={handleSwitchProfile}
-          onOpenAdmin={handleOpenAdmin}
           studentProfile={studentProfile}
         />
 
@@ -364,13 +384,21 @@ export function App() {
               />
             )}
 
-            {/* Smart Age & Class-Based Curriculum Management Screen */}
+            {/* Smart Age & Class-Based Curriculum Management Screen with Advanced Student Filters */}
             {currentTab === 'curriculum' && (
               <SmartCurriculumView
                 studentProfile={studentProfile}
                 onBackToHome={handleBackToHome}
                 onOpenPractice={() => setCurrentTab('practice')}
                 onOpenExplorer={() => setCurrentTab('explorer')}
+              />
+            )}
+
+            {/* Contact & Support Request Screen (Issue, Area, Violation, Class Promotion, Misleading info) */}
+            {currentTab === 'contact' && (
+              <ContactView
+                studentProfile={studentProfile}
+                onBackToHome={handleBackToHome}
               />
             )}
 
@@ -509,7 +537,7 @@ export function App() {
         </Suspense>
       )}
 
-      {/* Super Admin Login Modal (Accessible from Header, Sidebar, or Welcome Screen) */}
+      {/* Super Admin Login Modal (Triggered from Welcome Screen or Admin shortcut) */}
       <AdminLoginModal
         isOpen={isAdminLoginModalOpen}
         onClose={() => setIsAdminLoginModalOpen(false)}

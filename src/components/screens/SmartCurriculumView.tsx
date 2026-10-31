@@ -42,6 +42,7 @@ import {
 } from '../../types/lms';
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
 import { sound } from '../../utils/audio';
+import { StyledSelect, SelectOption } from '../common/StyledSelect';
 
 interface SmartCurriculumViewProps {
   studentProfile?: StudentProfile | null;
@@ -70,6 +71,11 @@ export const SmartCurriculumView: React.FC<SmartCurriculumViewProps> = ({
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [savedItemsOnly, setSavedItemsOnly] = useState(false);
+  // Advanced Filters
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('popular');
+
 
   // Content, activities & interests
   const [materials, setMaterials] = useState<ContentItem[]>(() =>
@@ -167,12 +173,20 @@ export const SmartCurriculumView: React.FC<SmartCurriculumViewProps> = ({
     return Array.from(subs);
   }, [materials]);
 
-  // Filtered materials
+  // Filtered materials with multi-dimensional criteria
   const filteredMaterials = useMemo(() => {
-    return materials.filter((item) => {
+    const list = materials.filter((item) => {
       if (selectedType !== 'all' && item.type !== selectedType) return false;
       if (selectedSubject !== 'all' && item.subject !== selectedSubject) return false;
+      if (selectedDifficulty !== 'all' && item.difficulty !== selectedDifficulty) return false;
+
+      // Status filters
       if (savedItemsOnly && !savedContentIds.has(item.id)) return false;
+      if (selectedStatus === 'saved' && !savedContentIds.has(item.id)) return false;
+      if (selectedStatus === 'interested' && !interestedContentIds.has(item.id)) return false;
+      if (selectedStatus === 'completed' && !completedContentIds.has(item.id)) return false;
+      if (selectedStatus === 'not_started' && (completedContentIds.has(item.id) || savedContentIds.has(item.id))) return false;
+
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchesTitle = item.title.toLowerCase().includes(q);
@@ -183,7 +197,15 @@ export const SmartCurriculumView: React.FC<SmartCurriculumViewProps> = ({
       }
       return true;
     });
-  }, [materials, selectedType, selectedSubject, savedItemsOnly, searchQuery, savedContentIds]);
+
+    // Sorting
+    return list.sort((a, b) => {
+      if (sortBy === 'popular') return (b.views + b.likes) - (a.views + a.likes);
+      if (sortBy === 'newest') return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      if (sortBy === 'alphabetical') return a.title.localeCompare(b.title);
+      return 0;
+    });
+  }, [materials, selectedType, selectedSubject, selectedDifficulty, selectedStatus, sortBy, savedItemsOnly, searchQuery, savedContentIds, interestedContentIds, completedContentIds]);
 
   // Smart Recommendations Engine
   const recommendedMaterials = useMemo(() => {
@@ -560,63 +582,95 @@ export const SmartCurriculumView: React.FC<SmartCurriculumViewProps> = ({
 
       {/* SECTION 2: CLASS MATERIALS (STRICT FILTERING & SEARCH) */}
       <section>
-        {/* Controls Bar */}
-        <div className="bg-white/80 backdrop-blur-md rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          {/* Search Input */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={`Search ${currentClass} topics, chapters, notes...`}
-              className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm font-semibold rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        {/* Enhanced Content Filter Panel for Students */}
+        <div className="bg-white rounded-[2rem] p-5 sm:p-6 border-2 border-slate-200 shadow-sm mb-6 space-y-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Search Input */}
+            <div className="relative w-full md:flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={`Search ${currentClass} lessons, chapters, phonics...`}
+                className="w-full pl-9 pr-4 py-2.5 text-xs sm:text-sm font-bold rounded-2xl bg-slate-50 border-2 border-slate-200 focus:bg-white focus:outline-hidden focus:border-blue-500 transition-all"
+              />
+            </div>
 
-          {/* Type filters */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {[
-              { id: 'all', label: 'All Items', icon: Layers },
-              { id: 'video', label: 'Videos', icon: Video },
-              { id: 'notes', label: 'Notes / Reading', icon: FileText },
-              { id: 'quiz', label: 'Quizzes', icon: HelpCircle },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              return (
+            {/* Filter Count & Reset */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs font-black text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl">
+                {filteredMaterials.length} Lessons Available
+              </span>
+              {(selectedType !== 'all' || selectedSubject !== 'all' || selectedDifficulty !== 'all' || selectedStatus !== 'all' || searchQuery.trim()) && (
                 <button
-                  key={tab.id}
                   onClick={() => {
                     sound.playPop();
-                    setSelectedType(tab.id);
+                    setSelectedType('all');
+                    setSelectedSubject('all');
+                    setSelectedDifficulty('all');
+                    setSelectedStatus('all');
+                    setSearchQuery('');
+                    setSavedItemsOnly(false);
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                    selectedType === tab.id
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
+                  className="text-xs font-black text-rose-600 hover:bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-200 transition-colors cursor-pointer"
                 >
-                  <Icon className="w-3.5 h-3.5" />
-                  {tab.label}
+                  Reset Filters
                 </button>
-              );
-            })}
+              )}
+            </div>
+          </div>
 
-            {/* Saved Toggle */}
-            <button
-              onClick={() => {
-                sound.playPop();
-                setSavedItemsOnly(!savedItemsOnly);
-              }}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                savedItemsOnly
-                  ? 'bg-amber-400 text-slate-950 shadow-xs'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              <Bookmark className="w-3.5 h-3.5 fill-current" />
-              Saved ({savedContentIds.size})
-            </button>
+          {/* Styled Dropdown Filters Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 border-t border-slate-100">
+            {/* Type */}
+            <StyledSelect
+              label="Format"
+              value={selectedType}
+              onChange={(val) => setSelectedType(val)}
+              options={[
+                { value: 'all', label: 'All Formats' },
+                { value: 'video', label: '📹 Video Lessons' },
+                { value: 'notes', label: '📖 Reading Guides' },
+                { value: 'quiz', label: '🧩 Interactive Quizzes' },
+              ]}
+            />
+
+            {/* Subject */}
+            <StyledSelect
+              label="Subject"
+              value={selectedSubject}
+              onChange={(val) => setSelectedSubject(val)}
+              options={[
+                { value: 'all', label: 'All Subjects' },
+                ...availableSubjects.map((s) => ({ value: s, label: s })),
+              ]}
+            />
+
+            {/* Difficulty */}
+            <StyledSelect
+              label="Difficulty"
+              value={selectedDifficulty}
+              onChange={(val) => setSelectedDifficulty(val)}
+              options={[
+                { value: 'all', label: 'All Levels' },
+                { value: 'beginner', label: '🌱 Beginner' },
+                { value: 'intermediate', label: '🌿 Intermediate' },
+                { value: 'advanced', label: '🌳 Advanced' },
+              ]}
+            />
+
+            {/* Sort */}
+            <StyledSelect
+              label="Sort By"
+              value={sortBy}
+              onChange={(val) => setSortBy(val)}
+              options={[
+                { value: 'popular', label: '🔥 Most Popular' },
+                { value: 'newest', label: '🆕 Newest Added' },
+                { value: 'alphabetical', label: '🔤 Alphabetical (A-Z)' },
+              ]}
+            />
           </div>
         </div>
 
@@ -1115,17 +1169,11 @@ export const SmartCurriculumView: React.FC<SmartCurriculumViewProps> = ({
                   <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
                     Select Target Class for Promotion
                   </label>
-                  <select
-                    value={targetClass}
-                    onChange={(e) => setTargetClass(e.target.value)}
-                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-black text-slate-800 focus:bg-white focus:outline-hidden"
-                  >
-                    {ALL_CLASSES.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.label} ({c.ageRange})
-                      </option>
-                    ))}
-                  </select>
+                  <StyledSelect
+    value={targetClass}
+    onChange={(val) => setTargetClass(val)}
+    options={ALL_CLASSES.map((c) => ({ value: c.id, label: `${c.icon} ${c.label} (${c.ageRange})` }))}
+  />
                 </div>
 
                 <div>
@@ -1200,20 +1248,21 @@ export const SmartCurriculumView: React.FC<SmartCurriculumViewProps> = ({
                 <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
                   Subject Category
                 </label>
-                <select
-                  value={customSubject}
-                  onChange={(e) => setCustomSubject(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-black text-slate-800 focus:bg-white focus:outline-hidden"
-                >
-                  <option value="Mathematics">Mathematics</option>
-                  <option value="Science">Science</option>
-                  <option value="English">English</option>
-                  <option value="Computer Science">Computer Science</option>
-                  <option value="Social Studies">Social Studies</option>
-                  <option value="Hindi & Sanskrit">Hindi & Sanskrit</option>
-                  <option value="Punjabi & Gurmukhi">Punjabi & Gurmukhi</option>
-                  <option value="Urdu & Islamic">Urdu & Islamic</option>
-                </select>
+                <StyledSelect
+    value={customSubject}
+    onChange={(val) => setCustomSubject(val)}
+    options={[
+      { value: 'Mathematics', label: 'Mathematics' },
+      { value: 'Science', label: 'Science' },
+      { value: 'English', label: 'English & Phonics' },
+      { value: 'Computer Science', label: 'Computer Science' },
+      { value: 'Social Studies', label: 'Social Studies' },
+      { value: 'Stories & Rhymes', label: 'Stories & Rhymes' },
+      { value: 'Hindi & Sanskrit', label: 'Hindi & Sanskrit' },
+      { value: 'Punjabi & Gurmukhi', label: 'Punjabi & Gurmukhi' },
+      { value: 'Urdu & Islamic', label: 'Urdu & Islamic' },
+    ]}
+  />
               </div>
 
               <div>

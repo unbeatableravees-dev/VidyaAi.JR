@@ -188,20 +188,12 @@ export const UploadContentModal: React.FC<UploadContentModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-black uppercase text-slate-700 tracking-wider mb-1.5">
-                Subject *
-              </label>
-              <select
+              <StyledSelect
+                label="Subject *"
                 value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500 cursor-pointer"
-              >
-                {SUBJECTS.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setSubject(val)}
+                options={SUBJECTS.map((s) => ({ value: s, label: s }))}
+              />
             </div>
           </div>
 
@@ -217,17 +209,11 @@ export const UploadContentModal: React.FC<UploadContentModalProps> = ({
               </span>
             </div>
 
-            <select
+            <StyledSelect
               value={targetClass}
-              onChange={(e) => setTargetClass(e.target.value as ClassGrade)}
-              className="w-full px-4 py-2.5 rounded-2xl bg-white border-2 border-blue-300 text-xs font-black text-slate-900 focus:outline-none focus:border-blue-600 cursor-pointer shadow-sm"
-            >
-              {ALL_CLASSES.map((cls) => (
-                <option key={cls.id} value={cls.id}>
-                  {cls.icon} {cls.label} ({cls.ageRange})
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setTargetClass(val as ClassGrade)}
+              options={ALL_CLASSES.map((cls) => ({ value: cls.id, label: `${cls.icon} ${cls.label} (${cls.ageRange})` }))}
+            />
 
             {/* LIVE CONTENT VISIBILITY PREVIEW */}
             <div className="mt-3 p-3 bg-white rounded-2xl border border-blue-200 flex items-start gap-2.5">
@@ -246,18 +232,16 @@ export const UploadContentModal: React.FC<UploadContentModalProps> = ({
           {/* 4. Difficulty, Chapter & Thumbnail */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-black uppercase text-slate-700 tracking-wider mb-1.5">
-                Difficulty
-              </label>
-              <select
+              <StyledSelect
+                label="Difficulty"
                 value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value as DifficultyLevel)}
-                className="w-full px-3 py-2 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-bold text-slate-900"
-              >
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </select>
+                onChange={(val) => setDifficulty(val as DifficultyLevel)}
+                options={[
+                  { value: 'beginner', label: '🌱 Beginner' },
+                  { value: 'intermediate', label: '🌿 Intermediate' },
+                  { value: 'advanced', label: '🌳 Advanced' },
+                ]}
+              />
             </div>
 
             <div>

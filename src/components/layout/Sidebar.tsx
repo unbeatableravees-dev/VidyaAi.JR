@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Grid, BookOpen, BarChart3, Settings, Gamepad2, Compass, Moon, User, GraduationCap, ShieldCheck } from 'lucide-react';
+import { Home, Grid, BookOpen, BarChart3, Settings, Gamepad2, Compass, Moon, User, GraduationCap, MessageSquareText } from 'lucide-react';
 import { APP_IMAGES } from '../../assets/images';
 import { sound } from '../../utils/audio';
 import { StudentProfile } from '../../types/student';
@@ -18,6 +18,7 @@ export type NavTab =
   | 'body-explorer'
   | 'learning'
   | 'progress'
+  | 'contact'
   | 'settings'
   | 'quiz'
   | 'quiz-results'
@@ -27,7 +28,6 @@ interface SidebarProps {
   currentTab: NavTab;
   onTabChange: (tab: NavTab) => void;
   onSwitchProfile?: () => void;
-  onOpenAdmin?: () => void;
   studentProfile?: StudentProfile | null;
 }
 
@@ -35,7 +35,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentTab,
   onTabChange,
   onSwitchProfile,
-  onOpenAdmin,
   studentProfile,
 }) => {
   const religion = studentProfile?.religion || 'muslim';
@@ -66,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {
             id: 'islamic' as NavTab,
             label: localized.islamic?.primary || 'Islamic Teachings',
-            secondary: localized.islamic?.secondary || 'اسلامی تعلیمات',
+            secondary: localized.islamic?.secondary || 'Values & Duas',
             icon: Moon,
             badge: '🕌',
           },
@@ -115,6 +114,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: localized.progress.primary,
       secondary: localized.progress.secondary,
       icon: BarChart3,
+    },
+    {
+      id: 'contact' as NavTab,
+      label: 'Contact',
+      secondary: 'Help & Issue Reports',
+      icon: MessageSquareText,
+      badge: 'Help',
     },
     {
       id: 'settings' as NavTab,
@@ -233,7 +239,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Bottom Profile & Admin Actions */}
+      {/* Bottom Profile Action */}
       <div className="shrink-0 pt-2 border-t border-white/15 flex flex-col items-center">
         <div className="relative w-[10.5rem] h-[6.5rem] flex items-center justify-center">
           <img
@@ -254,19 +260,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <User className="w-3.5 h-3.5" />
             <span>Switch Student</span>
-          </button>
-        )}
-
-        {onOpenAdmin && (
-          <button
-            onClick={() => {
-              sound.playPop();
-              onOpenAdmin();
-            }}
-            className="w-full mt-1.5 py-1.5 px-2 rounded-xl bg-slate-900/80 hover:bg-slate-900 text-yellow-300 text-[11px] font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-yellow-400/30 active:scale-98 shadow-xs"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-yellow-400" />
-            <span>Super Admin Portal 🔐</span>
           </button>
         )}
       </div>

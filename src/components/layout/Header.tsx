@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, ShieldCheck } from 'lucide-react';
+import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
@@ -15,7 +15,6 @@ interface HeaderProps {
   onProfileClick?: () => void;
   onSettingsClick?: () => void;
   onSwitchProfile?: () => void;
-  onOpenAdmin?: () => void;
   studentProfile?: StudentProfile | null;
 }
 
@@ -39,7 +38,6 @@ export const Header: React.FC<HeaderProps> = ({
   onProfileClick,
   onSettingsClick,
   onSwitchProfile,
-  onOpenAdmin,
   studentProfile,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -68,9 +66,10 @@ export const Header: React.FC<HeaderProps> = ({
   const religion = studentProfile?.religion || 'muslim';
   const relConfig = RELIGION_CONFIGS[religion] || RELIGION_CONFIGS.muslim;
   const greeting = getGreeting(religion, userName || 'Explorer');
+  const cleanLangBadge = religion === 'muslim' ? 'English + Urdu' : relConfig.languageBadge;
 
   return (
-    <header className="h-16 md:h-20 shrink-0 w-full px-3 sm:px-6 md:px-8 py-2.5 flex items-center justify-between border-b border-white/70 bg-white/75 backdrop-blur-2xl z-30 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden select-none">
+    <header className="h-16 md:h-20 shrink-0 w-full px-3 sm:px-6 md:px-8 py-2.5 flex items-center justify-between border-b border-white/70 bg-white/80 backdrop-blur-2xl z-40 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-visible select-none relative">
       {/* Left side: Search Bar */}
       <div className="flex items-center gap-2.5 sm:gap-4 flex-1 max-w-xl">
         {/* Search Input */}
@@ -85,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
           />
         </div>
 
-        {/* 3D Kid Explorer on Navbar (Hidden on small mobile screens to prevent cramming) */}
+        {/* 3D Kid Explorer on Navbar */}
         <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white/70 backdrop-blur-md rounded-full border border-white/80 shadow-sm shrink-0">
           <img
             src={APP_IMAGES.explorerMascot}
@@ -97,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
               {relConfig.icon} {userGrade}
             </span>
             <span className="text-xs font-black text-slate-800 leading-tight">
-              {relConfig.languageBadge}
+              {cleanLangBadge}
             </span>
           </div>
         </div>
@@ -105,30 +104,15 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right Controls */}
       <div className="flex items-center gap-2.5 sm:gap-3.5">
-        {/* Multilingual Tailored Greeting Pill */}
+        {/* Tailored Greeting Pill */}
         <div className="hidden lg:flex flex-col text-right">
-          <span className={`text-xs font-black text-slate-800 leading-tight ${relConfig.scriptFont}`}>
+          <span className="text-xs font-black text-slate-800 leading-tight">
             {greeting.text}
           </span>
           <span className="text-[10px] font-bold text-slate-400 leading-tight">
-            {relConfig.languageBadge}
+            {cleanLangBadge}
           </span>
         </div>
-
-        {/* Super Admin Quick Access Button */}
-        {onOpenAdmin && (
-          <button
-            onClick={() => {
-              sound.playPop();
-              onOpenAdmin();
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-yellow-400 text-xs font-black transition-all shadow-xs cursor-pointer hover:scale-102"
-            title="Open Super Admin Portal (admin@vidyaai.jr.in)"
-          >
-            <ShieldCheck className="w-4 h-4 text-yellow-400" />
-            <span className="hidden sm:inline">Admin Portal</span>
-          </button>
-        )}
 
         {/* Notification Bell */}
         <button
@@ -141,8 +125,8 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
         </button>
 
-        {/* User Profile */}
-        <div className="relative">
+        {/* User Profile Dropdown Container */}
+        <div className="relative z-50">
           <button
             onClick={() => {
               sound.playPop();
@@ -157,82 +141,79 @@ export const Header: React.FC<HeaderProps> = ({
             <ChevronDown className="w-4 h-4 text-slate-500" />
           </button>
 
-          {/* Profile Dropdown */}
+          {/* Profile Dropdown with Backdrop & Top Layering */}
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-72 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 text-slate-700 animate-in fade-in slide-in-from-top-2 duration-150 select-none">
-              <div className="px-5 py-2 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <span className={`w-10 h-10 rounded-full bg-gradient-to-br ${activeAvatar.color} flex items-center justify-center text-2xl shadow-sm`}>
-                    {activeAvatar.emoji}
-                  </span>
-                  <div>
-                    <p className="font-black text-sm text-slate-900">{userName}</p>
-                    <p className="text-xs font-bold text-blue-600">
-                      {userGrade} • {relConfig.label}
-                    </p>
+            <>
+              {/* Click-outside backdrop */}
+              <div
+                className="fixed inset-0 z-[140] bg-black/5"
+                onClick={() => setShowProfileMenu(false)}
+              />
+
+              {/* Elevated Dropdown Menu on top of everything */}
+              <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.22)] border-2 border-slate-200/90 py-3 z-[150] text-slate-700 animate-in fade-in slide-in-from-top-2 duration-150 select-none">
+                <div className="px-5 py-2 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <span className={`w-10 h-10 rounded-full bg-gradient-to-br ${activeAvatar.color} flex items-center justify-center text-2xl shadow-sm`}>
+                      {activeAvatar.emoji}
+                    </span>
+                    <div>
+                      <p className="font-black text-sm text-slate-900">{userName}</p>
+                      <p className="text-xs font-bold text-blue-600">
+                        {userGrade} • {relConfig.label}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Language & Religion Badge */}
-              <div className="px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 my-2 mx-3 rounded-2xl border border-blue-200 text-xs">
-                <span className="text-[10px] font-black text-blue-700 uppercase block tracking-wider">
-                  Active Languages
-                </span>
-                <span className="font-black text-slate-800">{relConfig.languageBadge}</span>
-              </div>
+                {/* Language & Community Badge */}
+                <div className="px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 my-2 mx-3 rounded-2xl border border-blue-200 text-xs">
+                  <span className="text-[10px] font-black text-blue-700 uppercase block tracking-wider">
+                    Active Languages
+                  </span>
+                  <span className="font-black text-slate-800">{cleanLangBadge}</span>
+                </div>
 
-              <div className="px-4 py-2 flex items-center justify-between text-xs font-black text-slate-600 bg-amber-50/80 my-2 mx-3 rounded-2xl border border-amber-200/50">
-                <span className="flex items-center gap-1.5 text-amber-600">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" /> {progress.starsEarned} Stars
-                </span>
-                <span className="flex items-center gap-1.5 text-blue-600">
-                  <Award className="w-4 h-4 text-blue-500" /> {earnedBadges} Badges
-                </span>
-              </div>
+                <div className="px-4 py-2 flex items-center justify-between text-xs font-black text-slate-600 bg-amber-50/80 my-2 mx-3 rounded-2xl border border-amber-200/50">
+                  <span className="flex items-center gap-1.5 text-amber-600">
+                    <Star className="w-4 h-4 fill-amber-400 text-amber-500" /> {progress.starsEarned} Stars
+                  </span>
+                  <span className="flex items-center gap-1.5 text-blue-600">
+                    <Award className="w-4 h-4 text-blue-500" /> {earnedBadges} Badges
+                  </span>
+                </div>
 
-              <button
-                onClick={() => {
-                  setShowProfileMenu(false);
-                  if (onProfileClick) onProfileClick();
-                }}
-                className="w-full px-5 py-2.5 text-left text-xs font-black text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer"
-              >
-                <User className="w-4 h-4 text-slate-400" /> View Report & Badges
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowProfileMenu(false);
-                  if (onSettingsClick) onSettingsClick();
-                }}
-                className="w-full px-5 py-2.5 text-left text-xs font-black text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer"
-              >
-                <Settings className="w-4 h-4 text-slate-400" /> Edit Profile & Settings
-              </button>
-
-              {onOpenAdmin && (
                 <button
                   onClick={() => {
                     setShowProfileMenu(false);
-                    onOpenAdmin();
+                    if (onProfileClick) onProfileClick();
                   }}
-                  className="w-full px-5 py-2.5 text-left text-xs font-black text-amber-900 bg-amber-50/60 hover:bg-amber-100/80 flex items-center gap-2.5 cursor-pointer border-t border-slate-100"
+                  className="w-full px-5 py-2.5 text-left text-xs font-black text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer"
                 >
-                  <ShieldCheck className="w-4 h-4 text-amber-600" /> Super Admin Portal 🔐
+                  <User className="w-4 h-4 text-slate-400" /> View Report & Badges
                 </button>
-              )}
 
-              <button
-                onClick={() => {
-                  setShowProfileMenu(false);
-                  if (onSwitchProfile) onSwitchProfile();
-                }}
-                className="w-full px-5 py-2.5 text-left text-xs font-black text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 cursor-pointer border-t border-slate-100"
-              >
-                <LogOut className="w-4 h-4 text-rose-500" /> Switch / Register New Student
-              </button>
-            </div>
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    if (onSettingsClick) onSettingsClick();
+                  }}
+                  className="w-full px-5 py-2.5 text-left text-xs font-black text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer"
+                >
+                  <Settings className="w-4 h-4 text-slate-400" /> Edit Profile & Settings
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    if (onSwitchProfile) onSwitchProfile();
+                  }}
+                  className="w-full px-5 py-2.5 text-left text-xs font-black text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 cursor-pointer border-t border-slate-100"
+                >
+                  <LogOut className="w-4 h-4 text-rose-500" /> Switch / Register New Student
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>
