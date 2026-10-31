@@ -20,8 +20,50 @@ import { VideoPlayerModal, VideoData } from './components/modals/VideoPlayerModa
 import { AnimatedBackground } from './components/layout/AnimatedBackground';
 import { sound } from './utils/audio';
 import { StudentProfile } from './types/student';
+import { clearStudentProgress, recordQuizCompletion } from './utils/studentProgress';
+
+const loadSavedProfiles = (): StudentProfile[] => {
+  try {
+    const savedProfiles = localStorage.getItem('vidya_student_profiles_v1');
+    if (savedProfiles) {
+      const profiles: unknown = JSON.parse(savedProfiles);
+      if (Array.isArray(profiles)) {
+        const validProfiles = profiles.filter(
+          (profile): profile is StudentProfile =>
+            typeof profile === 'object' &&
+            profile !== null &&
+            'id' in profile &&
+            typeof profile.id === 'string' &&
+            'name' in profile &&
+            typeof profile.name === 'string',
+        );
+        const activeProfile = localStorage.getItem('vidya_student_profile_v2');
+        if (activeProfile) {
+          const parsedActiveProfile: unknown = JSON.parse(activeProfile);
+          if (
+            typeof parsedActiveProfile === 'object' &&
+            parsedActiveProfile !== null &&
+            'id' in parsedActiveProfile &&
+            typeof parsedActiveProfile.id === 'string' &&
+            !validProfiles.some((profile) => profile.id === parsedActiveProfile.id)
+          ) {
+            validProfiles.push(parsedActiveProfile as StudentProfile);
+          }
+        }
+        return validProfiles;
+      }
+    }
+
+    const activeProfile = localStorage.getItem('vidya_student_profile_v2');
+    return activeProfile ? [JSON.parse(activeProfile) as StudentProfile] : [];
+  } catch (error) {
+    console.error('Unable to load saved student profiles.', error);
+    return [];
+  }
+};
 
 export function App() {
+  const [studentProfiles, setStudentProfiles] = useState<StudentProfile[]>(loadSavedProfiles);
   // Stored Student Profile (Multi-Faith, Multilingual, Age, Class, Game)
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(() => {
     try {
@@ -36,6 +78,9 @@ export function App() {
   const [showWelcome, setShowWelcome] = useState<boolean>(() => {
     return !localStorage.getItem('vidya_student_profile_v2');
   });
+  const [showProfilePicker, setShowProfilePicker] = useState(
+    () => !localStorage.getItem('vidya_student_profile_v2') && studentProfiles.length > 0,
+  );
 
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('numbers');
@@ -55,12 +100,30 @@ export function App() {
   const activeGrade = studentProfile?.gradeClass || 'Class 2';
 
   const handleProfileSubmit = (profile: StudentProfile) => {
+    const updatedProfiles = [
+      ...studentProfiles.filter((savedProfile) => savedProfile.id !== profile.id),
+      profile,
+    ];
+    localStorage.setItem('vidya_student_profiles_v1', JSON.stringify(updatedProfiles));
+    setStudentProfiles(updatedProfiles);
     setStudentProfile(profile);
     localStorage.setItem('vidya_student_profile_v2', JSON.stringify(profile));
     localStorage.setItem('vidya_user_name', profile.name);
     localStorage.setItem('vidya_user_avatar', profile.avatar);
     localStorage.setItem('vidya_user_grade', profile.gradeClass);
     setShowWelcome(false);
+    setShowProfilePicker(false);
+    setCurrentTab('home');
+  };
+
+  const handleChooseProfile = (profile: StudentProfile) => {
+    setStudentProfile(profile);
+    localStorage.setItem('vidya_student_profile_v2', JSON.stringify(profile));
+    localStorage.setItem('vidya_user_name', profile.name);
+    localStorage.setItem('vidya_user_avatar', profile.avatar);
+    localStorage.setItem('vidya_user_grade', profile.gradeClass);
+    setShowWelcome(false);
+    setShowProfilePicker(false);
     setCurrentTab('home');
   };
 
@@ -72,6 +135,11 @@ export function App() {
         avatar,
         gradeClass: grade,
       };
+      const updatedProfiles = studentProfiles.map((profile) =>
+        profile.id === updated.id ? updated : profile
+      );
+      localStorage.setItem('vidya_student_profiles_v1', JSON.stringify(updatedProfiles));
+      setStudentProfiles(updatedProfiles);
       setStudentProfile(updated);
       localStorage.setItem('vidya_student_profile_v2', JSON.stringify(updated));
     }
@@ -82,7 +150,24 @@ export function App() {
 
   const handleSwitchProfile = () => {
     sound.playPop();
+    setShowProfilePicker(true);
     setShowWelcome(true);
+  };
+
+  const handleResetActiveProfile = () => {
+    clearStudentProgress(studentProfile?.id);
+    const remainingProfiles = studentProfiles.filter(
+      (profile) => profile.id !== studentProfile?.id,
+    );
+    localStorage.setItem('vidya_student_profiles_v1', JSON.stringify(remainingProfiles));
+    localStorage.removeItem('vidya_student_profile_v2');
+    localStorage.removeItem('vidya_user_name');
+    localStorage.removeItem('vidya_user_avatar');
+    localStorage.removeItem('vidya_user_grade');
+    setStudentProfiles(remainingProfiles);
+    setStudentProfile(null);
+    setShowWelcome(true);
+    setShowProfilePicker(remainingProfiles.length > 0);
   };
 
   const handleStartLearning = () => {
@@ -94,6 +179,7 @@ export function App() {
   };
 
   const handleCompleteQuiz = (result: { correct: number; total: number; subjectName?: string; grade?: string }) => {
+    recordQuizCompletion(studentProfile?.id, result.correct, result.total);
     setQuizResult({
       correct: result.correct,
       total: result.total,
@@ -131,7 +217,10 @@ export function App() {
     return (
       <WelcomeScreen
         onProfileSubmit={handleProfileSubmit}
-        initialProfile={studentProfile}
+        initialProfile={showProfilePicker ? null : studentProfile}
+        savedProfiles={studentProfiles}
+        showProfilePicker={showProfilePicker}
+        onChooseProfile={handleChooseProfile}
       />
     );
   }
@@ -184,7 +273,10 @@ export function App() {
           {/* Islamic Teachings - ONLY visible to Muslim students */}
           {(currentTab === 'islamic' || currentTab === 'islamic-teachings') && (
             studentProfile?.religion === 'muslim' || !studentProfile ? (
-              <IslamicTeachingsView onBackToHome={handleBackToHome} />
+              <IslamicTeachingsView
+                studentId={studentProfile?.id}
+                onBackToHome={handleBackToHome}
+              />
             ) : (
               <HomeScreen
                 userName={activeDisplayName}
@@ -200,25 +292,35 @@ export function App() {
 
           {/* Punjabi & Gurmukhi Academy - for Sikh students */}
           {currentTab === 'punjabi' && (
-            <PunjabiLearningView onBackToHome={handleBackToHome} />
+            <PunjabiLearningView
+              studentId={studentProfile?.id}
+              onBackToHome={handleBackToHome}
+            />
           )}
 
           {/* Hindi & Cultural Wisdom Academy - for Hindu students */}
           {currentTab === 'hindi' && (
-            <HindiLearningView onBackToHome={handleBackToHome} />
+            <HindiLearningView
+              studentId={studentProfile?.id}
+              onBackToHome={handleBackToHome}
+            />
           )}
 
           {(currentTab === 'explorer' || currentTab === 'body-explorer') && (
             <ExplorerScreen
               onBackToHome={handleBackToHome}
               onOpenPractice={() => setCurrentTab('practice')}
-              initialModule={currentTab === 'body-explorer' ? 'body' : 'hub'}
+              initialModule={currentTab === 'body-explorer' ? 'body' : undefined}
+              studentId={studentProfile?.id}
             />
           )}
 
           {currentTab === 'practice' && (
             <PracticeScreen
+              studentId={studentProfile?.id}
               userGrade={activeGrade}
+              userAge={studentProfile?.age || 7}
+              religion={studentProfile?.religion || 'other'}
               onOpenBodyExplorer={() => setCurrentTab('explorer')}
             />
           )}
@@ -265,7 +367,13 @@ export function App() {
             />
           )}
 
-          {currentTab === 'progress' && <ProgressScreen />}
+          {currentTab === 'progress' && (
+            <ProgressScreen
+              studentId={studentProfile?.id}
+              userName={activeDisplayName}
+              userGrade={activeGrade}
+            />
+          )}
 
           {currentTab === 'settings' && (
             <SettingsScreen
@@ -274,10 +382,7 @@ export function App() {
               userGrade={activeGrade}
               onUpdateProfile={handleUpdateProfile}
               onResetProgress={() => {
-                localStorage.removeItem('vidya_student_profile_v2');
-                localStorage.removeItem('vidya_user_name');
-                setStudentProfile(null);
-                setShowWelcome(true);
+                handleResetActiveProfile();
               }}
             />
           )}

@@ -21,6 +21,7 @@ import { IslamicTeachingsView } from './IslamicTeachingsView';
 import { sound } from '../../utils/audio';
 
 interface ExplorerScreenProps {
+  studentId?: string;
   onBackToHome?: () => void;
   onOpenPractice?: () => void;
   initialModule?: 'body' | 'islamic' | 'space' | 'animals' | 'plants';
@@ -29,6 +30,7 @@ interface ExplorerScreenProps {
 type ExplorerView = 'hub' | 'body' | 'islamic' | 'space' | 'animals' | 'plants';
 
 export const ExplorerScreen: React.FC<ExplorerScreenProps> = ({
+  studentId,
   onBackToHome,
   onOpenPractice,
   initialModule,
@@ -61,6 +63,7 @@ export const ExplorerScreen: React.FC<ExplorerScreenProps> = ({
   if (activeView === 'body') {
     return (
       <HumanBodyGameScreen
+        studentId={studentId}
         onBackToExplorerHub={() => setActiveView('hub')}
         onBackToHome={onBackToHome}
         onOpenPractice={onOpenPractice}
@@ -72,6 +75,7 @@ export const ExplorerScreen: React.FC<ExplorerScreenProps> = ({
   if (activeView === 'islamic') {
     return (
       <IslamicTeachingsView
+        studentId={studentId}
         onBackToExplorerHub={() => setActiveView('hub')}
         onBackToHome={onBackToHome}
       />

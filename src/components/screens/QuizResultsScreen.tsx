@@ -20,7 +20,7 @@ import { APP_IMAGES } from '../../assets/images';
 interface QuizResultsScreenProps {
   userName: string;
   userGrade: string;
-  quizResult: { correct: number; total: number };
+  quizResult: { correct: number; total: number; subjectName?: string; grade?: string };
   onContinueLearning: () => void;
   onRetakeQuiz: () => void;
   onSelectLesson: (lessonId: string) => void;

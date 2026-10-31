@@ -8,6 +8,9 @@ import { StudentProfile, ReligionType, LanguagePair, RELIGION_CONFIGS } from '..
 interface WelcomeScreenProps {
   onProfileSubmit: (profile: StudentProfile) => void;
   initialProfile?: StudentProfile | null;
+  savedProfiles?: StudentProfile[];
+  showProfilePicker?: boolean;
+  onChooseProfile?: (profile: StudentProfile) => void;
 }
 
 const AVATARS = [
@@ -41,6 +44,9 @@ const FAVORITE_GAMES = [
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onProfileSubmit,
   initialProfile,
+  savedProfiles = [],
+  showProfilePicker = false,
+  onChooseProfile,
 }) => {
   const [name, setName] = useState(initialProfile?.name || '');
   const [selectedAvatar, setSelectedAvatar] = useState(initialProfile?.avatar || AVATARS[0].id);
@@ -49,8 +55,52 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   const [selectedReligion, setSelectedReligion] = useState<ReligionType>(initialProfile?.religion || 'muslim');
   const [selectedGame, setSelectedGame] = useState(initialProfile?.favoriteGame || 'body');
   const [error, setError] = useState(false);
+  const [creatingNewStudent, setCreatingNewStudent] = useState(false);
 
   const religionConfig = RELIGION_CONFIGS[selectedReligion];
+
+  if (showProfilePicker && savedProfiles.length > 0 && !creatingNewStudent) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#0c2e6b] via-[#14479e] to-[#0284c7] flex items-center justify-center p-4 sm:p-8">
+        <section className="w-full max-w-3xl rounded-[2rem] bg-white p-6 sm:p-10 shadow-2xl">
+          <div className="text-center">
+            <p className="text-sm font-black uppercase tracking-widest text-blue-600">Welcome back</p>
+            <h1 className="mt-2 text-3xl font-black text-slate-900">Who is learning today?</h1>
+            <p className="mt-2 text-sm font-semibold text-slate-500">
+              Each student has their own lessons, games, stars, and progress.
+            </p>
+          </div>
+          <div className="mt-7 grid gap-3 sm:grid-cols-2">
+            {savedProfiles.map((profile) => (
+              <button
+                key={profile.id}
+                type="button"
+                onClick={() => onChooseProfile?.(profile)}
+                className="flex items-center gap-4 rounded-2xl border-2 border-slate-200 bg-slate-50 p-4 text-left transition hover:border-blue-400 hover:bg-blue-50"
+              >
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow">
+                  {AVATARS.find((avatar) => avatar.id === profile.avatar)?.emoji || '👦'}
+                </span>
+                <span>
+                  <span className="block text-lg font-black text-slate-900">{profile.name}</span>
+                  <span className="block text-xs font-bold text-slate-500">
+                  {profile.gradeClass} · {RELIGION_CONFIGS[profile.religion]?.label || 'Universal / All'}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setCreatingNewStudent(true)}
+            className="mt-6 w-full rounded-2xl bg-blue-600 px-5 py-3 font-black text-white shadow-lg transition hover:bg-blue-700"
+          >
+            + Add a new student
+          </button>
+        </section>
+      </div>
+    );
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,8 +122,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       languages: languageMode,
       favoriteGame: selectedGame,
       createdAt: initialProfile?.createdAt || new Date().toISOString(),
-      stars: initialProfile?.stars || 150,
-      badges: initialProfile?.badges || 8,
+      stars: initialProfile?.stars ?? 0,
+      badges: initialProfile?.badges ?? 0,
     };
 
     sound.playSuccess();
@@ -132,6 +182,15 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         </div>
 
         {/* Setup Form */}
+        {showProfilePicker && savedProfiles.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setCreatingNewStudent(false)}
+            className="w-full rounded-xl bg-blue-50 px-4 py-2 text-sm font-black text-blue-700 hover:bg-blue-100"
+          >
+            ← Choose a saved student instead
+          </button>
+        )}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Step 1: Student Name */}
           <div>
