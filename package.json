@@ -1,7 +1,8 @@
 {
-  "name": "vidya-ai",
+  "name": "vidya-ai-jr",
   "private": true,
   "version": "1.0.0",
+  "description": "VidyaAI Jr - Magical interactive learning galaxy for young minds",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,10 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.16.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "canvas-confetti": "^1.9.4"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.1",
