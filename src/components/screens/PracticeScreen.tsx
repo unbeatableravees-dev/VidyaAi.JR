@@ -141,13 +141,25 @@ const COMMUNITY_GAMES: Record<ReligionType, PracticeGame[]> = {
   hindu: [
     {
       id: 'hindu-values-quiz',
-      title: 'Hindu Culture & Values',
+      title: 'Hindu Culture & Values Quiz',
       iconType: 'p-pattern',
       bgColor: '#ea580c',
       badgeColor: '#9a3412',
       category: 'hinduism',
-      desc: 'Explore festivals, stories, Sanskrit, yoga, and values.',
+      desc: 'Explore festivals, Ramayana stories, Sanskrit shlokas, and sanskar.',
       emoji: '🪔',
+      exam: true,
+      religion: 'hindu',
+    },
+    {
+      id: 'hindi-varnamala-exam',
+      title: 'Hindi Varnamala & Words Challenge',
+      iconType: 'p-alphabets',
+      bgColor: '#f97316',
+      badgeColor: '#c2410c',
+      category: 'hinduism',
+      desc: 'Test your knowledge of Hindi vowels, consonants, counting, and words.',
+      emoji: '🕉️',
       exam: true,
       religion: 'hindu',
     },
@@ -160,8 +172,20 @@ const COMMUNITY_GAMES: Record<ReligionType, PracticeGame[]> = {
       bgColor: '#d97706',
       badgeColor: '#92400e',
       category: 'sikhism',
-      desc: 'Learn about seva, langar, Sikh history, and Gurmukhi.',
+      desc: 'Learn about seva, langar, 10 Gurus, sakhis, and Gurmukhi.',
       emoji: '☬',
+      exam: true,
+      religion: 'sikh',
+    },
+    {
+      id: 'punjabi-gurmukhi-exam',
+      title: 'Gurmukhi 35 Akhari & Words Challenge',
+      iconType: 'p-alphabets',
+      bgColor: '#eab308',
+      badgeColor: '#ca8a04',
+      category: 'sikhism',
+      desc: 'Practice Gurmukhi letters ੳ to ੜ, daily counting, and words.',
+      emoji: 'ੴ',
       exam: true,
       religion: 'sikh',
     },
@@ -221,11 +245,31 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
     setActiveGame({ id, title });
   };
 
+  const explorerHubText =
+    religion === 'hindu'
+      ? {
+          title: 'Explorer Hub 🧭 (ज्ञान एवं खोज का केंद्र)',
+          desc: '3D Human Body Anatomy with Scanner, Hindi & Cultural Wisdom, Solar System, Plants, Animals & Wonders of Science!',
+        }
+      : religion === 'sikh'
+      ? {
+          title: 'Explorer Hub 🧭 (ਗਿਆਨ ਤੇ ਖੋਜ ਦਾ ਕੇਂਦਰ)',
+          desc: '3D Human Body Anatomy with Scanner, Punjabi & Gurmukhi Academy, Solar System, Nature, Animals & Wonders of Science!',
+        }
+      : religion === 'muslim'
+      ? {
+          title: 'Explorer Hub 🧭 (علم و دریافت کا مرکز)',
+          desc: '3D Human Body Anatomy with Scanner, Islamic Teachings in Arabic & Urdu, Solar System, Animals of the Quran, and Botany!',
+        }
+      : {
+          title: 'Explorer Hub 🧭 (Discovery & Knowledge Hub)',
+          desc: '3D Human Body Anatomy with Scanner, Solar System, Nature, Animals & Wonders of Science!',
+        };
+
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto pb-28 space-y-6 select-none">
       {/* Practice Header Banner */}
       <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-purple-600/95 via-indigo-600/90 to-blue-600/95 text-white p-8 md:p-10 shadow-xl border border-white/40 flex flex-col md:flex-row items-center justify-between gap-6 shimmer-effect">
-        {/* Wide Panorama Banner Art in the background with subtle blend */}
         <div className="absolute inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
           <img
             src={APP_IMAGES.bannerPanorama}
@@ -258,7 +302,7 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
           </div>
         </div>
 
-        {/* 3D Animated Illustration using media asset */}
+        {/* Mascot */}
         <div className="w-36 h-36 md:w-44 md:h-44 rounded-3xl bg-white/15 backdrop-blur-md p-2 flex items-center justify-center border-2 border-white/50 shadow-2xl animate-bounce-gentle relative z-10">
           <img
             src={APP_IMAGES.explorerMascot}
@@ -289,19 +333,19 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
           </div>
 
           <h2 className="text-2xl md:text-3xl font-black leading-tight drop-shadow">
-            Explorer Hub 🧭 (علم و دریافت کا مرکز)
+            {explorerHubText.title}
           </h2>
 
           <p className="text-sm text-blue-100 font-extrabold leading-relaxed">
-            3D Human Body Anatomy with Drag & Drop Scanner, Islamic Teachings in Arabic & Urdu, Solar System, Animals of the Quran, and Botany!
+            {explorerHubText.desc}
           </p>
 
           <div className="pt-2 flex items-center gap-3">
-            <button className="px-5 py-2.5 rounded-2xl bg-white text-blue-800 font-black text-xs shadow-lg group-hover:scale-105 transition-all flex items-center gap-2">
+            <button className="px-5 py-2.5 rounded-2xl bg-white text-blue-800 font-black text-xs shadow-lg group-hover:scale-105 transition-all flex items-center gap-2 cursor-pointer">
               <Play className="w-4 h-4 fill-blue-800" />
               <span>Launch Explorer Hub →</span>
             </button>
-            <span className="text-xs font-bold text-cyan-200">50+ Organs & Vessels • Duas • Cosmos</span>
+            <span className="text-xs font-bold text-cyan-200">50+ Organs & Vessels • Science & Culture</span>
           </div>
         </div>
 
@@ -310,7 +354,7 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
         </div>
       </div>
 
-      {/* Subject filters; the learning level comes from class and age selected during onboarding. */}
+      {/* Subject filters */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2">
           {[
@@ -334,47 +378,41 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
               className={`px-4 py-2 rounded-2xl text-xs font-black transition-all cursor-pointer ${
                 selectedFilter === f.id
                   ? 'bg-blue-600 text-white shadow-md scale-105'
-                  : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
               }`}
             >
               {f.label}
             </button>
           ))}
         </div>
-
-        <span className="text-xs font-black text-slate-500 hidden sm:inline">
-          Showing {visibleGames.length} Interactive Activities
-        </span>
       </div>
 
-      {/* Playable Games Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-5">
+      {/* Grid of Mini-Games */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {visibleGames.map((game) => (
           <div
             key={game.id}
             onClick={() => handleLaunchGame(game.id, game.title)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') handleLaunchGame(game.id, game.title);
-            }}
-            role="button"
-            tabIndex={0}
             style={{ backgroundColor: game.bgColor }}
-            className="rounded-[2rem] p-6 border-2 border-white/80 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col justify-between h-56 select-none relative overflow-hidden text-white glossy-bubble"
+            className="rounded-[2rem] p-5 text-white flex flex-col justify-between h-56 shadow-lg border-2 border-white/80 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group select-none relative overflow-hidden glossy-bubble"
           >
-            {/* Top Sheen */}
-            <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none rounded-t-[2rem]" />
+            <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/35 to-transparent pointer-events-none rounded-t-[2rem]" />
 
             <div className="flex items-start justify-between z-10">
-              <div className="w-16 h-16 flex items-center justify-center group-hover:scale-120 transition-transform duration-300">
-                {game.emoji ? (
-                  <span className="text-5xl drop-shadow-md" aria-hidden="true">{game.emoji}</span>
-                ) : (
-                  <PracticeIcon type={game.iconType} size={70} />
-                )}
-              </div>
-              <span className="px-3 py-1 bg-white/30 backdrop-blur-md rounded-full text-[11px] font-black uppercase tracking-wider">
-                {game.exam ? '10-Question Challenge' : 'Playable'}
+              <span
+                style={{ backgroundColor: game.badgeColor }}
+                className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1"
+              >
+                <Sparkles className="w-3 h-3 text-yellow-300" />
+                {game.category}
               </span>
+              <span className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-sm font-black group-hover:rotate-12 transition-transform">
+                {game.emoji || '⭐'}
+              </span>
+            </div>
+
+            <div className="flex-1 flex items-center justify-center my-2 group-hover:scale-115 transition-transform duration-300">
+              <PracticeIcon type={game.iconType} size={54} />
             </div>
 
             <div className="space-y-1 z-10">

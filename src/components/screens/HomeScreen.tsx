@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { ArrowRight, ChevronRight, Lock, Play, Sparkles } from 'lucide-react';
 import { ALL_CATEGORIES, PRACTICE_ACTIVITIES } from '../../data/learningData';
 import { HeroBannerIllustration, CategoryIcon, PracticeIcon } from '../illustrations/Illustrations';
-import { VideoPlayerModal, VideoData } from '../modals/VideoPlayerModal';
-import { InteractiveGameModal } from '../modals/InteractiveGameModal';
+import type { VideoData } from '../modals/VideoPlayerModal';
+
+const VideoPlayerModal = React.lazy(() =>
+  import('../modals/VideoPlayerModal').then((m) => ({ default: m.VideoPlayerModal }))
+);
+const InteractiveGameModal = React.lazy(() =>
+  import('../modals/InteractiveGameModal').then((m) => ({ default: m.InteractiveGameModal }))
+);
 import { sound } from '../../utils/audio';
 import { StudentProfile } from '../../types/student';
 import { APP_IMAGES } from '../../assets/images';
@@ -179,7 +185,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <div className="relative z-10 max-w-lg space-y-3.5 text-center md:text-left">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white/50 backdrop-blur-md rounded-full text-xs font-black text-slate-800 shadow-sm border border-white/60">
             <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
-            <span>Welcome Back, {userName}!</span>
+            <span>VidyaAI Jr • Welcome Back, {userName}!</span>
+            <span className="px-1.5 py-0.2 rounded-md bg-yellow-400 text-slate-950 text-[10px] font-black shadow-xs">JR</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0f2e5a] tracking-tight leading-tight drop-shadow-sm font-['Nunito',sans-serif]">
@@ -398,7 +405,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 Punjabi Academy ☬
               </h3>
               <p className="text-xs text-amber-100 font-bold leading-relaxed font-punjabi">
-                ਗੁਰਮੁਖੀ ਪੈਂਤੀ ਅੱਖਰੀ, ਰੋਜ਼ਾਨਾ ਸ਼ਬਦ, ਸਿੱਖ ਕਦਰਾਂ-ਕੀਮਤਾਂ ਅਤੇ ਪ੍ਰੇਰਣਾਦਾਇਕ ਸਾਖੀਆਂ!
+                ੩੫ ਅੱਖਰੀ, ਰੋਜ਼ਾਨਾ ਸ਼ਬਦ, ਦਸ ਪਾਤਸ਼ਾਹੀਆਂ, ਸਿੱਖ ਕਦਰਾਂ-ਕੀਮਤਾਂ, ਸਾਖੀਆਂ ਤੇ ਮੂਲ ਮੰਤਰ!
               </p>
               <span className="inline-flex items-center gap-1.5 text-xs font-black text-yellow-200 pt-1 group-hover:translate-x-1 transition-transform">
                 Explore Punjabi →
@@ -429,7 +436,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 Hindi & Culture 🕉️
               </h3>
               <p className="text-xs text-orange-100 font-bold leading-relaxed font-hindi">
-                हिन्दी वर्णमाला, पंचतंत्र की प्रेरक कहानियां और नैतिक संस्कार!
+                वर्णमाला, पंचतंत्र कथाएं, सनातन संस्कार, रामायण, सरल श्लोक एवं बाल योग!
               </p>
               <span className="inline-flex items-center gap-1.5 text-xs font-black text-yellow-200 pt-1 group-hover:translate-x-1 transition-transform">
                 Explore Hindi →
@@ -654,6 +661,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* Simulated Interactive Video Player Modal */}
       {selectedVideo && (
+        <React.Suspense fallback={null}>
         <VideoPlayerModal
           video={selectedVideo}
           onClose={() => setSelectedVideo(null)}
@@ -662,15 +670,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onStartLearning();
           }}
         />
+        </React.Suspense>
       )}
 
       {/* Playable Interactive Mini Game Modal */}
       {activeGame && (
+        <React.Suspense fallback={null}>
         <InteractiveGameModal
           gameId={activeGame.id}
           gameTitle={activeGame.title}
           onClose={() => setActiveGame(null)}
         />
+        </React.Suspense>
       )}
     </div>
   );
