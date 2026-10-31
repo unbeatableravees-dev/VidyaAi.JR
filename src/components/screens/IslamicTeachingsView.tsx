@@ -28,8 +28,10 @@ import {
 } from '../../data/islamicTeachingsData';
 import { sound } from '../../utils/audio';
 import { femaleVoice } from '../../utils/speech';
+import { getStudentProgress, setLessonCompleted } from '../../utils/studentProgress';
 
 interface IslamicTeachingsViewProps {
+  studentId?: string;
   onBackToExplorerHub?: () => void;
   onBackToHome?: () => void;
   initialCategory?: string;
@@ -38,6 +40,7 @@ interface IslamicTeachingsViewProps {
 const TEACHINGS_PER_PAGE = 20;
 
 export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
+  studentId,
   onBackToExplorerHub,
   onBackToHome,
   initialCategory,
@@ -60,15 +63,11 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [activeSpeechPart, setActiveSpeechPart] = useState<'all' | 'ar' | 'ur' | 'en' | null>(null);
 
-  // Memorized / Mastered items stored in localStorage
-  const [memorizedIds, setMemorizedIds] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('vidya_memorized_duas');
-      return saved ? JSON.parse(saved) : ['prophet-adam', 'quran-surah-al-fatiha'];
-    } catch {
-      return ['prophet-adam', 'quran-surah-al-fatiha'];
-    }
-  });
+  const [memorizedIds, setMemorizedIds] = useState<string[]>(() =>
+    getStudentProgress(studentId).completedLessonIds
+      .filter((id) => id.startsWith('islamic:'))
+      .map((id) => id.slice('islamic:'.length))
+  );
 
   // Filtered tracks for the hub
   const filteredTracks = ISLAMIC_TRACKS.filter((track) => {
@@ -137,27 +136,23 @@ export const IslamicTeachingsView: React.FC<IslamicTeachingsViewProps> = ({
   const toggleMemorized = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     sound.playSuccess();
-    setMemorizedIds((prev) => {
-      const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
+    const isMemorized = memorizedIds.includes(id);
+    setMemorizedIds((previous) =>
+      isMemorized ? previous.filter((item) => item !== id) : [...previous, id]
+    );
+    setLessonCompleted(studentId, `islamic:${id}`, !isMemorized);
+    if (!isMemorized) {
       try {
-        localStorage.setItem('vidya_memorized_duas', JSON.stringify(next));
+        confetti({
+          particleCount: 40,
+          spread: 70,
+          origin: { y: 0.5 },
+          colors: ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899'],
+        });
       } catch {
         // Ignore
       }
-      if (!prev.includes(id)) {
-        try {
-          confetti({
-            particleCount: 40,
-            spread: 70,
-            origin: { y: 0.5 },
-            colors: ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899'],
-          });
-        } catch {
-          // Ignore
-        }
-      }
-      return next;
-    });
+    }
   };
 
   const handleStopSpeech = () => {

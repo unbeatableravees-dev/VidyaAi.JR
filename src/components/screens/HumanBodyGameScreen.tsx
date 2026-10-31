@@ -22,14 +22,18 @@ import { BODY_REGIONS, BODY_ORGANS, BodyOrgan, BodyRegion } from '../../data/hum
 import { HumanBodyModel } from '../illustrations/HumanBodyModel';
 import { OrganIllustration } from '../illustrations/OrganIllustration';
 import { sound } from '../../utils/audio';
+import { femaleVoice } from '../../utils/speech';
+import { getStudentProgress, recordOrganDiscovery } from '../../utils/studentProgress';
 
 interface HumanBodyGameScreenProps {
+  studentId?: string;
   onBackToHome?: () => void;
   onOpenPractice?: () => void;
   onBackToExplorerHub?: () => void;
 }
 
 export const HumanBodyGameScreen: React.FC<HumanBodyGameScreenProps> = ({
+  studentId,
   onBackToHome,
   onOpenPractice,
   onBackToExplorerHub,
@@ -46,15 +50,9 @@ export const HumanBodyGameScreen: React.FC<HumanBodyGameScreenProps> = ({
   // Scanner feedback state
   const [scanPulse, setScanPulse] = useState<boolean>(false);
 
-  // Discovered Organs Set (Saved in localStorage for gamification)
-  const [discoveredOrgans, setDiscoveredOrgans] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('vidya_discovered_organs');
-      return saved ? JSON.parse(saved) : ['heart'];
-    } catch {
-      return ['heart'];
-    }
-  });
+  const [discoveredOrgans, setDiscoveredOrgans] = useState<string[]>(
+    () => getStudentProgress(studentId).discoveredOrganIds
+  );
 
   // Quiz state for the active organ
   const [quizAnswer, setQuizAnswer] = useState<string | null>(null);
@@ -94,18 +92,10 @@ export const HumanBodyGameScreen: React.FC<HumanBodyGameScreenProps> = ({
     }
 
     // Save to discovered list
-    setDiscoveredOrgans((prev) => {
-      if (!prev.includes(organId)) {
-        const next = [...prev, organId];
-        try {
-          localStorage.setItem('vidya_discovered_organs', JSON.stringify(next));
-        } catch {
-          // Ignore
-        }
-        return next;
-      }
-      return prev;
-    });
+    if (!discoveredOrgans.includes(organId)) {
+      setDiscoveredOrgans((previous) => [...previous, organId]);
+      recordOrganDiscovery(studentId, organId);
+    }
   };
 
   // Drag and Drop Event Handlers
@@ -185,25 +175,21 @@ export const HumanBodyGameScreen: React.FC<HumanBodyGameScreenProps> = ({
         return;
       }
 
-      window.speechSynthesis.cancel();
       const textToRead = `${activeOrgan.name}. ${activeOrgan.urduName}. ${activeOrgan.shortDesc}. ${activeOrgan.fullDescription}`;
-      const utterance = new SpeechSynthesisUtterance(textToRead);
-      utterance.rate = 0.9;
-      utterance.pitch = 1.05;
-
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-
-      setIsSpeaking(true);
-      window.speechSynthesis.speak(utterance);
+      setIsSpeaking(femaleVoice.speak({
+        text: textToRead,
+        lang: 'en',
+        rate: 0.9,
+        pitch: 1.12,
+        onEnd: () => setIsSpeaking(false),
+        onError: () => setIsSpeaking(false),
+      }));
     }
   };
 
   useEffect(() => {
     return () => {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      femaleVoice.stop();
     };
   }, [activeOrganId]);
 

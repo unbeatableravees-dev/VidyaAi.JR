@@ -44,10 +44,10 @@ class FemaleVoiceEngine {
       'female', 'woman', 'girl',
       // Microsoft Windows female voices
       'zira', 'jenny', 'aria', 'sonia', 'natasha', 'libby', 'hazel',
-      'salma', 'hoda', 'zeina', 'naayf',
+      'salma', 'hoda', 'zeina',
       'gul', 'uzma',
       // Apple / iOS female voices
-      'samantha', 'victoria', 'karen', 'moira', 'tessa', 'leila', 'maged', 'tarik',
+      'samantha', 'victoria', 'karen', 'moira', 'tessa', 'leila',
       // Google Chrome female voices
       'google uk english female', 'google us english female',
     ];
@@ -67,10 +67,7 @@ class FemaleVoiceEngine {
     });
     if (femaleLangVoice) return femaleLangVoice;
 
-    // 2. If language matches, pick the first voice of that language
-    if (langVoices.length > 0) return langVoices[0];
-
-    // 3. If Urdu voice is missing on user system, try Hindi female voice (shared vocabulary and phonetics)
+    // Prefer a recognizable female voice in a related language before an unknown-gender voice.
     if (lang === 'ur') {
       const hindiVoices = all.filter((v) => v.lang.toLowerCase().startsWith('hi'));
       const femaleHindi = hindiVoices.find((v) => {
@@ -81,13 +78,14 @@ class FemaleVoiceEngine {
       if (hindiVoices.length > 0) return hindiVoices[0];
     }
 
-    // 4. Fallback to any high quality female voice available on the device
     const anyFemale = all.find((v) => {
       const lowerName = v.name.toLowerCase();
       return femaleKeywords.some((kw) => lowerName.includes(kw));
     });
 
-    return anyFemale || all[0] || null;
+    // Browsers do not expose voice gender; use the requested language if no
+    // installed voice can be identified as female.
+    return anyFemale || langVoices[0] || all[0] || null;
   }
 
   public stop() {

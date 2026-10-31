@@ -3,15 +3,21 @@ import confetti from 'canvas-confetti';
 import { ArrowLeft, BookOpen, Volume2, CheckCircle2, Sparkles, Award } from 'lucide-react';
 import { HINDI_TRACKS, HINDI_LESSONS, HindiLesson } from '../../data/hindiData';
 import { sound } from '../../utils/audio';
+import { getStudentProgress, setLessonCompleted } from '../../utils/studentProgress';
 
 interface HindiLearningViewProps {
+  studentId?: string;
   onBackToHome?: () => void;
 }
 
-export const HindiLearningView: React.FC<HindiLearningViewProps> = ({ onBackToHome }) => {
+export const HindiLearningView: React.FC<HindiLearningViewProps> = ({ studentId, onBackToHome }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('hindi-varnamala');
   const [activeLesson, setActiveLesson] = useState<HindiLesson>(HINDI_LESSONS[0]);
-  const [completedIds, setCompletedIds] = useState<string[]>(['h-varnamala-a']);
+  const [completedIds, setCompletedIds] = useState<string[]>(() =>
+    getStudentProgress(studentId).completedLessonIds
+      .filter((id) => id.startsWith('hindi:'))
+      .map((id) => id.slice('hindi:'.length))
+  );
 
   const filteredLessons = HINDI_LESSONS.filter(
     (l) => selectedCategory === 'all' || l.category === selectedCategory
@@ -19,22 +25,23 @@ export const HindiLearningView: React.FC<HindiLearningViewProps> = ({ onBackToHo
 
   const toggleLearned = (id: string) => {
     sound.playSuccess();
-    setCompletedIds((prev) => {
-      const next = prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id];
-      if (!prev.includes(id)) {
-        try {
-          confetti({
-            particleCount: 40,
-            spread: 70,
-            origin: { y: 0.5 },
-            colors: ['#ea580c', '#f59e0b', '#10b981', '#3b82f6'],
-          });
-        } catch {
-          // Ignore
-        }
+    const isCompleted = completedIds.includes(id);
+    setCompletedIds((previous) =>
+      isCompleted ? previous.filter((item) => item !== id) : [...previous, id]
+    );
+    setLessonCompleted(studentId, `hindi:${id}`, !isCompleted);
+    if (!isCompleted) {
+      try {
+        confetti({
+          particleCount: 40,
+          spread: 70,
+          origin: { y: 0.5 },
+          colors: ['#ea580c', '#f59e0b', '#10b981', '#3b82f6'],
+        });
+      } catch {
+        // Ignore
       }
-      return next;
-    });
+    }
   };
 
   return (

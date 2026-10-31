@@ -22,6 +22,7 @@ import {
 } from '../../data/quizQuestions';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
+import { femaleVoice } from '../../utils/speech';
 
 interface QuizScreenProps {
   userGrade: string;
@@ -132,14 +133,11 @@ export const QuizScreen: React.FC<QuizScreenProps> = ({
 
   const speakQuestion = () => {
     sound.playPop();
-    if ('speechSynthesis' in window && currentQuestion) {
-      window.speechSynthesis.cancel();
+    if (currentQuestion) {
       const textToSpeak = `${currentQuestion.question}. Options: ${currentQuestion.options
         .map((o) => `${o.key}: ${o.value}`)
         .join('. ')}`;
-      const utterance = new SpeechSynthesisUtterance(textToSpeak);
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
+      femaleVoice.speak({ text: textToSpeak, lang: 'en', rate: 0.9 });
     }
   };
 
