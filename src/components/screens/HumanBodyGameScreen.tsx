@@ -17,6 +17,7 @@ import {
   Zap,
   Info,
   ChevronRight,
+  Award,
 } from 'lucide-react';
 import { BODY_REGIONS, BODY_ORGANS, BodyOrgan, BodyRegion } from '../../data/humanBodyData';
 import { HumanBodyModel } from '../illustrations/HumanBodyModel';
@@ -24,9 +25,12 @@ import { OrganIllustration } from '../illustrations/OrganIllustration';
 import { sound } from '../../utils/audio';
 import { femaleVoice } from '../../utils/speech';
 import { getStudentProgress, recordOrganDiscovery } from '../../utils/studentProgress';
+import { CertificateModal } from '../common/CertificateModal';
 
 interface HumanBodyGameScreenProps {
   studentId?: string;
+  studentName?: string;
+  studentGrade?: string;
   onBackToHome?: () => void;
   onOpenPractice?: () => void;
   onBackToExplorerHub?: () => void;
@@ -34,6 +38,8 @@ interface HumanBodyGameScreenProps {
 
 export const HumanBodyGameScreen: React.FC<HumanBodyGameScreenProps> = ({
   studentId,
+  studentName = 'Junior Explorer',
+  studentGrade = 'Class 2',
   onBackToHome,
   onOpenPractice,
   onBackToExplorerHub,
@@ -49,6 +55,10 @@ export const HumanBodyGameScreen: React.FC<HumanBodyGameScreenProps> = ({
 
   // Scanner feedback state
   const [scanPulse, setScanPulse] = useState<boolean>(false);
+
+  // Certificate and Celebration modal state
+  const [isCertificateOpen, setIsCertificateOpen] = useState(false);
+  const [showCelebrationModal, setShowCelebrationModal] = useState(false);
 
   const [discoveredOrgans, setDiscoveredOrgans] = useState<string[]>(
     () => getStudentProgress(studentId).discoveredOrganIds
@@ -93,8 +103,27 @@ export const HumanBodyGameScreen: React.FC<HumanBodyGameScreenProps> = ({
 
     // Save to discovered list
     if (!discoveredOrgans.includes(organId)) {
-      setDiscoveredOrgans((previous) => [...previous, organId]);
+      const nextOrgans = [...discoveredOrgans, organId];
+      setDiscoveredOrgans(nextOrgans);
       recordOrganDiscovery(studentId, organId);
+
+      // Check if all organs discovered
+      if (nextOrgans.length >= totalOrgansCount) {
+        setTimeout(() => {
+          sound.playFanfare();
+          try {
+            confetti({
+              particleCount: 120,
+              spread: 90,
+              origin: { y: 0.5 },
+              colors: ['#f59e0b', '#3b82f6', '#10b981', '#ec4899', '#8b5cf6'],
+            });
+          } catch {
+            // Ignore
+          }
+          setShowCelebrationModal(true);
+        }, 600);
+      }
     }
   };
 
@@ -235,8 +264,27 @@ export const HumanBodyGameScreen: React.FC<HumanBodyGameScreenProps> = ({
           </div>
         </div>
 
-        {/* Gamification Progress Badge */}
+        {/* Gamification Progress Badge & Certificate Action */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              sound.playSuccess();
+              setIsCertificateOpen(true);
+            }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-black text-xs shadow-md transition-all cursor-pointer ${
+              discoveredCount >= totalOrgansCount
+                ? 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 border-2 border-yellow-300 animate-bounce hover:scale-105'
+                : 'bg-white hover:bg-amber-50 text-slate-700 border-2 border-slate-200'
+            }`}
+          >
+            <Award className="w-4 h-4 text-amber-600" />
+            <span>
+              {discoveredCount >= totalOrgansCount
+                ? 'Claim Anatomy Certificate 🎓'
+                : `Certificate (${discoveredCount}/${totalOrgansCount})`}
+            </span>
+          </button>
+
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 px-4 py-2 rounded-2xl flex items-center gap-2.5 shadow-sm">
             <Trophy className="w-5 h-5 text-amber-500 stroke-[2.5]" />
             <div>
@@ -779,6 +827,57 @@ export const HumanBodyGameScreen: React.FC<HumanBodyGameScreenProps> = ({
           )}
         </section>
       </div>
+
+      {/* Achievement Unlocked Popup Modal */}
+      {showCelebrationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-fadeIn">
+          <div className="w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 text-center shadow-2xl border-4 border-yellow-300 space-y-4">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 mx-auto flex items-center justify-center text-4xl shadow-xl animate-bounce">
+              🫀
+            </div>
+            <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-800 uppercase tracking-widest">
+              Achievement Unlocked! 🏆
+            </span>
+            <h3 className="text-2xl font-black text-slate-900">
+              Junior Anatomy Specialist Master!
+            </h3>
+            <p className="text-xs sm:text-sm font-bold text-slate-600 leading-relaxed">
+              Mubarak ho, <span className="font-black text-blue-600">{studentName}</span>! You have successfully inspected, scanned, and discovered all {totalOrgansCount} vital organs of the human body!
+            </p>
+            <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs font-black">
+              ⭐ +80 Discovery Stars Added to Your Profile!
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                onClick={() => {
+                  sound.playSuccess();
+                  setShowCelebrationModal(false);
+                  setIsCertificateOpen(true);
+                }}
+                className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:scale-105 text-slate-950 font-black text-sm shadow-lg transition cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Award className="w-5 h-5" /> View & Download Certificate 🎓
+              </button>
+              <button
+                onClick={() => setShowCelebrationModal(false)}
+                className="py-3 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs cursor-pointer"
+              >
+                Keep Exploring
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Official Certificate Modal */}
+      <CertificateModal
+        isOpen={isCertificateOpen}
+        onClose={() => setIsCertificateOpen(false)}
+        studentName={studentName}
+        studentGrade={studentGrade}
+        achievementTitle="Junior Human Anatomy Specialist - All 8 Body Organs Mastered"
+        starsEarned={discoveredCount * 10}
+      />
     </div>
   );
 };
