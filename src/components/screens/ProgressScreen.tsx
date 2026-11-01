@@ -1,7 +1,9 @@
-import React from 'react';
-import { Award, BookOpen, CheckCircle, Gamepad2, Star, Trophy, XCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Award, BookOpen, CheckCircle, Gamepad2, Star, Trophy, XCircle, Download, Sparkles } from 'lucide-react';
 import { APP_IMAGES } from '../../assets/images';
 import { getStudentProgress } from '../../utils/studentProgress';
+import { CertificateModal } from '../common/CertificateModal';
+import { sound } from '../../utils/audio';
 
 interface ProgressScreenProps {
   studentId?: string;
@@ -14,6 +16,7 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({
   userName,
   userGrade,
 }) => {
+  const [showCertificate, setShowCertificate] = useState(false);
   const progress = getStudentProgress(studentId);
   const completedTasks =
     progress.completedLessonIds.length +
@@ -25,7 +28,10 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({
     { id: 'quiz-explorer', name: 'Quiz Explorer', icon: '🧠', earned: progress.quizAttempts > 0 },
     { id: 'exam-finisher', name: 'Exam Finisher', icon: '📝', earned: progress.examAttempts > 0 },
     { id: 'game-star', name: 'Game Star', icon: '🎮', earned: progress.activityCompletions > 0 },
-    { id: 'body-explorer', name: 'Body Explorer', icon: '🔎', earned: progress.discoveredOrganIds.length > 0 },
+    { id: 'body-explorer', name: 'Body Explorer', icon: '🫀', earned: (progress.discoveredOrganIds || []).length > 0 },
+    { id: 'space-explorer', name: 'Galaxy Pioneer', icon: '🪐', earned: (progress.discoveredSpaceIds || []).length > 0 },
+    { id: 'animal-master', name: 'Fauna Guardian', icon: '🦁', earned: (progress.discoveredAnimalIds || []).length > 0 },
+    { id: 'plant-botanist', name: 'Botanist', icon: '🌿', earned: (progress.discoveredPlantIds || []).length > 0 },
   ];
   const earnedBadges = badges.filter((badge) => badge.earned).length;
 
@@ -131,17 +137,38 @@ export const ProgressScreen: React.FC<ProgressScreenProps> = ({
               </p>
               <p className="flex items-center justify-center gap-2">
                 <BookOpen className="w-4 h-4 text-blue-900" />
-                Explorer discoveries: {progress.discoveredOrganIds.length}
+                Total discoveries: {(progress.discoveredOrganIds?.length || 0) + (progress.discoveredSpaceIds?.length || 0) + (progress.discoveredAnimalIds?.length || 0) + (progress.discoveredPlantIds?.length || 0)}
               </p>
               <p className="flex items-center justify-center gap-2">
                 <Star className="w-4 h-4 text-amber-900" />
                 Total stars: {progress.starsEarned}
               </p>
             </div>
+
+            <button
+              onClick={() => {
+                sound.playFanfare();
+                setShowCertificate(true);
+              }}
+              className="mt-4 px-4 py-2.5 rounded-2xl bg-slate-950 text-amber-300 hover:bg-slate-900 text-xs font-black shadow-md transition-all hover:scale-105 cursor-pointer flex items-center justify-center gap-2 w-full"
+            >
+              <Award className="w-4 h-4 text-amber-400" />
+              <span>Claim Official Certificate 🎓</span>
+            </button>
           </div>
           <Award className="absolute -right-4 -top-4 w-20 h-20 text-white/20" />
         </section>
       </div>
+
+      {/* Certificate Modal */}
+      <CertificateModal
+        isOpen={showCertificate}
+        onClose={() => setShowCertificate(false)}
+        studentName={userName}
+        studentGrade={userGrade}
+        achievementTitle="Academic All-Rounder & Explorer Excellence"
+        starsEarned={progress.starsEarned}
+      />
     </div>
   );
 };

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, Menu, ShieldCheck } from 'lucide-react';
+import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, Menu, ShieldCheck, X, BookOpen, Compass, Gamepad2, ArrowRight } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
 import { getGreeting } from '../../utils/language';
 import { getStudentProgress } from '../../utils/studentProgress';
+import { ALL_CATEGORIES } from '../../data/learningData';
+import { CATEGORY_DETAILS } from '../../data/categoryLessons';
+import { LmsStorageService } from '../../services/lmsStorage';
 
 interface HeaderProps {
   userName: string;
@@ -18,6 +21,10 @@ interface HeaderProps {
   studentProfile?: StudentProfile | null;
   onToggleMobileMenu?: () => void;
   onOpenAdmin?: () => void;
+  onNavigateToCategory?: (catId: string) => void;
+  onNavigateToLesson?: (catId: string, lessonId: string) => void;
+  onNavigateToPractice?: (gameId?: string) => void;
+  onNavigateToExplorer?: (moduleId?: string) => void;
 }
 
 const AVATAR_STYLES: Record<string, { emoji: string; color: string }> = {
@@ -43,12 +50,76 @@ export const Header: React.FC<HeaderProps> = ({
   studentProfile,
   onToggleMobileMenu,
   onOpenAdmin,
+  onNavigateToCategory,
+  onNavigateToLesson,
+  onNavigateToPractice,
+  onNavigateToExplorer,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [, setProgressVersion] = useState(0);
   const activeAvatar = AVATAR_STYLES[userAvatar] || AVATAR_STYLES['boy-aarav'];
   const studentId = studentProfile?.id;
   const progress = getStudentProgress(studentId);
+
+  // Search Results Computation
+  const cleanQ = searchQuery.trim().toLowerCase();
+  const matchedCategories = cleanQ
+    ? ALL_CATEGORIES.filter(
+        (c) => c.name.toLowerCase().includes(cleanQ) || c.desc.toLowerCase().includes(cleanQ)
+      ).slice(0, 4)
+    : [];
+
+  const matchedLessons: { id: string; title: string; categoryId: string; categoryName: string }[] = [];
+  if (cleanQ) {
+    // 1. From CATEGORY_DETAILS
+    Object.entries(CATEGORY_DETAILS).forEach(([catId, detail]) => {
+      detail.lessons.forEach((l) => {
+        if (
+          l.title.toLowerCase().includes(cleanQ) ||
+          l.topic.toLowerCase().includes(cleanQ) ||
+          l.description.toLowerCase().includes(cleanQ)
+        ) {
+          if (matchedLessons.length < 6) {
+            matchedLessons.push({
+              id: l.id,
+              title: l.title,
+              categoryId: catId,
+              categoryName: detail.title,
+            });
+          }
+        }
+      });
+    });
+
+    // 2. From Admin Content
+    LmsStorageService.getAllContent().forEach((item) => {
+      if (
+        item.title.toLowerCase().includes(cleanQ) ||
+        item.description.toLowerCase().includes(cleanQ) ||
+        (item.chapter && item.chapter.toLowerCase().includes(cleanQ))
+      ) {
+        if (matchedLessons.length < 8 && !matchedLessons.some((m) => m.id === item.id)) {
+          matchedLessons.push({
+            id: item.id,
+            title: item.title,
+            categoryId: item.subject.toLowerCase(),
+            categoryName: item.subject,
+          });
+        }
+      }
+    });
+  }
+
+  const explorerModules = [
+    { id: 'body', title: 'Human Body 3D Explorer', icon: '🫀' },
+    { id: 'space', title: 'Solar System & Space Galaxy', icon: '🪐' },
+    { id: 'animals', title: 'Animal World & Soundboard', icon: '🦁' },
+    { id: 'plants', title: 'Plants Anatomy & Life Cycle', icon: '🌿' },
+    { id: 'islamic', title: 'Islamic Teachings & Duas', icon: '🕌' },
+  ];
+  const matchedExplorer = cleanQ
+    ? explorerModules.filter((m) => m.title.toLowerCase().includes(cleanQ)).slice(0, 3)
+    : [];
   const earnedBadges = [
     progress.completedLessonIds.length > 0,
     progress.quizAttempts > 0,
@@ -97,8 +168,117 @@ export const Header: React.FC<HeaderProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search lessons, stories, topics..."
-            className="w-full pl-9 sm:pl-11 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-white/70 backdrop-blur-sm border border-white/80 rounded-full focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
+            className="w-full pl-9 sm:pl-11 pr-8 sm:pr-9 py-1.5 sm:py-2 text-xs sm:text-sm bg-white/70 backdrop-blur-sm border border-white/80 rounded-full focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-700 shadow-inner"
           />
+          {searchQuery && (
+            <button
+              onClick={() => onSearchChange('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+
+          {/* Live Search Results Dropdown */}
+          {cleanQ && (
+            <div className="absolute left-0 top-full mt-2 w-full min-w-[280px] sm:min-w-[400px] bg-white rounded-3xl shadow-2xl border-2 border-slate-200/90 p-4 z-[160] max-h-[75vh] overflow-y-auto space-y-4 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <span className="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                  <Search className="w-3.5 h-3.5 text-blue-600" /> Search Results for "{searchQuery}"
+                </span>
+                <button
+                  onClick={() => onSearchChange('')}
+                  className="text-[11px] font-bold text-slate-400 hover:text-slate-600"
+                >
+                  Close
+                </button>
+              </div>
+
+              {matchedCategories.length === 0 && matchedLessons.length === 0 && matchedExplorer.length === 0 ? (
+                <div className="py-6 text-center text-slate-400 text-xs font-bold">
+                  No matching lessons or subjects found. Try searching "Math", "Science", "Stories" or "Space"!
+                </div>
+              ) : null}
+
+              {/* Matched Categories */}
+              {matchedCategories.length > 0 && (
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-blue-600">Subjects</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    {matchedCategories.map((cat) => (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          sound.playPop();
+                          onNavigateToCategory?.(cat.id);
+                          onSearchChange('');
+                        }}
+                        className="flex items-center gap-2 p-2 rounded-xl hover:bg-blue-50 text-left transition-colors cursor-pointer group border border-slate-100"
+                      >
+                        <span className="text-xl">{cat.icon}</span>
+                        <div className="min-w-0">
+                          <p className="text-xs font-black text-slate-800 group-hover:text-blue-600 truncate">{cat.name}</p>
+                          <p className="text-[10px] text-slate-400 truncate">{cat.desc}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Matched Explorer Modules */}
+              {matchedExplorer.length > 0 && (
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-purple-600">3D Explorers</p>
+                  <div className="grid grid-cols-1 gap-1.5">
+                    {matchedExplorer.map((exp) => (
+                      <button
+                        key={exp.id}
+                        onClick={() => {
+                          sound.playPop();
+                          onNavigateToExplorer?.(exp.id);
+                          onSearchChange('');
+                        }}
+                        className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-purple-50 text-left transition-colors cursor-pointer group border border-purple-100"
+                      >
+                        <span className="text-xl">{exp.icon}</span>
+                        <p className="text-xs font-black text-slate-800 group-hover:text-purple-600 truncate flex-1">{exp.title}</p>
+                        <ArrowRight className="w-3.5 h-3.5 text-purple-400" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Matched Lessons */}
+              {matchedLessons.length > 0 && (
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-emerald-600">Interactive Lessons</p>
+                  <div className="space-y-1">
+                    {matchedLessons.map((l) => (
+                      <button
+                        key={l.id}
+                        onClick={() => {
+                          sound.playPop();
+                          onNavigateToLesson?.(l.categoryId, l.id);
+                          onSearchChange('');
+                        }}
+                        className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-emerald-50 text-left transition-colors cursor-pointer group border border-slate-100"
+                      >
+                        <div className="min-w-0 flex items-center gap-2">
+                          <BookOpen className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span className="text-xs font-bold text-slate-800 group-hover:text-emerald-700 truncate">{l.title}</span>
+                        </div>
+                        <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">
+                          {l.categoryName}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 3D Kid Explorer on Navbar */}

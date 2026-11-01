@@ -133,6 +133,7 @@ export function App() {
 
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('numbers');
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [quizResult, setQuizResult] = useState<{
     correct: number;
@@ -317,7 +318,13 @@ export function App() {
 
   const handleSelectCategory = (categoryId: string) => {
     setSelectedCategoryId(categoryId);
+    setSelectedLessonId(null);
     setCurrentTab('category-detail');
+  };
+
+  const handleStartLesson = (lessonId: string) => {
+    setSelectedLessonId(lessonId);
+    setCurrentTab('learning');
   };
 
   // Full-screen Super Admin Portal
@@ -388,6 +395,22 @@ export function App() {
           onOpenAdmin={handleOpenAdmin}
           studentProfile={studentProfile}
           onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
+          onNavigateToCategory={(catId) => {
+            setSelectedCategoryId(catId);
+            setSelectedLessonId(null);
+            setCurrentTab('category-detail');
+          }}
+          onNavigateToLesson={(catId, lessonId) => {
+            setSelectedCategoryId(catId);
+            setSelectedLessonId(lessonId);
+            setCurrentTab('learning');
+          }}
+          onNavigateToPractice={() => {
+            setCurrentTab('practice');
+          }}
+          onNavigateToExplorer={() => {
+            setCurrentTab('explorer');
+          }}
         />
 
         {/* Dynamic Screen Area with Suspense for Instant Performance */}
@@ -487,14 +510,20 @@ export function App() {
               <CategoryDetailScreen
                 categoryId={selectedCategoryId}
                 onBack={() => setCurrentTab('categories')}
-                onStartLesson={(_lessonId) => setCurrentTab('learning')}
+                onStartLesson={handleStartLesson}
               />
             )}
 
             {currentTab === 'learning' && (
               <VideoLessonScreen
+                categoryId={selectedCategoryId}
+                lessonId={selectedLessonId}
+                studentProfile={studentProfile}
                 onBack={handleBackToHome}
-                onContinueToQuiz={handleContinueToQuiz}
+                onContinueToQuiz={(subId) => {
+                  if (subId) setSelectedCategoryId(subId);
+                  handleContinueToQuiz();
+                }}
               />
             )}
 

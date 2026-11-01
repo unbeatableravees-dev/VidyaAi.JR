@@ -19,7 +19,9 @@ import {
   AdaptiveQuizQuestion,
   generateRandomQuizSet,
   QUIZ_SUBJECTS,
+  normalizeGrade,
 } from '../../data/quizQuestions';
+import { ALL_CLASSES } from '../../types/lms';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { femaleVoice } from '../../utils/speech';
@@ -32,7 +34,7 @@ interface QuizScreenProps {
 }
 
 const TOTAL_QUESTIONS = 10;
-const GRADES = ['Kindergarten', 'Grade 1', 'Grade 2', 'Grade 3'];
+const GRADES = ALL_CLASSES.map((c) => c.id);
 
 export const QuizScreen: React.FC<QuizScreenProps> = ({
   userGrade,

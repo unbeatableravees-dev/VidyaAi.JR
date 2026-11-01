@@ -11,12 +11,15 @@ import {
   BookOpen,
   Star,
   Gamepad2,
+  FileText,
 } from 'lucide-react';
 import { CATEGORY_DETAILS } from '../../data/categoryLessons';
 import { ALL_CATEGORIES } from '../../data/learningData';
 import { CategoryIcon } from '../illustrations/Illustrations';
 import { InteractiveGameModal } from '../modals/InteractiveGameModal';
 import { sound } from '../../utils/audio';
+import { femaleVoice } from '../../utils/speech';
+import { LmsStorageService } from '../../services/lmsStorage';
 
 interface CategoryDetailScreenProps {
   categoryId: string;
@@ -35,7 +38,31 @@ export const CategoryDetailScreen: React.FC<CategoryDetailScreenProps> = ({
   const categoryMeta = ALL_CATEGORIES.find((c) => c.id === categoryId) || ALL_CATEGORIES[0];
   const detail = CATEGORY_DETAILS[categoryId] || CATEGORY_DETAILS['numbers'];
 
-  const filteredLessons = detail.lessons.filter((l) => {
+  // Inject Teacher/Admin uploads for this subject from LMS storage
+  const adminItems = LmsStorageService.getAllContent().filter(
+    (item) =>
+      item.subject.toLowerCase() === categoryMeta.name.toLowerCase() ||
+      item.subject.toLowerCase() === categoryId.toLowerCase() ||
+      (categoryId === 'mathematics' && item.subject.toLowerCase().includes('math')) ||
+      (categoryId === 'numbers' && item.subject.toLowerCase().includes('number')) ||
+      (categoryId === 'alphabets' && item.subject.toLowerCase().includes('english'))
+  );
+
+  const dynamicAdminLessons = adminItems.map((item) => ({
+    id: item.id,
+    title: item.title,
+    topic: item.chapter || item.subject,
+    description: item.description,
+    difficulty: item.difficulty === 'beginner' ? 'Beginner' : 'Intermediate',
+    duration: `${item.durationMinutes || 5} mins`,
+    thumbnailEmoji: item.thumbnail && item.thumbnail.length <= 4 ? item.thumbnail : '🌟',
+    isCompleted: false,
+    isAdminUploaded: true,
+  }));
+
+  const allAvailableLessons = [...detail.lessons, ...dynamicAdminLessons];
+
+  const filteredLessons = allAvailableLessons.filter((l) => {
     if (selectedFilter === 'beginner') return l.difficulty === 'Beginner';
     if (selectedFilter === 'intermediate') return l.difficulty === 'Intermediate' || l.difficulty === 'Fun Activity';
     return true;
@@ -43,6 +70,26 @@ export const CategoryDetailScreen: React.FC<CategoryDetailScreenProps> = ({
 
   const handleSpeakCategory = () => {
     sound.playPop();
+    const isUrdu = categoryId === 'urdu';
+    const isHindi = categoryId === 'hindi';
+    const isArabic = categoryId === 'islamic' || categoryId === 'islamic-teachings';
+    const lang = isUrdu ? 'ur' : isHindi ? 'hi' : isArabic ? 'ar' : 'en';
+    femaleVoice.speak({
+      text: `${detail.title}. ${detail.tagline}`,
+      lang,
+    });
+  };
+
+  const handleSpeakLesson = (e: React.MouseEvent, title: string) => {
+    e.stopPropagation();
+    sound.playPop();
+    const isUrdu = categoryId === 'urdu';
+    const isHindi = categoryId === 'hindi';
+    const lang = isUrdu ? 'ur' : isHindi ? 'hi' : 'en';
+    femaleVoice.speak({
+      text: title,
+      lang,
+    });
   };
 
   return (
@@ -180,17 +227,33 @@ export const CategoryDetailScreen: React.FC<CategoryDetailScreenProps> = ({
                     <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0">
                       {idx + 1}
                     </span>
-                    <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[10px] font-black">
-                      {lesson.difficulty}
-                    </span>
+                    {(lesson as any).isAdminUploaded ? (
+                      <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-black flex items-center gap-1">
+                        ✨ Teacher Upload
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 text-[10px] font-black">
+                        {lesson.difficulty}
+                      </span>
+                    )}
                     <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1 ml-auto">
                       <Clock className="w-3 h-3" /> {lesson.duration}
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-black text-slate-900 group-hover:text-blue-600 transition-colors truncate">
-                    {lesson.title}
-                  </h3>
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-sm font-black text-slate-900 group-hover:text-blue-600 transition-colors truncate">
+                      {lesson.title}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={(e) => handleSpeakLesson(e, lesson.title)}
+                      className="p-1 rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shrink-0"
+                      title="Pronounce lesson title"
+                    >
+                      <Volume2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
 
                   <p className="text-xs font-semibold text-slate-500 line-clamp-2">
                     {lesson.description}

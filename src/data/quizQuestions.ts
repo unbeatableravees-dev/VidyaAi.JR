@@ -413,103 +413,268 @@ function generateMathNumbersQuestion(grade: string, isNumbersOnly = false): RawD
   }
 
   // Grade 3 Level
-  const templateType = randomInt(1, 6);
+  if (grade === 'Grade 3') {
+    const templateType = randomInt(1, 6);
 
-  // Template 1: Multiplication Tables (6 to 12)
-  if (templateType === 1) {
-    const a = randomInt(6, 9);
-    const b = randomInt(4, 9);
-    const ans = a * b;
-    return {
-      topic: 'Multiplication Tables',
-      difficulty: 1,
-      question: `What is ${a} × ${b}?`,
-      visualPrompt: `${a}  ×  ${b}  =  ?`,
-      answer: String(ans),
-      distractors: [String(ans - a), String(ans + b), String(ans - 2)],
-      explanation: `${a} times ${b} equals ${ans}.`,
-    };
-  }
+    // Template 1: Multiplication Tables (6 to 12)
+    if (templateType === 1) {
+      const a = randomInt(6, 9);
+      const b = randomInt(4, 9);
+      const ans = a * b;
+      return {
+        topic: 'Multiplication Tables',
+        difficulty: 1,
+        question: `What is ${a} × ${b}?`,
+        visualPrompt: `${a}  ×  ${b}  =  ?`,
+        answer: String(ans),
+        distractors: [String(ans - a), String(ans + b), String(ans - 2)],
+        explanation: `${a} times ${b} equals ${ans}.`,
+      };
+    }
 
-  // Template 2: Exact Division
-  if (templateType === 2) {
-    const div = randomInt(3, 8);
-    const quotient = randomInt(4, 9);
-    const dividend = div * quotient;
-    return {
-      topic: 'Division Facts',
-      difficulty: 2,
-      question: `${dividend} stickers are shared equally among ${div} children. How many stickers does each child get?`,
-      visualPrompt: `${dividend}  ÷  ${div}  =  ?`,
-      answer: String(quotient),
-      distractors: [String(quotient - 1), String(quotient + 1), String(quotient + 2)],
-      explanation: `${dividend} divided by ${div} equals ${quotient}.`,
-    };
-  }
+    // Template 2: Exact Division
+    if (templateType === 2) {
+      const div = randomInt(3, 8);
+      const quotient = randomInt(4, 9);
+      const dividend = div * quotient;
+      return {
+        topic: 'Division Facts',
+        difficulty: 2,
+        question: `${dividend} stickers are shared equally among ${div} children. How many stickers does each child get?`,
+        visualPrompt: `${dividend}  ÷  ${div}  =  ?`,
+        answer: String(quotient),
+        distractors: [String(quotient - 1), String(quotient + 1), String(quotient + 2)],
+        explanation: `${dividend} divided by ${div} equals ${quotient}.`,
+      };
+    }
 
-  // Template 3: Fractions
-  if (templateType === 3) {
-    const totalSlices = randomChoice([4, 6, 8]);
-    const eaten = randomChoice([1, 2, 3]);
-    const remaining = totalSlices - eaten;
-    return {
-      topic: 'Fractions',
-      difficulty: 2,
-      question: `A pizza is sliced into ${totalSlices} equal pieces. You ate ${eaten} slice(s). What fraction of the pizza is remaining?`,
-      visualPrompt: `${totalSlices} slices  −  ${eaten} eaten`,
-      answer: `${remaining}/${totalSlices}`,
-      distractors: [`${eaten}/${totalSlices}`, `1/${totalSlices}`, `${remaining}/${remaining + 2}`],
-      explanation: `${remaining} out of ${totalSlices} equal parts remain, which is written as ${remaining}/${totalSlices}.`,
-    };
-  }
+    // Template 3: Fractions
+    if (templateType === 3) {
+      const totalSlices = randomChoice([4, 6, 8]);
+      const eaten = randomChoice([1, 2, 3]);
+      const remaining = totalSlices - eaten;
+      return {
+        topic: 'Fractions',
+        difficulty: 2,
+        question: `A pizza is sliced into ${totalSlices} equal pieces. You ate ${eaten} slice(s). What fraction of the pizza is remaining?`,
+        visualPrompt: `${totalSlices} slices  −  ${eaten} eaten`,
+        answer: `${remaining}/${totalSlices}`,
+        distractors: [`${eaten}/${totalSlices}`, `1/${totalSlices}`, `${remaining}/${remaining + 2}`],
+        explanation: `${remaining} out of ${totalSlices} equal parts remain, which is written as ${remaining}/${totalSlices}.`,
+      };
+    }
 
-  // Template 4: Perimeter of Rectangle
-  if (templateType === 4) {
-    const l = randomInt(5, 12);
-    const w = randomInt(3, 8);
-    const peri = 2 * (l + w);
+    // Template 4: Perimeter of Rectangle
+    if (templateType === 4) {
+      const l = randomInt(5, 12);
+      const w = randomInt(3, 8);
+      const peri = 2 * (l + w);
+      return {
+        topic: 'Perimeter Geometry',
+        difficulty: 3,
+        question: `A rectangle picture frame is ${l} cm long and ${w} cm wide. What is its total perimeter?`,
+        visualPrompt: `Length: ${l} cm | Width: ${w} cm`,
+        answer: `${peri} cm`,
+        distractors: [`${l * w} cm`, `${peri - 2} cm`, `${l + w} cm`],
+        explanation: `Perimeter = (Length + Width) × 2 = (${l} + ${w}) × 2 = ${peri} cm.`,
+      };
+    }
+
+    // Template 5: Place value in 4-digit numbers
+    if (templateType === 5) {
+      const thousands = randomInt(2, 8);
+      const hundreds = randomInt(1, 9);
+      const tens = randomInt(1, 9);
+      const ones = randomInt(1, 9);
+      const num = thousands * 1000 + hundreds * 100 + tens * 10 + ones;
+      return {
+        topic: '4-Digit Place Value',
+        difficulty: 2,
+        question: `In the number ${num}, what is the place value of the digit ${hundreds}?`,
+        visualPrompt: `${thousands},${hundreds}${tens}${ones}  ➔  digit ${hundreds}`,
+        answer: `${hundreds * 100}`,
+        distractors: [`${hundreds}`, `${hundreds * 10}`, `${hundreds * 1000}`],
+        explanation: `The digit ${hundreds} is in the hundreds place, so its value is ${hundreds * 100}.`,
+      };
+    }
+
+    // Template 6: Multi-step Word Problem
+    const boxCount = randomInt(4, 7);
+    const itemsPerBox = randomInt(6, 10);
+    const broken = randomInt(3, 8);
+    const result = boxCount * itemsPerBox - broken;
     return {
-      topic: 'Perimeter Geometry',
+      topic: 'Two-Step Problem',
       difficulty: 3,
-      question: `A rectangle picture frame is ${l} cm long and ${w} cm wide. What is its total perimeter?`,
-      visualPrompt: `Length: ${l} cm | Width: ${w} cm`,
-      answer: `${peri} cm`,
-      distractors: [`${l * w} cm`, `${peri - 2} cm`, `${l + w} cm`],
-      explanation: `Perimeter = (Length + Width) × 2 = (${l} + ${w}) × 2 = ${peri} cm.`,
+      question: `A toy store has ${boxCount} boxes with ${itemsPerBox} crayons in each. If ${broken} crayons are broken, how many good crayons are left?`,
+      visualPrompt: `(${boxCount} × ${itemsPerBox})  −  ${broken}  =  ?`,
+      answer: String(result),
+      distractors: [String(result + broken), String(result - 5), String(boxCount * itemsPerBox)],
+      explanation: `Total crayons = ${boxCount} × ${itemsPerBox} = ${boxCount * itemsPerBox}. After subtracting ${broken} broken crayons, ${result} remain.`,
     };
   }
 
-  // Template 5: Place value in 4-digit numbers
-  if (templateType === 5) {
-    const thousands = randomInt(2, 8);
-    const hundreds = randomInt(1, 9);
-    const tens = randomInt(1, 9);
-    const ones = randomInt(1, 9);
-    const num = thousands * 1000 + hundreds * 100 + tens * 10 + ones;
+  // Grade 4-5 (Upper Primary)
+  if (grade === 'Grade 4-5') {
+    const t = randomInt(1, 4);
+    if (t === 1) {
+      const l = randomInt(7, 14);
+      const w = randomInt(4, 9);
+      const area = l * w;
+      return {
+        topic: 'Area of Rectangle',
+        difficulty: 2,
+        question: `A rectangular garden has length ${l} m and width ${w} m. What is its total area?`,
+        visualPrompt: `Length: ${l}m × Width: ${w}m`,
+        answer: `${area} m²`,
+        distractors: [`${2 * (l + w)} m²`, `${area + 10} m²`, `${area - 8} m²`],
+        explanation: `Area = length × width = ${l} × ${w} = ${area} square meters.`,
+      };
+    }
+    if (t === 2) {
+      const p = randomChoice([10, 20, 25, 50]);
+      const base = randomChoice([40, 60, 80, 100, 200]);
+      const ans = (p / 100) * base;
+      return {
+        topic: 'Percentages',
+        difficulty: 2,
+        question: `What is ${p}% of ${base}?`,
+        visualPrompt: `${p}% of ${base} = ?`,
+        answer: String(ans),
+        distractors: [String(ans + 5), String(ans - 4), String(ans * 2)],
+        explanation: `${p}% means ${p}/100 × ${base} = ${ans}.`,
+      };
+    }
+    if (t === 3) {
+      const primes = [13, 17, 19, 23, 29, 31];
+      const prime = randomChoice(primes);
+      return {
+        topic: 'Prime Numbers',
+        difficulty: 2,
+        question: `Which of the following numbers is a PRIME number (only divisible by 1 and itself)?`,
+        visualPrompt: `Has exactly two factors`,
+        answer: String(prime),
+        distractors: [String(prime + 1), String(prime - 2), String(prime + 3)],
+        explanation: `${prime} is prime because it cannot be divided evenly by any number except 1 and ${prime}.`,
+      };
+    }
+    // Decimals
+    const d1 = (randomInt(20, 50) / 10).toFixed(1);
+    const d2 = (randomInt(10, 30) / 10).toFixed(1);
+    const sum = (parseFloat(d1) + parseFloat(d2)).toFixed(1);
     return {
-      topic: '4-Digit Place Value',
+      topic: 'Decimals Addition',
       difficulty: 2,
-      question: `In the number ${num}, what is the place value of the digit ${hundreds}?`,
-      visualPrompt: `${thousands},${hundreds}${tens}${ones}  ➔  digit ${hundreds}`,
-      answer: `${hundreds * 100}`,
-      distractors: [`${hundreds}`, `${hundreds * 10}`, `${hundreds * 1000}`],
-      explanation: `The digit ${hundreds} is in the hundreds place, so its value is ${hundreds * 100}.`,
+      question: `What is ${d1} + ${d2}?`,
+      visualPrompt: `${d1} + ${d2} = ?`,
+      answer: sum,
+      distractors: [(parseFloat(sum) + 0.5).toFixed(1), (parseFloat(sum) - 0.2).toFixed(1), (parseFloat(sum) + 1.0).toFixed(1)],
+      explanation: `Aligning decimals: ${d1} + ${d2} = ${sum}.`,
     };
   }
 
-  // Template 6: Multi-step Word Problem
-  const boxCount = randomInt(4, 7);
-  const itemsPerBox = randomInt(6, 10);
-  const broken = randomInt(3, 8);
-  const result = boxCount * itemsPerBox - broken;
+  // Grade 6-8 (Middle School)
+  if (grade === 'Grade 6-8') {
+    const t = randomInt(1, 4);
+    if (t === 1) {
+      // Linear equation: 2x + a = b
+      const x = randomInt(3, 9);
+      const a = randomInt(4, 15);
+      const b = 2 * x + a;
+      return {
+        topic: 'Algebra Basics',
+        difficulty: 3,
+        question: `Solve for x in the equation: 2x + ${a} = ${b}`,
+        visualPrompt: `2x + ${a} = ${b}`,
+        answer: `x = ${x}`,
+        distractors: [`x = ${x + 2}`, `x = ${x - 1}`, `x = ${b - a}`],
+        explanation: `Subtract ${a} from both sides: 2x = ${b - a}, then divide by 2: x = ${x}.`,
+      };
+    }
+    if (t === 2) {
+      // Integers
+      const a = randomInt(-15, -4);
+      const b = randomInt(8, 20);
+      const ans = a + b;
+      return {
+        topic: 'Integers',
+        difficulty: 2,
+        question: `Calculate: (${a}) + (${b})`,
+        visualPrompt: `${a} + ${b} = ?`,
+        answer: String(ans),
+        distractors: [String(ans - 4), String(a - b), String(ans + 6)],
+        explanation: `${a} + ${b} = ${ans}.`,
+      };
+    }
+    if (t === 3) {
+      return {
+        topic: 'Angles in Triangles',
+        difficulty: 2,
+        question: `What is the total sum of all interior angles in any geometric triangle?`,
+        visualPrompt: `∠A + ∠B + ∠C = ?`,
+        answer: '180°',
+        distractors: ['90°', '360°', '270°'],
+        explanation: `The sum of interior angles in any Euclidean triangle is always exactly 180 degrees.`,
+      };
+    }
+    // Exponent
+    const base = randomChoice([2, 3, 4]);
+    const exp = randomChoice([3, 4]);
+    const ans = Math.pow(base, exp);
+    return {
+      topic: 'Exponents & Powers',
+      difficulty: 2,
+      question: `Evaluate ${base}^${exp} (${base} to the power of ${exp}):`,
+      visualPrompt: `${base}^${exp} = ?`,
+      answer: String(ans),
+      distractors: [String(base * exp), String(ans - 4), String(ans + base)],
+      explanation: `${base}^${exp} = ${Array(exp).fill(base).join(' × ')} = ${ans}.`,
+    };
+  }
+
+  // Grade 9-10 (Secondary)
+  const t = randomInt(1, 4);
+  if (t === 1) {
+    return {
+      topic: 'Pythagorean Theorem',
+      difficulty: 3,
+      question: `In a right-angled triangle, if legs are a = 6 cm and b = 8 cm, what is hypotenuse c?`,
+      visualPrompt: `a² + b² = c²`,
+      answer: '10 cm',
+      distractors: ['14 cm', '12 cm', '48 cm'],
+      explanation: `c = √(6² + 8²) = √(36 + 64) = √100 = 10 cm.`,
+    };
+  }
+  if (t === 2) {
+    return {
+      topic: 'Trigonometry',
+      difficulty: 3,
+      question: `What is the exact mathematical value of sin(30°)?`,
+      visualPrompt: `sin(30°) = ?`,
+      answer: '1/2 (or 0.5)',
+      distractors: ['√3/2', '1', '0'],
+      explanation: `In a 30-60-90 right triangle, sin(30°) = opposite/hypotenuse = 1/2.`,
+    };
+  }
+  if (t === 3) {
+    return {
+      topic: 'Quadratic Discriminant',
+      difficulty: 3,
+      question: `In the quadratic formula ax² + bx + c = 0, what is the discriminant formula?`,
+      visualPrompt: `Discriminant Δ = ?`,
+      answer: 'b² − 4ac',
+      distractors: ['b² + 4ac', '4ac − b²', '2a / b'],
+      explanation: `The discriminant Δ = b² − 4ac determines the nature of the roots of a quadratic equation.`,
+    };
+  }
   return {
-    topic: 'Two-Step Problem',
+    topic: 'Coordinate Geometry',
     difficulty: 3,
-    question: `A toy store has ${boxCount} boxes with ${itemsPerBox} crayons in each. If ${broken} crayons are broken, how many good crayons are left?`,
-    visualPrompt: `(${boxCount} × ${itemsPerBox})  −  ${broken}  =  ?`,
-    answer: String(result),
-    distractors: [String(result + broken), String(result - 5), String(boxCount * itemsPerBox)],
-    explanation: `Total crayons = ${boxCount} × ${itemsPerBox} = ${boxCount * itemsPerBox}. After subtracting ${broken} broken crayons, ${result} remain.`,
+    question: `What is the distance between the origin (0, 0) and the point (3, 4)?`,
+    visualPrompt: `d = √((x₂−x₁)² + (y₂−y₁)²)`,
+    answer: '5 units',
+    distractors: ['7 units', '12 units', '25 units'],
+    explanation: `Distance = √(3² + 4²) = √(9 + 16) = √25 = 5 units.`,
   };
 }
 
@@ -798,35 +963,95 @@ function generateScienceQuestion(grade: string): RawDraft {
   }
 
   // Grade 3: Solar System & Human Anatomy
-  const isPlanet = Math.random() > 0.5;
-  if (isPlanet) {
-    const p = randomChoice(PLANETS_BANK);
-    return {
-      topic: 'Solar System',
-      difficulty: 2,
-      question: p.q,
-      visualPrompt: p.emoji,
-      answer: p.ans,
-      distractors: p.dist,
-      explanation: p.fact,
-    };
-  } else {
-    const bodyBank = [
-      { q: 'Which muscular organ beats non-stop to pump oxygenated blood through the body?', ans: 'Heart', dist: ['Lungs', 'Stomach', 'Kidneys'], fact: 'Your heart beats around 100,000 times every day!' },
-      { q: 'Which pair of organs helps us breathe in oxygen and exhale carbon dioxide?', ans: 'Lungs', dist: ['Heart', 'Liver', 'Brain'], fact: 'The lungs expand and contract like balloons when we breathe.' },
-      { q: 'Which organ acts as the master control computer of our entire body?', ans: 'Brain', dist: ['Stomach', 'Bones', 'Skin'], fact: 'The brain sends signals through nerves faster than a sports car!' },
+  if (grade === 'Grade 3') {
+    const isPlanet = Math.random() > 0.5;
+    if (isPlanet) {
+      const p = randomChoice(PLANETS_BANK);
+      return {
+        topic: 'Solar System',
+        difficulty: 2,
+        question: p.q,
+        visualPrompt: p.emoji,
+        answer: p.ans,
+        distractors: p.dist,
+        explanation: p.fact,
+      };
+    } else {
+      const bodyBank = [
+        { q: 'Which muscular organ beats non-stop to pump oxygenated blood through the body?', ans: 'Heart', dist: ['Lungs', 'Stomach', 'Kidneys'], fact: 'Your heart beats around 100,000 times every day!' },
+        { q: 'Which pair of organs helps us breathe in oxygen and exhale carbon dioxide?', ans: 'Lungs', dist: ['Heart', 'Liver', 'Brain'], fact: 'The lungs expand and contract like balloons when we breathe.' },
+        { q: 'Which organ acts as the master control computer of our entire body?', ans: 'Brain', dist: ['Stomach', 'Bones', 'Skin'], fact: 'The brain sends signals through nerves faster than a sports car!' },
+      ];
+      const b = randomChoice(bodyBank);
+      return {
+        topic: 'Human Body Systems',
+        difficulty: 3,
+        question: b.q,
+        visualPrompt: '🫀 🫁 🧠',
+        answer: b.ans,
+        distractors: b.dist,
+        explanation: b.fact,
+      };
+    }
+  }
+
+  // Grade 4-5 (Upper Primary)
+  if (grade === 'Grade 4-5') {
+    const scienceUpper = [
+      { q: 'By which process do green plants prepare their own food using sunlight and chlorophyll?', ans: 'Photosynthesis 🌿', dist: ['Respiration', 'Evaporation', 'Digestion'], fact: 'Photosynthesis turns carbon dioxide and water into glucose and oxygen.' },
+      { q: 'What is the boiling point of pure water at sea level under normal atmospheric pressure?', ans: '100°C (212°F) 🌡️', dist: ['50°C', '0°C', '150°C'], fact: 'Water boils at 100°C and freezes at 0°C.' },
+      { q: 'Which planet in our solar system is by far the largest in size and mass?', ans: 'Jupiter 🪐', dist: ['Saturn', 'Mars', 'Neptune'], fact: 'Jupiter is so massive that over 1,300 Earths could fit inside it!' },
+      { q: 'Which human organ absorbs most of the digested nutrients into the bloodstream?', ans: 'Small Intestine 🫄', dist: ['Stomach', 'Large Intestine', 'Esophagus'], fact: 'Tiny hair-like villi inside the small intestine absorb nutrients.' },
     ];
-    const b = randomChoice(bodyBank);
+    const item = randomChoice(scienceUpper);
     return {
-      topic: 'Human Body Systems',
-      difficulty: 3,
-      question: b.q,
-      visualPrompt: '🫀 🫁 🧠',
-      answer: b.ans,
-      distractors: b.dist,
-      explanation: b.fact,
+      topic: 'Applied Sciences',
+      difficulty: 2,
+      question: item.q,
+      visualPrompt: '🔬 🌿 🌡️ 🪐',
+      answer: item.ans,
+      distractors: item.dist,
+      explanation: item.fact,
     };
   }
+
+  // Grade 6-8 (Middle School)
+  if (grade === 'Grade 6-8') {
+    const scienceMiddle = [
+      { q: 'Which microscopic cell organelle is widely known as the "Powerhouse of the Cell"?', ans: 'Mitochondria ⚡', dist: ['Ribosome', 'Nucleus', 'Endoplasmic Reticulum'], fact: 'Mitochondria generate cellular energy in the form of ATP molecules.' },
+      { q: 'According to physics, what is the mathematical formula for Speed?', ans: 'Speed = Distance ÷ Time 🚗', dist: ['Speed = Distance × Time', 'Speed = Mass × Gravity', 'Speed = Force ÷ Area'], fact: 'Speed measures how much distance an object covers in a given time interval.' },
+      { q: 'On the pH scale measuring acidity and alkalinity, what number represents a completely neutral solution?', ans: 'pH 7 (Neutral) 💧', dist: ['pH 0', 'pH 14', 'pH 1'], fact: 'Pure distilled water has a neutral pH of 7; below 7 is acidic and above is basic.' },
+      { q: 'Which layer of Earth\'s atmosphere absorbs most of the Sun\'s dangerous ultraviolet (UV) radiation?', ans: 'Ozone Layer (in Stratosphere) 🛡️', dist: ['Troposphere', 'Mesosphere', 'Exosphere'], fact: 'The ozone layer shields all surface life from cancer-causing UV rays.' },
+    ];
+    const item = randomChoice(scienceMiddle);
+    return {
+      topic: 'Cell Biology & Physics',
+      difficulty: 3,
+      question: item.q,
+      visualPrompt: '🧬 ⚡ 💧 🛡️',
+      answer: item.ans,
+      distractors: item.dist,
+      explanation: item.fact,
+    };
+  }
+
+  // Grade 9-10 (Secondary)
+  const scienceSecondary = [
+    { q: 'What is the chemical element symbol for Gold in the Periodic Table?', ans: 'Au (from Latin Aurum) 🥇', dist: ['Ag', 'Fe', 'Gd'], fact: 'Au comes from the Latin word "Aurum", meaning shining dawn.' },
+    { q: 'According to Ohm\'s Law in physics, what is the formula connecting Voltage (V), Current (I), and Resistance (R)?', ans: 'V = I × R ⚡', dist: ['V = I ÷ R', 'V = I² × R', 'V = R ÷ I'], fact: 'Ohm\'s Law states that electric current is directly proportional to applied voltage.' },
+    { q: 'What is the approximate acceleration due to Earth\'s gravity (g) near the surface?', ans: '9.8 m/s² 🌍', dist: ['15.2 m/s²', '3.14 m/s²', '98 m/s²'], fact: 'All falling objects accelerate at 9.8 meters per second squared in a vacuum on Earth.' },
+    { q: 'What is the molecular double-helix genetic code molecule inside living cells called?', ans: 'DNA (Deoxyribonucleic acid) 🧬', dist: ['RNA', 'ATP', 'Hemoglobin'], fact: 'DNA holds the master biological blueprint for all living organisms.' },
+  ];
+  const item = randomChoice(scienceSecondary);
+  return {
+    topic: 'Advanced Chemistry & Physics',
+    difficulty: 3,
+    question: item.q,
+    visualPrompt: '⚛️ 🥇 ⚡ 🧬',
+    answer: item.ans,
+    distractors: item.dist,
+    explanation: item.fact,
+  };
 }
 
 // -------------------------------------------------------------
@@ -1065,6 +1290,18 @@ function generateMannersArtStoriesQuestion(category: string, grade: string): Raw
   };
 }
 
+export function normalizeGrade(grade = 'Grade 1'): string {
+  const g = String(grade).toLowerCase();
+  if (g.includes('nursery') || g.includes('lkg') || g.includes('ukg') || g.includes('kindergarten')) return 'Kindergarten';
+  if (g.includes('class 1') || g === 'grade 1' || g.includes('grade 1')) return 'Grade 1';
+  if (g.includes('class 2') || g === 'grade 2' || g.includes('grade 2')) return 'Grade 2';
+  if (g.includes('class 3') || g === 'grade 3' || g.includes('grade 3')) return 'Grade 3';
+  if (g.includes('class 4') || g.includes('class 5') || g.includes('grade 4') || g.includes('grade 5')) return 'Grade 4-5';
+  if (g.includes('class 6') || g.includes('class 7') || g.includes('class 8') || g.includes('grade 6') || g.includes('grade 7') || g.includes('grade 8')) return 'Grade 6-8';
+  if (g.includes('class 9') || g.includes('class 10') || g.includes('grade 9') || g.includes('grade 10')) return 'Grade 9-10';
+  return 'Grade 1';
+}
+
 // -------------------------------------------------------------
 // MAIN QUIZ GENERATION ENGINE (Dynamic 10,000+ Permutations)
 // -------------------------------------------------------------
@@ -1073,9 +1310,7 @@ export function generateRandomQuizSet(
   subjectId = 'all',
   count = 10,
 ): AdaptiveQuizQuestion[] {
-  const normalizedGrade = ['Kindergarten', 'Grade 1', 'Grade 2', 'Grade 3'].includes(grade)
-    ? grade
-    : 'Grade 1';
+  const normalizedGrade = normalizeGrade(grade);
 
   const questions: AdaptiveQuizQuestion[] = [];
   const usedQuestionsSet = new Set<string>();

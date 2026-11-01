@@ -4,6 +4,7 @@ import { PRACTICE_ACTIVITIES } from '../../data/learningData';
 import { PracticeIcon } from '../illustrations/Illustrations';
 import { InteractiveGameModal } from '../modals/InteractiveGameModal';
 import { IslamicExamModal } from '../modals/IslamicExamModal';
+import { TracingCanvasModal } from '../modals/TracingCanvasModal';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { ReligionType } from '../../types/student';
@@ -36,6 +37,16 @@ const COMMON_GAMES: PracticeGame[] = [
             : activity.title === 'Colour the Shapes' ? 'Choose colors and create a bright picture.'
               : 'Spot the target and pop only the right bubbles.',
   })),
+  {
+    id: 'p-tracing-canvas',
+    title: 'Magical Tracing Canvas',
+    iconType: 'p-colour',
+    bgColor: '#0284c7',
+    badgeColor: '#0369a1',
+    category: 'creativity',
+    desc: 'Trace English letters, numbers, Hindi, and Urdu with colorful crayons!',
+    emoji: '✍️',
+  },
   {
     id: 'p-balloon-pop',
     title: 'Balloon Pop Math',
@@ -438,7 +449,16 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
 
       {/* Interactive Modal when launched */}
       {activeGame && (
-        games.find((game) => game.id === activeGame.id)?.exam ? (
+        activeGame.id === 'p-tracing-canvas' ? (
+          <TracingCanvasModal
+            isOpen={true}
+            onClose={() => setActiveGame(null)}
+            onWin={() => {
+              recordActivityCompletion(studentId);
+              setProgress(getStudentProgress(studentId));
+            }}
+          />
+        ) : games.find((game) => game.id === activeGame.id)?.exam ? (
           <IslamicExamModal
             examId={activeGame.id}
             userGrade={contentGrade}
