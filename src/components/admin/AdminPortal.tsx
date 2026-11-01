@@ -218,16 +218,28 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
         </div>
 
         {/* Exit & Logout */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => {
               sound.playPop();
               onExit();
             }}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-black transition-all border border-slate-700 cursor-pointer shadow-sm hover:scale-102"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-black transition-all border border-slate-700 cursor-pointer shadow-sm hover:scale-102"
+            title="Switch back to student view without logging out"
+          >
+            <span>Return to App</span>
+          </button>
+          <button
+            onClick={() => {
+              sound.playPop();
+              LmsStorageService.logoutAdmin();
+              onExit();
+            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-black transition-all border border-rose-500 cursor-pointer shadow-sm hover:scale-102"
+            title="Log out of Super Admin session"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Return to Student App</span>
+            <span>Logout Admin</span>
           </button>
         </div>
       </header>
