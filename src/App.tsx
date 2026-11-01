@@ -182,19 +182,34 @@ export function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
 
+    // Support #admin or #admin-login URL hash
+    const handleHash = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#admin' || hash === '#admin-login') {
+        setIsAdminLoginModalOpen(true);
+      }
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+
     return () => {
       window.removeEventListener('vidya_student_class_promoted', handleProfileSync);
       window.removeEventListener('vidya_student_profile_updated', handleProfileSync);
       window.removeEventListener('vidya_student_profile_deleted', handleProfileSync);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('hashchange', handleHash);
     };
   }, []);
 
   const handleOpenAdmin = () => {
-    if (LmsStorageService.getActiveAdminSession()) {
-      setIsAdminOpen(true);
-    } else {
-      setIsAdminLoginModalOpen(true);
+    // Always open Admin Login modal so user is prompted for email and password
+    setIsAdminLoginModalOpen(true);
+  };
+
+  const handleExitAdmin = () => {
+    setIsAdminOpen(false);
+    if (window.location.hash.toLowerCase() === '#admin' || window.location.hash.toLowerCase() === '#admin-login') {
+      window.history.replaceState(null, '', window.location.pathname);
     }
   };
 
@@ -309,12 +324,12 @@ export function App() {
   if (isAdminOpen) {
     return (
       <Suspense fallback={<ScreenLoadingFallback />}>
-        <AdminPortal onExit={() => setIsAdminOpen(false)} />
+        <AdminPortal onExit={handleExitAdmin} />
       </Suspense>
     );
   }
 
-  // Welcome / Student Registration Screen (Contains the only Admin Login trigger)
+  // Welcome / Student Registration Screen (Contains Admin Login trigger)
   if (showWelcome) {
     return (
       <>
@@ -328,7 +343,12 @@ export function App() {
         />
         <AdminLoginModal
           isOpen={isAdminLoginModalOpen}
-          onClose={() => setIsAdminLoginModalOpen(false)}
+          onClose={() => {
+            setIsAdminLoginModalOpen(false);
+            if (window.location.hash.toLowerCase() === '#admin' || window.location.hash.toLowerCase() === '#admin-login') {
+              window.history.replaceState(null, '', window.location.pathname);
+            }
+          }}
           onLoginSuccess={() => {
             setIsAdminLoginModalOpen(false);
             setIsAdminOpen(true);
@@ -355,7 +375,7 @@ export function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative z-10 w-full">
-        {/* Fixed Non-Scrolling Top Header (Admin Portal removed from student view, profile dropdown fixed on top) */}
+        {/* Fixed Non-Scrolling Top Header (Admin Portal accessible via dropdown, profile dropdown fixed on top) */}
         <Header
           userName={activeDisplayName}
           userAvatar={activeAvatar}
@@ -365,6 +385,7 @@ export function App() {
           onProfileClick={() => setCurrentTab('progress')}
           onSettingsClick={() => setCurrentTab('settings')}
           onSwitchProfile={handleSwitchProfile}
+          onOpenAdmin={handleOpenAdmin}
           studentProfile={studentProfile}
           onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
         />
@@ -541,10 +562,15 @@ export function App() {
         </Suspense>
       )}
 
-      {/* Super Admin Login Modal (Triggered from Welcome Screen or Admin shortcut) */}
+      {/* Super Admin Login Modal (Triggered from Header, Welcome Screen, URL hash, or Ctrl+Shift+A) */}
       <AdminLoginModal
         isOpen={isAdminLoginModalOpen}
-        onClose={() => setIsAdminLoginModalOpen(false)}
+        onClose={() => {
+          setIsAdminLoginModalOpen(false);
+          if (window.location.hash.toLowerCase() === '#admin' || window.location.hash.toLowerCase() === '#admin-login') {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
+        }}
         onLoginSuccess={() => {
           setIsAdminLoginModalOpen(false);
           setIsAdminOpen(true);

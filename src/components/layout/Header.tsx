@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, Menu } from 'lucide-react';
+import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, Menu, ShieldCheck } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
@@ -17,6 +17,7 @@ interface HeaderProps {
   onSwitchProfile?: () => void;
   studentProfile?: StudentProfile | null;
   onToggleMobileMenu?: () => void;
+  onOpenAdmin?: () => void;
 }
 
 const AVATAR_STYLES: Record<string, { emoji: string; color: string }> = {
@@ -41,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSwitchProfile,
   studentProfile,
   onToggleMobileMenu,
+  onOpenAdmin,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [, setProgressVersion] = useState(0);
@@ -217,6 +219,18 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <Settings className="w-4 h-4 text-slate-400" /> Edit Profile & Settings
                 </button>
+
+                {onOpenAdmin && (
+                  <button
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      onOpenAdmin();
+                    }}
+                    className="w-full px-5 py-2.5 text-left text-xs font-black text-indigo-700 hover:bg-indigo-50 flex items-center gap-2.5 cursor-pointer border-t border-slate-100"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" /> Super Admin Portal Login
+                  </button>
+                )}
 
                 <button
                   onClick={() => {
