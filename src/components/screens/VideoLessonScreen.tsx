@@ -16,6 +16,7 @@ import {
 import { LESSON_PLAYLIST_VIDEOS } from '../../data/youtubeVideos';
 import { AppleSvg } from '../illustrations/Illustrations';
 import { sound } from '../../utils/audio';
+import { UniversalVideoPlayer } from '../common/UniversalVideoPlayer';
 
 interface VideoLessonScreenProps {
   onBack: () => void;
@@ -96,17 +97,13 @@ export const VideoLessonScreen: React.FC<VideoLessonScreenProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column (8 cols) */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Real YouTube Video Player or Interactive Playground */}
+          {/* HD Video Lesson Player or Interactive Playground */}
           {mode === 'video' ? (
-            <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-950 border-2 border-white shadow-2xl flex flex-col justify-between">
-              <iframe
-                src={`https://www.youtube.com/embed/${currentVideo.youtubeId}?autoplay=1&rel=0`}
-                title={currentVideo.title}
-                className="w-full h-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
+            <UniversalVideoPlayer
+              src={currentVideo.youtubeId}
+              title={currentVideo.title}
+              className="rounded-3xl border-2 border-white"
+            />
           ) : (
             <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-900 border-2 border-white shadow-2xl flex flex-col justify-between p-6">
               <div className="relative z-20 flex items-center justify-between">

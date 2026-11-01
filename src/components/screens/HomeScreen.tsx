@@ -20,6 +20,7 @@ interface HomeScreenProps {
   onStartLearning: () => void;
   onSelectCategory: (categoryId: string) => void;
   onViewAllCategories: () => void;
+  onOpenCurriculum?: () => void;
   onOpenPractice?: () => void;
   onOpenBodyExplorer?: () => void;
   onOpenIslamic?: () => void;
@@ -31,97 +32,116 @@ interface HomeScreenProps {
 const FEATURED_VIDEO_DETAILS: Record<string, VideoData> = {
   v1: {
     id: 'v1',
-    title: "Toto Discovers The Elephant's Super Trunk",
-    category: 'Animals & Nature',
-    duration: '4:32',
+    title: 'Magicimals: The Brave Little Elephant & Forest Friends',
+    category: 'Stories & Moral Values',
+    duration: '6:12',
     thumbnailEmoji: '🐘',
     bgGradient: 'from-pink-900 via-purple-900 to-indigo-950',
-    description: 'Join Toto the baby elephant as he discovers 7 miraculous things his trunk can do!',
+    description: 'Enchanting animated animal moral story from Magicimals teaching empathy, friendship, and curiosity.',
     notes: [
-      'An elephant trunk has over 40,000 muscles!',
-      'Elephants use trunks like a snorkel to swim underwater.',
-      'Trunks can pick up a tiny peanut or lift a heavy log.',
+      'Channel: Magicimals Official Stories.',
+      'Small acts of kindness make every friend feel safe.',
+      'Every animal in the forest has a special talent.',
     ],
     objectives: [
-      'Learn animal adaptation and anatomy',
-      'Understand how Asian & African elephants live',
-      'Develop empathy and love for wildlife',
+      'Learn moral empathy through animal adventures',
+      'Inspire imagination and nature appreciation',
+      'Encourage kindness towards friends and classmates',
     ],
   },
   v2: {
     id: 'v2',
-    title: 'Train Kisne Banaya? (The Invention of Trains)',
-    category: 'Science & Invention',
-    duration: '5:18',
-    thumbnailEmoji: '🚂',
+    title: 'A to Z Alphabet Phonics Song & Letter Adventure',
+    category: 'Alphabets & Phonics',
+    duration: '4:15',
+    thumbnailEmoji: '🔤',
     bgGradient: 'from-amber-900 via-orange-950 to-slate-900',
-    description: 'From coal-powered steam engines to modern high-speed bullet trains!',
+    description: 'Catchy and colorful alphabetical phonics with singing animals and letter sounds from A to Z.',
     notes: [
-      'George Stephenson built the first public inter-city railway.',
-      'Steam engines burned coal to heat water into high-pressure steam.',
-      'Modern Vande Bharat trains run on clean electricity.',
+      'Source: https://youtu.be/hq3yfQnllfQ',
+      'Letter A makes the /æ/ sound for Apple.',
+      'Singing the alphabet daily builds reading readiness.',
     ],
     objectives: [
-      'Discover the history of steam and electric locomotives',
-      'Understand how wheels grip steel tracks',
-      'Explore famous rail journeys of India and the world',
+      'Recognize all 26 uppercase and lowercase letters',
+      'Connect letters with phonics sounds',
+      'Build early vocabulary for young learners',
     ],
   },
   v3: {
     id: 'v3',
-    title: "Krishna's Mountain Adventure (Govardhan)",
-    category: 'Mythology & Moral',
-    duration: '6:21',
-    thumbnailEmoji: '🦚',
+    title: 'Masti Toons: Chanda Mama Door Ke & Sweet Toddler Rhymes',
+    category: 'Rhymes & Music',
+    duration: '4:45',
+    thumbnailEmoji: '🎵',
     bgGradient: 'from-emerald-950 via-teal-900 to-blue-950',
-    description: 'Little Krishna lifts Govardhan mountain on his pinky finger to shelter villagers from torrential rains.',
+    description: 'Musical rhythm, joyful nursery rhymes, and colorful dance songs from Masti Toons by Varda.',
     notes: [
-      'True strength comes from protecting those in need.',
-      'Nature, cows, and mountains deserve our care and gratitude.',
-      'Unity gives power to overcome any stormy weather.',
+      'Channel: Masti Toons by Varda.',
+      'Traditional rhymes with sweet catchy melodies.',
+      'Clap along to the beat to build rhythm and joy.',
     ],
     objectives: [
-      'Learn the value of humility and courage',
-      'Appreciate traditional folk heritage',
-      'Reflect on community teamwork and solidarity',
+      'Develop auditory rhythm and speech clarity',
+      'Celebrate joy and playful toddler songs',
+      'Preserve beloved cultural childhood rhymes',
     ],
   },
   v4: {
     id: 'v4',
-    title: 'Mor Ka Choti Chidiya (The Peacock & The Sparrow)',
-    category: 'Moral Stories',
-    duration: '4:45',
-    thumbnailEmoji: '🦜',
+    title: 'Phonics Letter Tracing & ABC Sounds Masterclass',
+    category: 'Alphabets & Writing',
+    duration: '5:20',
+    thumbnailEmoji: '✏️',
     bgGradient: 'from-blue-900 via-indigo-950 to-slate-900',
-    description: 'A proud peacock with iridescent feathers learns that every bird has their own unique gift.',
+    description: 'Learn handwriting strokes and vocal sounds for every letter with fun interactive phonics.',
     notes: [
-      'Never judge someone by their plain looks.',
-      'The little sparrow could fly high above stormy clouds to guide others.',
-      'Self-worth comes from goodness inside your heart.',
+      'Source: https://youtu.be/TF1loU8bJaM',
+      'Trace letters from top to bottom with neat strokes.',
+      'Blend letter sounds to read simple 3-letter words.',
     ],
     objectives: [
-      'Embrace individuality and diversity in friends',
-      'Overcome vanity and bragging',
-      'Build respectful, kind friendships in school',
+      'Master proper letter stroke direction',
+      'Form words using phonemic awareness',
+      'Enhance spelling and reading fluency',
     ],
   },
   v5: {
     id: 'v5',
-    title: 'Little Detectives: Subtraction ka Raaz',
-    category: 'Math Mystery',
-    duration: '5:12',
-    thumbnailEmoji: '🔍',
+    title: 'Magicimals: The Curious Little Fox & The Starry Night',
+    category: 'Stories & Moral Values',
+    duration: '5:30',
+    thumbnailEmoji: '🦊',
     bgGradient: 'from-purple-950 via-indigo-950 to-slate-950',
-    description: 'Who stole the 3 cookies from the jar? Solve clues using subtraction equations!',
+    description: 'Follow the adventurous young fox from Magicimals as she discovers the magic of sharing.',
     notes: [
-      'Starting count: 8 chocolate chip cookies.',
-      'Leftover count: 5 cookies.',
-      'Equation: 8 - 5 = 3 missing cookies found by the puppy!',
+      'Channel: Magicimals Official Stories.',
+      'Curiosity leads to wondrous learning adventures.',
+      'Sharing toys makes playtime ten times happier.',
     ],
     objectives: [
-      'Solve real-life subtraction word problems',
-      'Use deductive detective reasoning',
-      'Check answers using reverse addition',
+      'Foster curiosity about nature and stars',
+      'Reinforce sharing and cooperation',
+      'Build family listening and bedtime story habits',
+    ],
+  },
+  v6: {
+    id: 'v6',
+    title: 'Masti Toons: Bandar Mama Pahan Pajama & Animal Song',
+    category: 'Rhymes & Music',
+    duration: '4:10',
+    thumbnailEmoji: '🐒',
+    bgGradient: 'from-indigo-950 via-purple-900 to-rose-950',
+    description: 'Laugh and dance with Bandar Mama from Masti Toons by Varda in his colorful party outfit!',
+    notes: [
+      'Channel: Masti Toons by Varda.',
+      'Rhyming patterns: Pajama, Mama, Daawat!',
+      'Dance moves build motor coordination and balance.',
+    ],
+    objectives: [
+      'Identify rhyming sound patterns',
+      'Practice motor coordination through dance motions',
+      'Spread happiness and smiles among toddlers',
     ],
   },
 };
@@ -131,6 +151,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onStartLearning,
   onSelectCategory,
   onViewAllCategories,
+  onOpenCurriculum,
   onOpenPractice,
   onOpenBodyExplorer,
   onOpenIslamic,
@@ -165,7 +186,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto pb-28 select-none">
+    <div className="p-3 sm:p-6 md:p-8 space-y-6 sm:space-y-8 max-w-7xl mx-auto pb-28 select-none">
       {/* Hero Banner with Glossy Glassmorphism & Media Art */}
       <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#93c5fd]/95 via-[#7dd3fc]/85 to-[#67e8f9]/95 shadow-xl border-2 border-white/80 min-h-[300px] md:min-h-[340px] flex flex-col md:flex-row items-center justify-between px-6 sm:px-8 md:px-12 py-8 shimmer-effect gap-6">
         {/* Wide Panorama Banner Art in the background with subtle blend */}
@@ -221,6 +242,43 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             className="w-full h-full object-contain filter drop-shadow-2xl"
           />
         </div>
+      </div>
+
+      {/* Smart Age & Class Personalized LMS Banner */}
+      <div
+        onClick={() => {
+          sound.playPop();
+          if (onOpenCurriculum) onOpenCurriculum();
+          else onStartLearning();
+        }}
+        className="rounded-[2.2rem] bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white p-5 sm:p-6 shadow-xl border-2 border-white/60 flex flex-col sm:flex-row items-center justify-between gap-4 cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all select-none"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl shadow-sm border border-white/30 shrink-0">
+            🎯
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-yellow-400 text-slate-950 font-black text-[10px] uppercase tracking-wider">
+                {studentProfile?.gradeClass || 'Class 2'} Smart LMS
+              </span>
+              <span className="text-xs font-bold text-blue-100">
+                Personalized Age-Based Curriculum
+              </span>
+            </div>
+            <h3 className="text-base sm:text-lg font-black text-white">
+              Open {studentProfile?.gradeClass || 'Class'} Materials, Videos & Quizzes
+            </h3>
+            <p className="text-xs text-blue-100 font-semibold mt-0.5">
+              Personalized materials, interest tracking, teacher notes & class promotion requests.
+            </p>
+          </div>
+        </div>
+
+        <button className="px-5 py-2.5 rounded-2xl bg-white text-slate-900 font-black text-xs hover:bg-yellow-300 transition-colors shadow-md shrink-0 flex items-center gap-1.5 cursor-pointer">
+          <span>Explore Curriculum</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Popular Categories Section - ALL 13 CATEGORIES with glossy card look */}
@@ -638,7 +696,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
                 {/* Play button hover overlay */}
                 <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="w-11 h-11 rounded-full bg-red-600 text-white flex items-center justify-center shadow-xl transform scale-75 group-hover:scale-100 transition-transform">
+                  <div className="w-11 h-11 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xl transform scale-75 group-hover:scale-100 transition-transform">
                     <Play className="w-5 h-5 fill-white translate-x-0.5" />
                   </div>
                 </div>

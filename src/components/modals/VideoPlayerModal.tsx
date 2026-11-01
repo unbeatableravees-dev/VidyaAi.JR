@@ -17,6 +17,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { sound } from '../../utils/audio';
+import { UniversalVideoPlayer } from '../common/UniversalVideoPlayer';
 
 export interface VideoData {
   id: string;
@@ -94,58 +95,43 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
           onClose();
         }
       }}
-      className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 md:p-6 overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-4xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/40 my-auto flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-4xl bg-white rounded-3xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/40 my-auto flex flex-col max-h-[94vh]">
         {/* Top Header Bar */}
-        <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 bg-blue-600 text-white text-xs font-black rounded-full shadow-sm">
+        <div className="px-4 sm:px-6 py-3.5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
+            <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-blue-600 text-white text-[11px] sm:text-xs font-black rounded-full shadow-sm shrink-0">
               {video.category}
             </span>
-            <h2 className="text-sm md:text-base font-black truncate max-w-md">
+            <h2 className="text-xs sm:text-sm md:text-base font-black truncate">
               {video.title}
             </h2>
           </div>
 
-          <div className="flex items-center gap-2">
-            {video.youtubeId && (
-              <a
-                href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-                target="_blank"
-                rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-sm transition-all cursor-pointer"
-              >
-                <span>Watch on YouTube</span>
-                <span className="text-[10px]">↗</span>
-              </a>
-            )}
-
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => {
                 sound.playPop();
                 onClose();
               }}
-              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
-        {/* Video Player Frame (16:9) with Real YouTube Embed */}
-        <div className="relative aspect-video bg-slate-950 flex flex-col justify-between overflow-hidden shadow-2xl">
-          <iframe
-            src={`https://www.youtube.com/embed/${video.youtubeId || 'lLAyDRLHKXY'}?autoplay=1&rel=0`}
+        {/* Video Player Frame with UniversalVideoPlayer */}
+        <div className="w-full bg-slate-950 overflow-hidden shadow-2xl">
+          <UniversalVideoPlayer
+            src={video.youtubeId}
             title={video.title}
-            className="w-full h-full border-0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
           />
         </div>
 
         {/* Content Details & Tabs Section */}
-        <div className="p-6 overflow-y-auto flex-1 space-y-5 bg-slate-50/50">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4 sm:space-y-5 bg-slate-50/50">
           {/* Action Row */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
             <div>
@@ -186,7 +172,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-4 border-b border-slate-200">
+          <div className="flex items-center gap-3 sm:gap-4 border-b border-slate-200 overflow-x-auto pb-1 whitespace-nowrap [scrollbar-width:none]">
             {[
               { id: 'overview', label: '📖 Lesson Summary' },
               { id: 'notes', label: '🎯 Learning Goals' },
