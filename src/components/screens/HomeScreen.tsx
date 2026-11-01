@@ -186,7 +186,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto pb-28 select-none">
+    <div className="p-3 sm:p-6 md:p-8 space-y-6 sm:space-y-8 max-w-7xl mx-auto pb-28 select-none">
       {/* Hero Banner with Glossy Glassmorphism & Media Art */}
       <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#93c5fd]/95 via-[#7dd3fc]/85 to-[#67e8f9]/95 shadow-xl border-2 border-white/80 min-h-[300px] md:min-h-[340px] flex flex-col md:flex-row items-center justify-between px-6 sm:px-8 md:px-12 py-8 shimmer-effect gap-6">
         {/* Wide Panorama Banner Art in the background with subtle blend */}
@@ -696,7 +696,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
                 {/* Play button hover overlay */}
                 <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="w-11 h-11 rounded-full bg-red-600 text-white flex items-center justify-center shadow-xl transform scale-75 group-hover:scale-100 transition-transform">
+                  <div className="w-11 h-11 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xl transform scale-75 group-hover:scale-100 transition-transform">
                     <Play className="w-5 h-5 fill-white translate-x-0.5" />
                   </div>
                 </div>

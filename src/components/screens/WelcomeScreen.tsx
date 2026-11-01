@@ -187,7 +187,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
       </div>
 
       {/* Main Glassmorphism Card */}
-      <div className="relative z-10 w-full max-w-2xl bg-white/95 backdrop-blur-2xl rounded-[3rem] p-6 sm:p-10 md:p-12 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.45)] border-2 border-white/90 animate-in zoom-in-95 duration-300 my-auto">
+      <div className="relative z-10 w-full max-w-2xl bg-white/95 backdrop-blur-2xl rounded-3xl sm:rounded-[3rem] p-4 sm:p-8 md:p-12 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.45)] border-2 border-white/90 animate-in zoom-in-95 duration-300 my-auto">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center space-y-2 mb-7">
           <div className="relative">

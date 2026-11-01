@@ -234,8 +234,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
 
       {/* Main Container */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        {/* Left Sidebar Navigation */}
-        <aside className="w-full md:w-64 shrink-0 bg-slate-900/70 border-r border-slate-800 p-4 space-y-2 overflow-y-auto">
+        {/* Left Sidebar Navigation (Responsive: Horizontal on mobile, vertical on desktop) */}
+        <aside className="w-full md:w-64 shrink-0 bg-slate-900/70 border-b md:border-b-0 md:border-r border-slate-800 p-2 sm:p-4 flex md:flex-col gap-1.5 md:gap-0 md:space-y-2 overflow-x-auto md:overflow-y-auto whitespace-nowrap [scrollbar-width:none]">
           {[
             { id: 'overview' as AdminTab, label: 'Analytics & Overview', icon: BarChart2, badge: undefined },
             { id: 'students' as AdminTab, label: 'Students Directory', icon: Users, badge: students.length },
@@ -253,13 +253,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
                   sound.playPop();
                   setActiveTab(tab.id);
                 }}
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-2xl font-black text-xs transition-all cursor-pointer ${
+                className={`flex-shrink-0 md:w-full flex items-center justify-between gap-2 px-3 sm:px-3.5 py-2 sm:py-3 rounded-2xl font-black text-xs transition-all cursor-pointer ${
                   isActive
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-[1.02]'
                     : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2 sm:gap-2.5">
                   <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                   <span>{tab.label}</span>
                 </div>
@@ -569,9 +569,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onExit }) => {
                             </div>
                           </td>
                           <td className="px-5 py-3.5">
-                            <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-black uppercase text-[10px]">
-                              {item.type}
-                            </span>
+                            <div className="flex flex-col gap-1 items-start">
+                              <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-black uppercase text-[10px]">
+                                {item.type}
+                              </span>
+                              {item.isLocalFile && (
+                                <span className="px-1.5 py-0.5 rounded-md bg-emerald-950/80 text-emerald-400 font-black text-[9px] border border-emerald-800/60 flex items-center gap-1">
+                                  📁 Local File
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-5 py-3.5">
                             <span className="px-2.5 py-1 rounded-lg bg-indigo-950 text-indigo-300 font-black border border-indigo-800/60 text-[11px]">

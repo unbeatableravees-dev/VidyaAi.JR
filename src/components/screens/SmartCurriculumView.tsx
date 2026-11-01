@@ -43,6 +43,7 @@ import {
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
 import { sound } from '../../utils/audio';
 import { StyledSelect, SelectOption } from '../common/StyledSelect';
+import { UniversalVideoPlayer } from '../common/UniversalVideoPlayer';
 
 interface SmartCurriculumViewProps {
   studentProfile?: StudentProfile | null;
@@ -931,7 +932,7 @@ export const SmartCurriculumView: React.FC<SmartCurriculumViewProps> = ({
             if (e.target === e.currentTarget) setActiveViewerItem(null);
           }}
         >
-          <div className="relative w-full max-w-3xl max-h-[90vh] bg-white rounded-[2.5rem] p-6 sm:p-8 shadow-2xl border-4 border-white/80 overflow-y-auto flex flex-col">
+          <div className="relative w-full max-w-3xl max-h-[92vh] bg-white rounded-3xl sm:rounded-[2.5rem] p-4 sm:p-7 md:p-8 shadow-2xl border-4 border-white/80 overflow-y-auto flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
@@ -963,25 +964,13 @@ export const SmartCurriculumView: React.FC<SmartCurriculumViewProps> = ({
             <div className="py-6 flex-1">
               {activeViewerItem.type === 'video' ? (
                 <div className="space-y-4">
-                  {activeViewerItem.mediaUrl ? (
-                    <div className="aspect-video w-full rounded-2xl overflow-hidden bg-slate-900 shadow-lg border border-slate-200">
-                      <iframe
-                        src={activeViewerItem.mediaUrl}
-                        title={activeViewerItem.title}
-                        className="w-full h-full border-0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  ) : (
-                    <div className="aspect-video w-full rounded-2xl bg-gradient-to-tr from-slate-900 to-indigo-950 flex flex-col items-center justify-center text-white p-6 text-center">
-                      <Play className="w-16 h-16 text-yellow-400 mb-3 fill-yellow-400" />
-                      <h3 className="text-base font-black">{activeViewerItem.title}</h3>
-                      <p className="text-xs text-slate-300 mt-1 max-w-md">
-                        Interactive audio-visual lesson for {currentClass}.
-                      </p>
-                    </div>
-                  )}
+                  <UniversalVideoPlayer
+                    src={activeViewerItem.mediaUrl}
+                    isLocal={activeViewerItem.isLocalFile}
+                    localFileId={activeViewerItem.localFileId}
+                    title={activeViewerItem.title}
+                    className="rounded-2xl border border-slate-200"
+                  />
 
                   {activeViewerItem.contentBody && (
                     <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 leading-relaxed whitespace-pre-line">

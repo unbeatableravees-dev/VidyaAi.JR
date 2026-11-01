@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, ChevronDown, Award, Star, User, Settings, LogOut, Menu } from 'lucide-react';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
@@ -16,6 +16,7 @@ interface HeaderProps {
   onSettingsClick?: () => void;
   onSwitchProfile?: () => void;
   studentProfile?: StudentProfile | null;
+  onToggleMobileMenu?: () => void;
 }
 
 const AVATAR_STYLES: Record<string, { emoji: string; color: string }> = {
@@ -39,6 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSettingsClick,
   onSwitchProfile,
   studentProfile,
+  onToggleMobileMenu,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [, setProgressVersion] = useState(0);
@@ -70,8 +72,21 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="h-16 md:h-20 shrink-0 w-full px-3 sm:px-6 md:px-8 py-2.5 flex items-center justify-between border-b border-white/70 bg-white/80 backdrop-blur-2xl z-40 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-visible select-none relative">
-      {/* Left side: Search Bar */}
-      <div className="flex items-center gap-2.5 sm:gap-4 flex-1 max-w-xl">
+      {/* Left side: Mobile Menu Button & Search Bar */}
+      <div className="flex items-center gap-2 sm:gap-4 flex-1 max-w-xl">
+        {/* Mobile Hamburger Menu Toggle */}
+        <button
+          onClick={() => {
+            sound.playPop();
+            onToggleMobileMenu?.();
+          }}
+          className="md:hidden p-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors cursor-pointer shrink-0"
+          title="Toggle Navigation Menu"
+          aria-label="Toggle Navigation Menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
         {/* Search Input */}
         <div className="relative w-full">
           <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />

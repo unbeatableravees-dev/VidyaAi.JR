@@ -146,6 +146,7 @@ export function App() {
   // Super Admin Portal State (Only accessible from Welcome Screen or secret shortcut)
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const activeDisplayName = studentProfile?.name || 'Aarav';
   const activeAvatar = studentProfile?.avatar || 'boy-aarav';
@@ -348,6 +349,8 @@ export function App() {
         onTabChange={setCurrentTab}
         onSwitchProfile={handleSwitchProfile}
         studentProfile={studentProfile}
+        isMobileOpen={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main Content Area */}
@@ -363,6 +366,7 @@ export function App() {
           onSettingsClick={() => setCurrentTab('settings')}
           onSwitchProfile={handleSwitchProfile}
           studentProfile={studentProfile}
+          onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
         />
 
         {/* Dynamic Screen Area with Suspense for Instant Performance */}

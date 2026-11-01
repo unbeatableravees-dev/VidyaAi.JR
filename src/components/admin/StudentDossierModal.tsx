@@ -32,7 +32,7 @@ export const StudentDossierModal: React.FC<StudentDossierModalProps> = ({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-3xl bg-white rounded-[2.5rem] p-6 sm:p-8 shadow-2xl border-4 border-white my-auto max-h-[92vh] overflow-y-auto space-y-6">
+      <div className="relative w-full max-w-3xl bg-white rounded-3xl sm:rounded-[2.5rem] p-4 sm:p-7 md:p-8 shadow-2xl border-4 border-white my-auto max-h-[92vh] overflow-y-auto space-y-6">
         {/* Header with Student Bio */}
         <div className="flex flex-wrap items-start justify-between gap-4 pb-5 border-b border-slate-100">
           <div className="flex items-center gap-4">

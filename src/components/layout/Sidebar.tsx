@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Grid, BookOpen, BarChart3, Settings, Gamepad2, Compass, Moon, User, GraduationCap, MessageSquareText } from 'lucide-react';
+import { Home, Grid, BookOpen, BarChart3, Settings, Gamepad2, Compass, Moon, User, GraduationCap, MessageSquareText, X } from 'lucide-react';
 import { APP_IMAGES } from '../../assets/images';
 import { sound } from '../../utils/audio';
 import { StudentProfile } from '../../types/student';
@@ -29,6 +29,8 @@ interface SidebarProps {
   onTabChange: (tab: NavTab) => void;
   onSwitchProfile?: () => void;
   studentProfile?: StudentProfile | null;
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -36,6 +38,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onTabChange,
   onSwitchProfile,
   studentProfile,
+  isMobileOpen = false,
+  onCloseMobile,
 }) => {
   const religion = studentProfile?.religion || 'muslim';
   const localized = getNavLabels(religion);
@@ -133,6 +137,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleItemClick = (id: NavTab) => {
     sound.playPop();
     onTabChange(id);
+    onCloseMobile?.();
   };
 
   const renderContent = () => (
@@ -267,8 +272,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
   );
 
   return (
-    <aside className="sidebar-royal-blue relative z-20 flex h-screen min-h-0 w-60 shrink-0 flex-col overflow-hidden py-3 pl-4 pr-3 select-none shadow-2xl border-r border-blue-400/20 lg:w-64">
-      {renderContent()}
-    </aside>
+    <>
+      {/* Desktop Persistent Sidebar */}
+      <aside className="hidden md:flex sidebar-royal-blue relative z-20 h-screen min-h-0 w-60 shrink-0 flex-col overflow-hidden py-3 pl-4 pr-3 select-none shadow-2xl border-r border-blue-400/20 lg:w-64">
+        {renderContent()}
+      </aside>
+
+      {/* Mobile Slide-Over Drawer with Backdrop */}
+      {isMobileOpen && (
+        <div className="md:hidden fixed inset-0 z-[100] flex animate-in fade-in duration-200">
+          {/* Backdrop */}
+          <div
+            onClick={onCloseMobile}
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+          />
+
+          {/* Drawer Menu */}
+          <aside className="sidebar-royal-blue relative z-10 flex h-full w-72 max-w-[85vw] flex-col overflow-hidden py-3 px-4 shadow-2xl border-r border-blue-400/30 animate-in slide-in-from-left duration-300">
+            {/* Top Close Row */}
+            <div className="flex items-center justify-between pb-2 mb-1 border-b border-white/10">
+              <span className="text-xs font-black text-blue-200 tracking-wide uppercase">
+                Navigation
+              </span>
+              <button
+                onClick={onCloseMobile}
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer transition-colors"
+                title="Close Menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {renderContent()}
+          </aside>
+        </div>
+      )}
+    </>
   );
 };

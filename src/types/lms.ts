@@ -59,6 +59,11 @@ export interface ContentItem {
   thumbnail: string;
   mediaUrl: string; // Video URL or document text / PDF simulation
   contentBody?: string; // Rich text / reading sheet notes
+  isLocalFile?: boolean; // Whether content is stored as local file
+  localFileId?: string; // IndexedDB media storage key
+  fileName?: string; // Original uploaded file name
+  fileSize?: string; // Formatted size (e.g. 15.2 MB)
+  mimeType?: string; // e.g. video/mp4, application/pdf
   status: 'draft' | 'published';
   publishedAt: string;
   views: number;
