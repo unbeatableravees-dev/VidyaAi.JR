@@ -33,6 +33,8 @@ import { CertificateModal } from '../common/CertificateModal';
 
 interface ExplorerScreenProps {
   studentId?: string;
+  studentName?: string;
+  studentGrade?: string;
   onBackToHome?: () => void;
   onOpenPractice?: () => void;
   initialModule?: 'body' | 'islamic' | 'space' | 'animals' | 'plants';
@@ -42,6 +44,8 @@ type ExplorerView = 'hub' | 'body' | 'islamic' | 'space' | 'animals' | 'plants';
 
 export const ExplorerScreen: React.FC<ExplorerScreenProps> = ({
   studentId,
+  studentName = 'Junior Explorer',
+  studentGrade = 'Class 2',
   onBackToHome,
   onOpenPractice,
   initialModule,
@@ -57,6 +61,14 @@ export const ExplorerScreen: React.FC<ExplorerScreenProps> = ({
   // Certificate Modal state
   const [isCertOpen, setIsCertOpen] = useState(false);
   const [progress, setProgress] = useState(() => getStudentProgress(studentId));
+
+  React.useEffect(() => {
+    const handleProgressChange = () => {
+      setProgress(getStudentProgress(studentId));
+    };
+    window.addEventListener('studentprogresschange', handleProgressChange);
+    return () => window.removeEventListener('studentprogresschange', handleProgressChange);
+  }, [studentId]);
 
   const handleLaunchModule = (view: ExplorerView) => {
     sound.playSuccess();
@@ -105,6 +117,8 @@ export const ExplorerScreen: React.FC<ExplorerScreenProps> = ({
     return (
       <HumanBodyGameScreen
         studentId={studentId}
+        studentName={studentName}
+        studentGrade={studentGrade}
         onBackToExplorerHub={() => setActiveView('hub')}
         onBackToHome={onBackToHome}
         onOpenPractice={onOpenPractice}
@@ -1280,8 +1294,9 @@ export const ExplorerScreen: React.FC<ExplorerScreenProps> = ({
       <CertificateModal
         isOpen={isCertOpen}
         onClose={() => setIsCertOpen(false)}
-        studentName="Junior Explorer"
-        achievementTitle="Master of Solar System, Animals & Botany"
+        studentName={studentName}
+        studentGrade={studentGrade}
+        achievementTitle="Master 3D Explorer - Cosmic Space, Wildlife & Human Anatomy"
         starsEarned={progress.starsEarned || 150}
       />
     </div>

@@ -5,6 +5,8 @@ import { PracticeIcon } from '../illustrations/Illustrations';
 import { InteractiveGameModal } from '../modals/InteractiveGameModal';
 import { IslamicExamModal } from '../modals/IslamicExamModal';
 import { TracingCanvasModal } from '../modals/TracingCanvasModal';
+import { MathTablesModal } from '../modals/MathTablesModal';
+import { FlashcardsModal } from '../modals/FlashcardsModal';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
 import { ReligionType } from '../../types/student';
@@ -46,6 +48,26 @@ const COMMON_GAMES: PracticeGame[] = [
     category: 'creativity',
     desc: 'Trace English letters, numbers, Hindi, and Urdu with colorful crayons!',
     emoji: '✍️',
+  },
+  {
+    id: 'p-math-tables',
+    title: 'Math Tables Arena (2-20)',
+    iconType: 'p-numbers',
+    bgColor: '#059669',
+    badgeColor: '#047857',
+    category: 'math',
+    desc: 'Learn multiplication tables 2 to 20 with voice reading and speed quiz!',
+    emoji: '🧮',
+  },
+  {
+    id: 'p-flashcards',
+    title: 'Flip & Learn Flashcards',
+    iconType: 'p-pattern',
+    bgColor: '#7c3aed',
+    badgeColor: '#6d28d9',
+    category: 'general',
+    desc: 'Flip interactive cards for Science, Math formulas, Elements & Capitals!',
+    emoji: '🎴',
   },
   {
     id: 'p-balloon-pop',
@@ -457,6 +479,24 @@ export const PracticeScreen: React.FC<PracticeScreenProps> = ({
               recordActivityCompletion(studentId);
               setProgress(getStudentProgress(studentId));
             }}
+          />
+        ) : activeGame.id === 'p-math-tables' ? (
+          <MathTablesModal
+            isOpen={true}
+            onClose={() => {
+              setActiveGame(null);
+              setProgress(getStudentProgress(studentId));
+            }}
+            studentId={studentId}
+          />
+        ) : activeGame.id === 'p-flashcards' ? (
+          <FlashcardsModal
+            isOpen={true}
+            onClose={() => {
+              setActiveGame(null);
+              setProgress(getStudentProgress(studentId));
+            }}
+            studentId={studentId}
           />
         ) : games.find((game) => game.id === activeGame.id)?.exam ? (
           <IslamicExamModal

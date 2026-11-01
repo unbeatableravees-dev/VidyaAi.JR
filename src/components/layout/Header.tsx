@@ -5,6 +5,8 @@ import { APP_IMAGES } from '../../assets/images';
 import { StudentProfile, RELIGION_CONFIGS } from '../../types/student';
 import { getGreeting } from '../../utils/language';
 import { getStudentProgress } from '../../utils/studentProgress';
+import { getStudentStreakData } from '../../utils/streakManager';
+import { getStudentStoreData, STORE_ACCESSORIES } from '../../utils/starStore';
 import { ALL_CATEGORIES } from '../../data/learningData';
 import { CATEGORY_DETAILS } from '../../data/categoryLessons';
 import { LmsStorageService } from '../../services/lmsStorage';
@@ -18,6 +20,8 @@ interface HeaderProps {
   onProfileClick?: () => void;
   onSettingsClick?: () => void;
   onSwitchProfile?: () => void;
+  onOpenBazaar?: () => void;
+  onOpenStreak?: () => void;
   studentProfile?: StudentProfile | null;
   onToggleMobileMenu?: () => void;
   onOpenAdmin?: () => void;
@@ -36,6 +40,17 @@ const AVATAR_STYLES: Record<string, { emoji: string; color: string }> = {
   'girl-zehra': { emoji: '🎨', color: 'from-purple-400 to-violet-600' },
   'boy-gurpreet': { emoji: '👳', color: 'from-orange-400 to-red-500' },
   'girl-fatima': { emoji: '🧕', color: 'from-teal-400 to-emerald-600' },
+  // Unlocked Kids' Favorite Characters
+  'hero-spiderman': { emoji: '🦸‍♂️', color: 'from-red-500 to-blue-700' },
+  'hero-astronaut': { emoji: '🚀', color: 'from-blue-600 to-purple-800' },
+  'hero-ninja': { emoji: '🥷', color: 'from-slate-700 to-black' },
+  'hero-fairy': { emoji: '🧚‍♀️', color: 'from-pink-400 to-purple-600' },
+  'hero-dino': { emoji: '🦖', color: 'from-emerald-500 to-teal-800' },
+  'hero-robot': { emoji: '🤖', color: 'from-cyan-500 to-blue-800' },
+  'hero-safari': { emoji: '🦁', color: 'from-amber-500 to-orange-600' },
+  'hero-detective': { emoji: '🕵️‍♂️', color: 'from-amber-700 to-stone-900' },
+  'hero-unicorn': { emoji: '🦄', color: 'from-fuchsia-400 to-pink-500' },
+  'hero-wizard': { emoji: '🧙‍♂️', color: 'from-violet-600 to-indigo-900' },
 };
 
 export const Header: React.FC<HeaderProps> = ({
@@ -47,6 +62,8 @@ export const Header: React.FC<HeaderProps> = ({
   onProfileClick,
   onSettingsClick,
   onSwitchProfile,
+  onOpenBazaar,
+  onOpenStreak,
   studentProfile,
   onToggleMobileMenu,
   onOpenAdmin,
@@ -57,9 +74,27 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [, setProgressVersion] = useState(0);
-  const activeAvatar = AVATAR_STYLES[userAvatar] || AVATAR_STYLES['boy-aarav'];
   const studentId = studentProfile?.id;
+  const storeData = getStudentStoreData(studentId);
+  const streak = getStudentStreakData(studentId);
+  const activeCharKey = storeData.equippedCharacterId || userAvatar;
+  const activeAvatar = AVATAR_STYLES[activeCharKey] || AVATAR_STYLES['boy-aarav'];
+  const activeAccessory = STORE_ACCESSORIES.find((a) => a.id === storeData.equippedAccessoryId);
   const progress = getStudentProgress(studentId);
+
+  useEffect(() => {
+    const handleProgressChange = () => {
+      setProgressVersion((v) => v + 1);
+    };
+    window.addEventListener('studentprogresschange', handleProgressChange);
+    window.addEventListener('studentstreakchange', handleProgressChange);
+    window.addEventListener('studentstorechange', handleProgressChange);
+    return () => {
+      window.removeEventListener('studentprogresschange', handleProgressChange);
+      window.removeEventListener('studentstreakchange', handleProgressChange);
+      window.removeEventListener('studentstorechange', handleProgressChange);
+    };
+  }, []);
 
   // Search Results Computation
   const cleanQ = searchQuery.trim().toLowerCase();
@@ -311,6 +346,32 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
         </div>
 
+        {/* Daily Streak Flame Pill */}
+        <button
+          onClick={() => {
+            sound.playPop();
+            if (onOpenStreak) onOpenStreak();
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 border border-orange-300 text-orange-950 font-black text-xs shadow-sm hover:scale-105 transition cursor-pointer"
+          title="Daily Learning Streak & Quests"
+        >
+          <span className="text-sm">🔥</span>
+          <span>{streak.currentStreak}d</span>
+        </button>
+
+        {/* Star Bazaar Pill */}
+        <button
+          onClick={() => {
+            sound.playPop();
+            if (onOpenBazaar) onOpenBazaar();
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 border border-amber-300 text-amber-950 font-black text-xs shadow-sm hover:scale-105 transition cursor-pointer"
+          title="Star Bazaar & Reward Store"
+        >
+          <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+          <span>{progress.starsEarned} ⭐</span>
+        </button>
+
         {/* Notification Bell */}
         <button
           onClick={() => sound.playPop()}
@@ -331,8 +392,13 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 rounded-full transition-all cursor-pointer shadow-sm hover:scale-102"
           >
-            <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${activeAvatar.color} ring-2 ring-blue-300 flex items-center justify-center text-2xl shadow-sm transition-transform duration-300 hover:scale-110 hover:rotate-[-8deg]`}>
+            <div className={`relative w-9 h-9 rounded-full bg-gradient-to-br ${activeAvatar.color} ring-2 ring-blue-300 flex items-center justify-center text-2xl shadow-sm transition-transform duration-300 hover:scale-110 hover:rotate-[-8deg]`}>
               <span role="img" aria-label="Selected character">{activeAvatar.emoji}</span>
+              {activeAccessory && (
+                <span className="absolute -top-2 -right-1.5 text-xs drop-shadow-sm animate-bounce">
+                  {activeAccessory.emoji}
+                </span>
+              )}
             </div>
             <span className="text-sm font-black text-slate-800 hidden sm:inline">Hi, {userName}</span>
             <ChevronDown className="w-4 h-4 text-slate-500" />
