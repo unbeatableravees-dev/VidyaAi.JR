@@ -1,5 +1,4 @@
-import { ReligionType, RELIGION_CONFIGS } from '../types/student';
-import { NavTab } from '../components/layout/Sidebar';
+import { ReligionType } from '../types/student';
 
 export interface LocalizedNavLabel {
   primary: string;
@@ -11,14 +10,14 @@ export function getNavLabels(religion: ReligionType = 'muslim'): Record<string, 
   switch (religion) {
     case 'muslim':
       return {
-        home: { primary: 'Home', secondary: 'گھر' },
-        categories: { primary: 'Categories (14)', secondary: 'اقسام' },
-        islamic: { primary: 'Islamic Teachings', secondary: 'اسلامی تعلیمات', badge: '🕌' },
-        explorer: { primary: '3D Explorer', secondary: 'تھری ڈی کھوج' },
-        practice: { primary: 'Practice Games', secondary: 'مشق کھیلیں' },
-        learning: { primary: 'My Learning', secondary: 'میری پڑھائی' },
-        progress: { primary: 'Progress', secondary: 'کارکردگی' },
-        settings: { primary: 'Settings', secondary: 'ترتیبات' },
+        home: { primary: 'Home', secondary: 'Main Hub' },
+        categories: { primary: 'Categories (14)', secondary: 'Subjects' },
+        islamic: { primary: 'Islamic Teachings', secondary: 'Values & Duas', badge: '🕌' },
+        explorer: { primary: '3D Explorer', secondary: '3D Discovery' },
+        practice: { primary: 'Practice Games', secondary: 'Fun Arcade' },
+        learning: { primary: 'My Learning', secondary: 'Class Lessons' },
+        progress: { primary: 'Progress', secondary: 'My Report' },
+        settings: { primary: 'Settings', secondary: 'Preferences' },
       };
 
     case 'sikh':
@@ -58,20 +57,15 @@ export function getNavLabels(religion: ReligionType = 'muslim'): Record<string, 
   }
 }
 
-export function getGreeting(religion: ReligionType = 'muslim', name: string = 'Explorer'): {
-  text: string;
-  subtext: string;
-  badge: string;
-} {
-  const config = RELIGION_CONFIGS[religion] || RELIGION_CONFIGS.other;
-  return {
-    text: `${config.greeting}, ${name}!`,
-    subtext: `${config.greetingTransliteration} • Welcome to VidyaAI Jr`,
-    badge: config.languageBadge,
-  };
-}
-
-export function getPraise(religion: ReligionType = 'muslim'): string {
-  const config = RELIGION_CONFIGS[religion] || RELIGION_CONFIGS.other;
-  return config.praiseWord;
+export function getGreeting(religion: ReligionType, userName: string): { text: string } {
+  switch (religion) {
+    case 'muslim':
+      return { text: `Assalam-o-Alaikum, ${userName}! 🌟` };
+    case 'sikh':
+      return { text: `Sat Sri Akal, ${userName}! 🌟` };
+    case 'hindu':
+      return { text: `Namaste, ${userName}! 🌟` };
+    default:
+      return { text: `Welcome, ${userName}! 🌟` };
+  }
 }

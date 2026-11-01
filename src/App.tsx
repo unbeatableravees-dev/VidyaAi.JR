@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Sidebar, NavTab } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { HomeScreen } from './components/screens/HomeScreen';
@@ -8,6 +8,8 @@ import { sound } from './utils/audio';
 import { StudentProfile } from './types/student';
 import { clearStudentProgress, recordQuizCompletion } from './utils/studentProgress';
 import type { VideoData } from './components/modals/VideoPlayerModal';
+import { AdminLoginModal } from './components/admin/AdminLoginModal';
+import { LmsStorageService } from './services/lmsStorage';
 
 // Code-split heavy views so the initial bundle stays lightweight & blazing fast
 const IslamicTeachingsView = React.lazy(() =>
@@ -24,6 +26,15 @@ const ExplorerScreen = React.lazy(() =>
 );
 const PracticeScreen = React.lazy(() =>
   import('./components/screens/PracticeScreen').then((m) => ({ default: m.PracticeScreen }))
+);
+const SmartCurriculumView = React.lazy(() =>
+  import('./components/screens/SmartCurriculumView').then((m) => ({ default: m.SmartCurriculumView }))
+);
+const ContactView = React.lazy(() =>
+  import('./components/screens/ContactView').then((m) => ({ default: m.ContactView }))
+);
+const AdminPortal = React.lazy(() =>
+  import('./components/admin/AdminPortal').then((m) => ({ default: m.AdminPortal }))
 );
 const VideoLessonScreen = React.lazy(() =>
   import('./components/screens/VideoLessonScreen').then((m) => ({ default: m.VideoLessonScreen }))
@@ -132,9 +143,60 @@ export function App() {
 
   const [activeVideoModal, setActiveVideoModal] = useState<VideoData | null>(null);
 
+  // Super Admin Portal State (Only accessible from Welcome Screen or secret shortcut)
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const activeDisplayName = studentProfile?.name || 'Aarav';
   const activeAvatar = studentProfile?.avatar || 'boy-aarav';
   const activeGrade = studentProfile?.gradeClass || 'Class 2';
+
+  // Listen for admin changes (promotions, updates, deletions)
+  useEffect(() => {
+    const handleProfileSync = () => {
+      try {
+        const saved = localStorage.getItem('vidya_student_profile_v2');
+        if (saved) {
+          setStudentProfile(JSON.parse(saved));
+        } else {
+          setStudentProfile(null);
+          setShowWelcome(true);
+        }
+        setStudentProfiles(loadSavedProfiles());
+      } catch {
+        // Fallback
+      }
+    };
+
+    window.addEventListener('vidya_student_class_promoted', handleProfileSync);
+    window.addEventListener('vidya_student_profile_updated', handleProfileSync);
+    window.addEventListener('vidya_student_profile_deleted', handleProfileSync);
+
+    // Optional keyboard shortcut for admins: Ctrl+Shift+A
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        handleOpenAdmin();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('vidya_student_class_promoted', handleProfileSync);
+      window.removeEventListener('vidya_student_profile_updated', handleProfileSync);
+      window.removeEventListener('vidya_student_profile_deleted', handleProfileSync);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const handleOpenAdmin = () => {
+    if (LmsStorageService.getActiveAdminSession()) {
+      setIsAdminOpen(true);
+    } else {
+      setIsAdminLoginModalOpen(true);
+    }
+  };
 
   const handleProfileSubmit = (profile: StudentProfile) => {
     const updatedProfiles = [
@@ -243,15 +305,36 @@ export function App() {
     setCurrentTab('category-detail');
   };
 
+  // Full-screen Super Admin Portal
+  if (isAdminOpen) {
+    return (
+      <Suspense fallback={<ScreenLoadingFallback />}>
+        <AdminPortal onExit={() => setIsAdminOpen(false)} />
+      </Suspense>
+    );
+  }
+
+  // Welcome / Student Registration Screen (Contains the only Admin Login trigger)
   if (showWelcome) {
     return (
-      <WelcomeScreen
-        onProfileSubmit={handleProfileSubmit}
-        initialProfile={showProfilePicker ? null : studentProfile}
-        savedProfiles={studentProfiles}
-        showProfilePicker={showProfilePicker}
-        onChooseProfile={handleChooseProfile}
-      />
+      <>
+        <WelcomeScreen
+          onProfileSubmit={handleProfileSubmit}
+          initialProfile={showProfilePicker ? null : studentProfile}
+          savedProfiles={studentProfiles}
+          showProfilePicker={showProfilePicker}
+          onChooseProfile={handleChooseProfile}
+          onOpenAdmin={handleOpenAdmin}
+        />
+        <AdminLoginModal
+          isOpen={isAdminLoginModalOpen}
+          onClose={() => setIsAdminLoginModalOpen(false)}
+          onLoginSuccess={() => {
+            setIsAdminLoginModalOpen(false);
+            setIsAdminOpen(true);
+          }}
+        />
+      </>
     );
   }
 
@@ -260,17 +343,19 @@ export function App() {
       {/* Optimized Lightweight Aurora & Twinkle Backdrop */}
       <AnimatedBackground />
 
-      {/* Royal Blue Left Sidebar with Jr Identity & Multilingual Navigation */}
+      {/* Royal Blue Left Sidebar with Jr Identity (Admin Portal removed from student view) */}
       <Sidebar
         currentTab={currentTab}
         onTabChange={setCurrentTab}
         onSwitchProfile={handleSwitchProfile}
         studentProfile={studentProfile}
+        isMobileOpen={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden relative z-10 w-full">
-        {/* Fixed Non-Scrolling Top Header */}
+        {/* Fixed Non-Scrolling Top Header (Admin Portal removed from student view, profile dropdown fixed on top) */}
         <Header
           userName={activeDisplayName}
           userAvatar={activeAvatar}
@@ -281,6 +366,7 @@ export function App() {
           onSettingsClick={() => setCurrentTab('settings')}
           onSwitchProfile={handleSwitchProfile}
           studentProfile={studentProfile}
+          onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
         />
 
         {/* Dynamic Screen Area with Suspense for Instant Performance */}
@@ -290,6 +376,7 @@ export function App() {
               <HomeScreen
                 userName={activeDisplayName}
                 onStartLearning={handleStartLearning}
+                onOpenCurriculum={() => setCurrentTab('curriculum')}
                 onSelectCategory={handleSelectCategory}
                 onViewAllCategories={handleViewAllCategories}
                 onOpenPractice={() => setCurrentTab('practice')}
@@ -298,6 +385,24 @@ export function App() {
                 onOpenPunjabi={() => setCurrentTab('punjabi')}
                 onOpenHindi={() => setCurrentTab('hindi')}
                 studentProfile={studentProfile}
+              />
+            )}
+
+            {/* Smart Age & Class-Based Curriculum Management Screen with Advanced Student Filters */}
+            {currentTab === 'curriculum' && (
+              <SmartCurriculumView
+                studentProfile={studentProfile}
+                onBackToHome={handleBackToHome}
+                onOpenPractice={() => setCurrentTab('practice')}
+                onOpenExplorer={() => setCurrentTab('explorer')}
+              />
+            )}
+
+            {/* Contact & Support Request Screen (Issue, Area, Violation, Class Promotion, Misleading info) */}
+            {currentTab === 'contact' && (
+              <ContactView
+                studentProfile={studentProfile}
+                onBackToHome={handleBackToHome}
               />
             )}
 
@@ -312,6 +417,7 @@ export function App() {
                 <HomeScreen
                   userName={activeDisplayName}
                   onStartLearning={handleStartLearning}
+                  onOpenCurriculum={() => setCurrentTab('curriculum')}
                   onSelectCategory={handleSelectCategory}
                   onViewAllCategories={handleViewAllCategories}
                   onOpenPractice={() => setCurrentTab('practice')}
@@ -434,6 +540,16 @@ export function App() {
           />
         </Suspense>
       )}
+
+      {/* Super Admin Login Modal (Triggered from Welcome Screen or Admin shortcut) */}
+      <AdminLoginModal
+        isOpen={isAdminLoginModalOpen}
+        onClose={() => setIsAdminLoginModalOpen(false)}
+        onLoginSuccess={() => {
+          setIsAdminLoginModalOpen(false);
+          setIsAdminOpen(true);
+        }}
+      />
     </div>
   );
 }

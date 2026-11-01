@@ -292,7 +292,6 @@ export const PUNJABI_LESSONS: PunjabiLesson[] = [
   {
     id: 'p-words-counting-1-5',
     title: 'Punjabi Numbers ੧ to ੫ (ਗਿਣਤੀ ਇਕ ਤੋਂ ਪੰਜ)',
-    hindiTitle: 'ਗਿਣਤੀ: ੧ (ਇਕ), ੨ (ਦੋ), ੩ (ਤਿੰਨ), ੪ (ਚਾਰ), ੫ (ਪੰਜ)',
     punjabiTitle: '੧ (ਇਕ), ੨ (ਦੋ), ੩ (ਤਿੰਨ), ੪ (ਚਾਰ), ੫ (ਪੰਜ)',
     category: 'punjabi-words',
     categoryPunjabi: 'ਰੋਜ਼ਾਨਾ ਸ਼ਬਦ',
