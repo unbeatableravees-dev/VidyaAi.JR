@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Sparkles, RefreshCw, Volume2, ShieldAlert } from 'lucide-react';
-import { isLocalMediaSource, extractYouTubeId, buildEmbedUrl } from '../../utils/videoUtils';
+import { Play, RefreshCw, ShieldAlert } from 'lucide-react';
+import { isLocalMediaSource, buildEmbedUrl } from '../../utils/videoUtils';
 import { LmsMediaStorage } from '../../services/lmsMediaStorage';
 
 interface UniversalVideoPlayerProps {
@@ -71,22 +71,7 @@ export const UniversalVideoPlayer: React.FC<UniversalVideoPlayerProps> = ({
 
   return (
     <div className={`relative aspect-video w-full bg-slate-950 overflow-hidden shadow-2xl select-none flex flex-col justify-between ${className}`}>
-      {/* 1. TOP BRANDED SHIELD OVERLAY (Masks external logos & headers seamlessly) */}
-      <div className="absolute top-0 left-0 right-0 z-20 h-10 bg-gradient-to-b from-slate-950/90 via-slate-900/60 to-transparent px-4 flex items-center justify-between pointer-events-none transition-opacity duration-300">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[11px] font-black uppercase tracking-wider text-white drop-shadow">
-            Vidya AI Kids • HD Player
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded-full bg-blue-600/80 backdrop-blur-sm text-[10px] font-black text-white shadow-xs">
-            {isLocalFile ? 'Local File' : 'Interactive Stream'}
-          </span>
-        </div>
-      </div>
-
-      {/* 2. PLAYER DISPLAY */}
+      {/* PLAYER DISPLAY */}
       {isLocalFile ? (
         resolvedLocalUrl ? (
           <video
@@ -96,30 +81,39 @@ export const UniversalVideoPlayer: React.FC<UniversalVideoPlayerProps> = ({
             autoPlay={autoPlay}
             playsInline
             poster={poster}
-            className="w-full h-full object-contain bg-black z-10"
+            className="w-full h-full object-contain bg-black"
             onError={() => setHasError(true)}
           >
             Your browser does not support the video tag.
           </video>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-white p-6 text-center z-10">
+          <div className="w-full h-full flex flex-col items-center justify-center text-white p-6 text-center">
             <Play className="w-12 h-12 text-blue-400 mb-2 animate-bounce" />
             <p className="text-sm font-black">Loading local video file...</p>
           </div>
         )
       ) : embedUrl ? (
-        <iframe
-          key={`${embedUrl}-${reloadKey}`}
-          src={embedUrl}
-          title={title}
-          className="w-full h-full border-0 z-10 relative"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
-          onError={() => setHasError(true)}
-        />
+        /* The container clips the top 56px to completely hide the YouTube title bar and channel logo */
+        <div className="relative w-full h-full overflow-hidden bg-black">
+          <iframe
+            key={`${embedUrl}-${reloadKey}`}
+            src={embedUrl}
+            title={title}
+            className="w-full border-0 absolute"
+            style={{
+              top: '-56px',
+              left: '0',
+              width: '100%',
+              height: 'calc(100% + 56px)',
+            }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            onError={() => setHasError(true)}
+          />
+        </div>
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center text-white p-6 text-center z-10">
+        <div className="w-full h-full flex flex-col items-center justify-center text-white p-6 text-center">
           <ShieldAlert className="w-12 h-12 text-amber-400 mb-2" />
           <p className="text-sm font-black">Video source not found</p>
         </div>

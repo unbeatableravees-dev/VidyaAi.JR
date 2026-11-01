@@ -5,8 +5,10 @@
 export const APPROVED_VIDEO_IDS = {
   ALPHABET_PHONICS: 'hq3yfQnllfQ', // https://youtu.be/hq3yfQnllfQ
   TRACING_PHONICS: 'TF1loU8bJaM',  // https://youtu.be/TF1loU8bJaM
-  MAGICIMALS_STORY: 'hq3yfQnllfQ', // @magicimals
-  MASTITOONS_RHYMES: 'TF1loU8bJaM', // @mastitoonsbyvarda
+  MAGICIMALS_STORY_1: 'fabyDHOhUMg', // @magicimals: Jack and the Magic Beanstalk
+  MAGICIMALS_STORY_2: 'Eq18su0edqU', // @magicimals: The Boy Who Went to the North Wind
+  MASTITOONS_RHYME_1: 'UHEm0JnL7I8', // @mastitoonsbyvarda: The Muffin Man
+  MASTITOONS_RHYME_2: 'eCRI4yZP0SE', // @mastitoonsbyvarda: Rain Rain Go Away
 };
 
 export const DEFAULT_FALLBACK_VIDEO_ID = 'hq3yfQnllfQ';
@@ -39,10 +41,10 @@ export function extractYouTubeId(urlOrId: string | undefined | null): string {
 
   // Handle channel handle inputs
   if (raw.includes('@magicimals') || raw.toLowerCase().includes('magicimals')) {
-    return APPROVED_VIDEO_IDS.MAGICIMALS_STORY;
+    return APPROVED_VIDEO_IDS.MAGICIMALS_STORY_1;
   }
   if (raw.includes('@mastitoons') || raw.toLowerCase().includes('mastitoons')) {
-    return APPROVED_VIDEO_IDS.MASTITOONS_RHYMES;
+    return APPROVED_VIDEO_IDS.MASTITOONS_RHYME_1;
   }
 
   // If already exactly an 11-char ID
@@ -58,9 +60,13 @@ export function extractYouTubeId(urlOrId: string | undefined | null): string {
     return match[1];
   }
 
-  // If it's one of the known IDs in the string
+  // Check known IDs
   if (raw.includes('hq3yfQnllfQ')) return 'hq3yfQnllfQ';
   if (raw.includes('TF1loU8bJaM')) return 'TF1loU8bJaM';
+  if (raw.includes('fabyDHOhUMg')) return 'fabyDHOhUMg';
+  if (raw.includes('Eq18su0edqU')) return 'Eq18su0edqU';
+  if (raw.includes('UHEm0JnL7I8')) return 'UHEm0JnL7I8';
+  if (raw.includes('eCRI4yZP0SE')) return 'eCRI4yZP0SE';
 
   // Fallback to safe default
   return DEFAULT_FALLBACK_VIDEO_ID;
