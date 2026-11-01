@@ -14,36 +14,71 @@ import {
   Tv,
 } from 'lucide-react';
 import { LESSON_PLAYLIST_VIDEOS } from '../../data/youtubeVideos';
+import { CATEGORY_DETAILS } from '../../data/categoryLessons';
+import { LmsStorageService } from '../../services/lmsStorage';
 import { AppleSvg } from '../illustrations/Illustrations';
 import { sound } from '../../utils/audio';
+import { femaleVoice } from '../../utils/speech';
 import { UniversalVideoPlayer } from '../common/UniversalVideoPlayer';
+import { StudentProfile } from '../../types/student';
 
 interface VideoLessonScreenProps {
+  categoryId?: string;
+  lessonId?: string | null;
+  studentProfile?: StudentProfile | null;
   onBack: () => void;
-  onContinueToQuiz: () => void;
+  onContinueToQuiz: (subjectId?: string) => void;
 }
 
 export const VideoLessonScreen: React.FC<VideoLessonScreenProps> = ({
+  categoryId = 'numbers',
+  lessonId,
+  studentProfile,
   onBack,
   onContinueToQuiz,
 }) => {
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'overview' | 'objectives' | 'notes'>('overview');
-  const [selectedActivityAnswer, setSelectedActivityAnswer] = useState<number | null>(5);
-  const [activityFeedback, setActivityFeedback] = useState<boolean>(true);
   const [mode, setMode] = useState<'video' | 'interactive'>('video');
 
-  const currentVideo = LESSON_PLAYLIST_VIDEOS[activeStepIndex] || LESSON_PLAYLIST_VIDEOS[0];
+  // Math counter interactive state
+  const [counterA, setCounterA] = useState(3);
+  const [counterB, setCounterB] = useState(2);
 
-  const handleSelectAnswer = (ans: number) => {
-    setSelectedActivityAnswer(ans);
+  // Phonics interactive state
+  const [activePhonicsLetter, setActivePhonicsLetter] = useState('A');
+
+  // Find specific lesson from Category Details or LMS Storage
+  const categoryDetail = CATEGORY_DETAILS[categoryId] || CATEGORY_DETAILS['numbers'];
+  const matchedLesson = lessonId
+    ? categoryDetail.lessons.find((l) => l.id === lessonId)
+    : categoryDetail.lessons[0];
+  const adminUploadedItem = lessonId ? LmsStorageService.getContentById(lessonId) : null;
+
+  // Video resolution: if admin uploaded, use its mediaUrl, otherwise find best matching YouTube video
+  const resolvedVideoSrc = adminUploadedItem?.mediaUrl
+    ? adminUploadedItem.mediaUrl
+    : categoryId === 'alphabets' || categoryId === 'english'
+    ? 'hq3yfQnllfQ'
+    : categoryId === 'science'
+    ? 'd0iFq34K_iU'
+    : categoryId === 'story-time' || categoryId === 'children-stories'
+    ? 'fabyDHOhUMg'
+    : categoryId === 'rhymes'
+    ? '12Y6G03Hkfg'
+    : (LESSON_PLAYLIST_VIDEOS[activeStepIndex] || LESSON_PLAYLIST_VIDEOS[0]).youtubeId;
+
+  const currentTitle = adminUploadedItem?.title || matchedLesson?.title || (LESSON_PLAYLIST_VIDEOS[activeStepIndex] || LESSON_PLAYLIST_VIDEOS[0]).title;
+  const currentDescription = adminUploadedItem?.description || matchedLesson?.description || (LESSON_PLAYLIST_VIDEOS[activeStepIndex] || LESSON_PLAYLIST_VIDEOS[0]).description;
+  const currentTopic = adminUploadedItem?.chapter || matchedLesson?.topic || categoryDetail.title;
+
+  const handleSpeakPhonics = (letter: string, word: string) => {
+    setActivePhonicsLetter(letter);
     sound.playPop();
-    if (ans === 5) {
-      sound.playSuccess();
-      setActivityFeedback(true);
-    } else {
-      setActivityFeedback(false);
-    }
+    femaleVoice.speak({
+      text: `${letter} says /${letter.toLowerCase()}/ for ${word}!`,
+      lang: 'en',
+    });
   };
 
   return (
@@ -100,43 +135,114 @@ export const VideoLessonScreen: React.FC<VideoLessonScreenProps> = ({
           {/* HD Video Lesson Player or Interactive Playground */}
           {mode === 'video' ? (
             <UniversalVideoPlayer
-              src={currentVideo.youtubeId}
-              title={currentVideo.title}
+              src={resolvedVideoSrc}
+              title={currentTitle}
               className="rounded-3xl border-2 border-white"
             />
           ) : (
             <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-900 border-2 border-white shadow-2xl flex flex-col justify-between p-6">
               <div className="relative z-20 flex items-center justify-between">
                 <span className="px-3.5 py-1 bg-purple-600 text-white text-xs font-black rounded-full shadow">
-                  Interactive Blackboard
+                  Interactive Concept Playground
                 </span>
                 <span className="px-3.5 py-1 bg-amber-400 text-slate-900 text-xs font-black rounded-full shadow flex items-center gap-1.5">
                   <Star className="w-3.5 h-3.5 fill-slate-900" /> Hands-on Demo
                 </span>
               </div>
 
-              {/* Classroom blackboard */}
-              <div className="my-auto w-full h-[70%] rounded-2xl bg-[#064e3b] border-8 border-[#78350f] shadow-2xl relative flex items-center justify-around px-8 overflow-hidden">
-                <div className="flex flex-col items-center justify-center space-y-4 z-10 select-none">
-                  <div className="text-4xl lg:text-5xl font-black text-white font-['Fredoka',sans-serif] tracking-wider drop-shadow">
-                    2 + 3 = 5
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex gap-1.5">
-                      <AppleSvg size={42} />
-                      <AppleSvg size={42} />
-                    </div>
-                    <span className="text-3xl font-black text-amber-300">+</span>
-                    <div className="flex gap-1.5">
-                      <AppleSvg size={42} />
-                      <AppleSvg size={42} />
-                      <AppleSvg size={42} />
-                    </div>
-                    <span className="text-3xl font-black text-amber-300">=</span>
-                    <span className="text-3xl font-black text-white">5</span>
+              {/* Dynamic Playground based on category */}
+              {categoryId === 'alphabets' || categoryId === 'english' ? (
+                <div className="my-auto w-full rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 border-4 border-indigo-500/50 p-4 text-center space-y-3">
+                  <p className="text-xs font-black text-amber-300">Tap Any Letter to Hear Phonics Voice 🔊</p>
+                  <div className="flex flex-wrap justify-center gap-2 max-h-48 overflow-y-auto p-1">
+                    {[
+                      { l: 'A', w: 'Apple 🍎' },
+                      { l: 'B', w: 'Ball ⚽' },
+                      { l: 'C', w: 'Cat 🐱' },
+                      { l: 'D', w: 'Duck 🦆' },
+                      { l: 'E', w: 'Elephant 🐘' },
+                      { l: 'F', w: 'Fish 🐟' },
+                      { l: 'G', w: 'Grapes 🍇' },
+                      { l: 'H', w: 'Hat 🎩' },
+                      { l: 'M', w: 'Moon 🌙' },
+                      { l: 'S', w: 'Sun ☀️' },
+                      { l: 'Z', w: 'Zebra 🦓' },
+                    ].map((item) => (
+                      <button
+                        key={item.l}
+                        onClick={() => handleSpeakPhonics(item.l, item.w)}
+                        className={`px-3 py-1.5 rounded-xl font-black text-sm flex items-center gap-1.5 transition-all cursor-pointer ${
+                          activePhonicsLetter === item.l
+                            ? 'bg-amber-400 text-slate-950 scale-105 shadow-md'
+                            : 'bg-white/10 hover:bg-white/20 text-white'
+                        }`}
+                      >
+                        <span>{item.l}</span>
+                        <span className="text-xs">{item.w}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="my-auto w-full h-[70%] rounded-2xl bg-[#064e3b] border-8 border-[#78350f] shadow-2xl relative flex flex-col items-center justify-around px-8 py-4 overflow-hidden">
+                  <div className="flex items-center gap-6 z-10 select-none">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          sound.playPop();
+                          setCounterA((prev) => Math.max(1, prev - 1));
+                        }}
+                        className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-black cursor-pointer"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="text-3xl font-black text-amber-300">{counterA}</span>
+                      <button
+                        onClick={() => {
+                          sound.playPop();
+                          setCounterA((prev) => Math.min(8, prev + 1));
+                        }}
+                        className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-black cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <span className="text-3xl font-black text-white">+</span>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          sound.playPop();
+                          setCounterB((prev) => Math.max(1, prev - 1));
+                        }}
+                        className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-black cursor-pointer"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="text-3xl font-black text-amber-300">{counterB}</span>
+                      <button
+                        onClick={() => {
+                          sound.playPop();
+                          setCounterB((prev) => Math.min(8, prev + 1));
+                        }}
+                        className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-black cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <span className="text-3xl font-black text-white">=</span>
+                    <span className="text-4xl font-black text-amber-400">{counterA + counterB}</span>
+                  </div>
+
+                  <div className="flex flex-wrap justify-center gap-1.5 z-10">
+                    {Array.from({ length: counterA + counterB }).map((_, i) => (
+                      <AppleSvg key={i} size={36} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="text-center text-xs font-black text-slate-300">
                 Tap HD Video Lesson above anytime to watch the full animated episode!
@@ -149,32 +255,20 @@ export const VideoLessonScreen: React.FC<VideoLessonScreenProps> = ({
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-black rounded-full">
-                  {currentVideo.category}
-                </span>
-                <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-black rounded-full">
-                  {currentVideo.channel}
+                  {currentTopic}
                 </span>
                 <span className="px-2.5 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full flex items-center gap-1">
-                  <Clock className="w-3 h-3" /> {currentVideo.duration}
+                  <Clock className="w-3 h-3" /> Standard Lesson
                 </span>
-              </div>
-
-              <div className="text-xs font-extrabold text-slate-500">
-                {currentVideo.views}
               </div>
             </div>
 
             <div>
               <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-                {currentVideo.title}
+                {currentTitle}
               </h1>
-              {currentVideo.hindiTitle && (
-                <p className="text-sm font-bold text-slate-500 mt-1">
-                  {currentVideo.hindiTitle}
-                </p>
-              )}
               <p className="text-xs md:text-sm font-semibold text-slate-600 mt-2">
-                {currentVideo.description}
+                {currentDescription}
               </p>
             </div>
 
@@ -368,7 +462,7 @@ export const VideoLessonScreen: React.FC<VideoLessonScreenProps> = ({
               <button
                 onClick={() => {
                   sound.playPop();
-                  onContinueToQuiz();
+                  onContinueToQuiz(categoryId);
                 }}
                 className="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black text-sm rounded-2xl shadow-lg transition-transform hover:scale-[1.02] cursor-pointer"
               >

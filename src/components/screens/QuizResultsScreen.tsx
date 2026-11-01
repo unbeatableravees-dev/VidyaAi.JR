@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
 import {
   Trophy,
@@ -11,11 +11,13 @@ import {
   Play,
   ArrowRight,
   Sparkles,
+  Award,
 } from 'lucide-react';
 import { EARNED_BADGES, RECOMMENDED_LESSONS } from '../../data/learningData';
 import { QuizCelebrationIllustration, HexBadge } from '../illustrations/Illustrations';
 import { sound } from '../../utils/audio';
 import { APP_IMAGES } from '../../assets/images';
+import { CertificateModal } from '../common/CertificateModal';
 
 interface QuizResultsScreenProps {
   userName: string;
@@ -34,6 +36,7 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
   onRetakeQuiz,
   onSelectLesson,
 }) => {
+  const [showCertificate, setShowCertificate] = useState(false);
   const scorePercentage = Math.round((quizResult.correct / quizResult.total) * 100);
   const wrongAnswers = quizResult.total - quizResult.correct;
   // Trigger celebratory confetti on mount
@@ -178,8 +181,29 @@ export const QuizResultsScreen: React.FC<QuizResultsScreenProps> = ({
               <span>Take 10 New Questions (Random!)</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
+
+            <button
+              onClick={() => {
+                sound.playFanfare();
+                setShowCertificate(true);
+              }}
+              className="w-full py-2.5 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-102"
+            >
+              <Award className="w-4 h-4 text-slate-950" />
+              <span>Claim Official Certificate 🎓</span>
+            </button>
           </div>
         </div>
+
+        {/* Certificate Modal */}
+        <CertificateModal
+          isOpen={showCertificate}
+          onClose={() => setShowCertificate(false)}
+          studentName={userName}
+          studentGrade={quizResult.grade || userGrade}
+          achievementTitle={`${quizResult.subjectName || 'All Subjects'} Quiz Champion (${quizResult.correct}/${quizResult.total})`}
+          starsEarned={quizResult.correct * 10}
+        />
 
         {/* Earned Badges Card (5 cols) */}
         <div className="md:col-span-5 bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm flex flex-col justify-between space-y-4">

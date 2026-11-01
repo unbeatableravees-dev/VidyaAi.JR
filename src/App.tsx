@@ -10,6 +10,11 @@ import { clearStudentProgress, recordQuizCompletion } from './utils/studentProgr
 import type { VideoData } from './components/modals/VideoPlayerModal';
 import { AdminLoginModal } from './components/admin/AdminLoginModal';
 import { LmsStorageService } from './services/lmsStorage';
+import { StarBazaarModal } from './components/modals/StarBazaarModal';
+import { DailyQuestModal } from './components/modals/DailyQuestModal';
+import { SiblingSwitcherModal } from './components/modals/SiblingSwitcherModal';
+import { ScreenTimeLockModal } from './components/modals/ScreenTimeLockModal';
+import { getScreenTimeConfig, recordScreenTimeTick } from './utils/screenTimeManager';
 
 // Code-split heavy views so the initial bundle stays lightweight & blazing fast
 const IslamicTeachingsView = React.lazy(() =>
@@ -133,6 +138,7 @@ export function App() {
 
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('numbers');
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [quizResult, setQuizResult] = useState<{
     correct: number;
@@ -143,6 +149,12 @@ export function App() {
 
   const [activeVideoModal, setActiveVideoModal] = useState<VideoData | null>(null);
 
+  // New Upgrades State
+  const [isBazaarOpen, setIsBazaarOpen] = useState(false);
+  const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
+  const [isSiblingModalOpen, setIsSiblingModalOpen] = useState(false);
+  const [screenTimeCfg, setScreenTimeCfg] = useState(() => getScreenTimeConfig());
+
   // Super Admin Portal State (Only accessible from Welcome Screen or secret shortcut)
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
@@ -151,6 +163,24 @@ export function App() {
   const activeDisplayName = studentProfile?.name || 'Aarav';
   const activeAvatar = studentProfile?.avatar || 'boy-aarav';
   const activeGrade = studentProfile?.gradeClass || 'Class 2';
+
+  // Screen Time Tracking Effect (ticks every 10 seconds)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const cfg = recordScreenTimeTick(10);
+      setScreenTimeCfg(cfg);
+    }, 10000);
+
+    const handleScreenTimeChange = () => {
+      setScreenTimeCfg(getScreenTimeConfig());
+    };
+    window.addEventListener('screentimechange', handleScreenTimeChange);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('screentimechange', handleScreenTimeChange);
+    };
+  }, []);
 
   // Listen for admin changes (promotions, updates, deletions)
   useEffect(() => {
@@ -264,8 +294,23 @@ export function App() {
 
   const handleSwitchProfile = () => {
     sound.playPop();
-    setShowProfilePicker(true);
-    setShowWelcome(true);
+    setIsSiblingModalOpen(true);
+  };
+
+  const handleDeleteProfile = (profileId: string) => {
+    const nextProfiles = studentProfiles.filter((p) => p.id !== profileId);
+    localStorage.setItem('vidya_student_profiles_v1', JSON.stringify(nextProfiles));
+    setStudentProfiles(nextProfiles);
+
+    if (studentProfile?.id === profileId) {
+      if (nextProfiles.length > 0) {
+        handleChooseProfile(nextProfiles[0]);
+      } else {
+        localStorage.removeItem('vidya_student_profile_v2');
+        setStudentProfile(null);
+        setShowWelcome(true);
+      }
+    }
   };
 
   const handleResetActiveProfile = () => {
@@ -317,7 +362,13 @@ export function App() {
 
   const handleSelectCategory = (categoryId: string) => {
     setSelectedCategoryId(categoryId);
+    setSelectedLessonId(null);
     setCurrentTab('category-detail');
+  };
+
+  const handleStartLesson = (lessonId: string) => {
+    setSelectedLessonId(lessonId);
+    setCurrentTab('learning');
   };
 
   // Full-screen Super Admin Portal
@@ -385,9 +436,27 @@ export function App() {
           onProfileClick={() => setCurrentTab('progress')}
           onSettingsClick={() => setCurrentTab('settings')}
           onSwitchProfile={handleSwitchProfile}
+          onOpenBazaar={() => setIsBazaarOpen(true)}
+          onOpenStreak={() => setIsStreakModalOpen(true)}
           onOpenAdmin={handleOpenAdmin}
           studentProfile={studentProfile}
           onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
+          onNavigateToCategory={(catId) => {
+            setSelectedCategoryId(catId);
+            setSelectedLessonId(null);
+            setCurrentTab('category-detail');
+          }}
+          onNavigateToLesson={(catId, lessonId) => {
+            setSelectedCategoryId(catId);
+            setSelectedLessonId(lessonId);
+            setCurrentTab('learning');
+          }}
+          onNavigateToPractice={() => {
+            setCurrentTab('practice');
+          }}
+          onNavigateToExplorer={() => {
+            setCurrentTab('explorer');
+          }}
         />
 
         {/* Dynamic Screen Area with Suspense for Instant Performance */}
@@ -470,6 +539,8 @@ export function App() {
                 onOpenPractice={() => setCurrentTab('practice')}
                 initialModule={currentTab === 'body-explorer' ? 'body' : undefined}
                 studentId={studentProfile?.id}
+                studentName={activeDisplayName}
+                studentGrade={activeGrade}
               />
             )}
 
@@ -487,14 +558,20 @@ export function App() {
               <CategoryDetailScreen
                 categoryId={selectedCategoryId}
                 onBack={() => setCurrentTab('categories')}
-                onStartLesson={(_lessonId) => setCurrentTab('learning')}
+                onStartLesson={handleStartLesson}
               />
             )}
 
             {currentTab === 'learning' && (
               <VideoLessonScreen
+                categoryId={selectedCategoryId}
+                lessonId={selectedLessonId}
+                studentProfile={studentProfile}
                 onBack={handleBackToHome}
-                onContinueToQuiz={handleContinueToQuiz}
+                onContinueToQuiz={(subId) => {
+                  if (subId) setSelectedCategoryId(subId);
+                  handleContinueToQuiz();
+                }}
               />
             )}
 
@@ -575,6 +652,40 @@ export function App() {
           setIsAdminLoginModalOpen(false);
           setIsAdminOpen(true);
         }}
+      />
+
+      {/* Star Bazaar Reward Store Modal */}
+      <StarBazaarModal
+        isOpen={isBazaarOpen}
+        onClose={() => setIsBazaarOpen(false)}
+        studentId={studentProfile?.id}
+        studentName={activeDisplayName}
+      />
+
+      {/* Daily Quests & Streak Modal */}
+      <DailyQuestModal
+        isOpen={isStreakModalOpen}
+        onClose={() => setIsStreakModalOpen(false)}
+        studentId={studentProfile?.id}
+        studentName={activeDisplayName}
+      />
+
+      {/* Sibling & Family Switcher Modal */}
+      <SiblingSwitcherModal
+        isOpen={isSiblingModalOpen}
+        onClose={() => setIsSiblingModalOpen(false)}
+        activeProfile={studentProfile}
+        savedProfiles={studentProfiles}
+        onSelectProfile={handleChooseProfile}
+        onAddProfile={handleProfileSubmit}
+        onDeleteProfile={handleDeleteProfile}
+      />
+
+      {/* Screen Time Lock Screen Modal */}
+      <ScreenTimeLockModal
+        isOpen={screenTimeCfg.isLocked}
+        studentName={activeDisplayName}
+        limitMinutes={screenTimeCfg.dailyLimitMinutes}
       />
     </div>
   );

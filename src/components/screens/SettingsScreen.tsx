@@ -11,8 +11,11 @@ import {
   Bell,
   Award,
   BookOpen,
+  Lock,
+  X,
 } from 'lucide-react';
 import { sound } from '../../utils/audio';
+import { ALL_CLASSES } from '../../types/lms';
 
 interface SettingsScreenProps {
   userName: string;
@@ -27,9 +30,13 @@ const AVATAR_OPTIONS = [
   { id: 'girl-ananya', name: 'Ananya', emoji: '👧', color: 'from-pink-400 to-rose-500' },
   { id: 'boy-kabir', name: 'Kabir', emoji: '🧑‍🚀', color: 'from-amber-400 to-orange-500' },
   { id: 'girl-meera', name: 'Meera', emoji: '🐼', color: 'from-emerald-400 to-teal-500' },
+  { id: 'boy-sheru', name: 'Sheru', emoji: '🦁', color: 'from-yellow-400 to-amber-600' },
+  { id: 'girl-zehra', name: 'Zehra', emoji: '🎨', color: 'from-purple-400 to-violet-600' },
+  { id: 'boy-gurpreet', name: 'Gurpreet', emoji: '👳', color: 'from-orange-400 to-red-500' },
+  { id: 'girl-fatima', name: 'Fatima', emoji: '🧕', color: 'from-teal-400 to-emerald-600' },
 ];
 
-const GRADES = ['Kindergarten', 'Grade 1', 'Grade 2', 'Grade 3'];
+const GRADES = ALL_CLASSES.map((c) => c.id);
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   userName,
@@ -40,11 +47,18 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 }) => {
   const [nameInput, setNameInput] = useState(userName);
   const [selectedAvatar, setSelectedAvatar] = useState(userAvatar || 'boy-aarav');
-  const [selectedGrade, setSelectedGrade] = useState(userGrade || 'Grade 1');
+  const [selectedGrade, setSelectedGrade] = useState(userGrade || 'Class 2');
   const [soundEnabled, setSoundEnabled] = useState(sound.enabled);
   const [autoplay, setAutoplay] = useState(true);
   const [dailyGoal, setDailyGoal] = useState('15 min');
   const [showSavedToast, setShowSavedToast] = useState(false);
+
+  // Parent PIN / Math verification state
+  const [showParentGate, setShowParentGate] = useState(false);
+  const [mathNum1] = useState(() => Math.floor(Math.random() * 5) + 6); // 6 to 10
+  const [mathNum2] = useState(() => Math.floor(Math.random() * 5) + 5); // 5 to 9
+  const [parentInput, setParentInput] = useState('');
+  const [parentError, setParentError] = useState('');
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,8 +74,21 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const toggleSound = () => {
     const next = !soundEnabled;
     setSoundEnabled(next);
-    sound.enabled = next;
+    sound.setEnabled(next);
     if (next) sound.playPop();
+  };
+
+  const handleVerifyParentAndReset = () => {
+    const correctAns = String(mathNum1 * mathNum2);
+    const cleanInput = parentInput.trim();
+    if (cleanInput === correctAns || cleanInput === '1234') {
+      sound.playSuccess();
+      setShowParentGate(false);
+      if (onResetProgress) onResetProgress();
+    } else {
+      sound.playPop();
+      setParentError('Incorrect verification answer. Try again.');
+    }
   };
 
   const currentAvatarObj = AVATAR_OPTIONS.find((a) => a.id === selectedAvatar) || AVATAR_OPTIONS[0];
@@ -320,18 +347,75 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <button
             type="button"
             onClick={() => {
-              if (window.confirm('Are you sure you want to reset your score and stars?')) {
-                sound.playPop();
-                if (onResetProgress) onResetProgress();
-              }
+              sound.playPop();
+              setParentInput('');
+              setParentError('');
+              setShowParentGate(true);
             }}
             className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-black rounded-xl border border-rose-200 transition-all cursor-pointer flex items-center gap-1.5"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <Lock className="w-3.5 h-3.5 text-rose-500" />
             <span>Reset Progress</span>
           </button>
         </div>
       </div>
+
+      {/* Parent Verification PIN / Math Challenge Modal */}
+      {showParentGate && (
+        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-slate-200 text-center space-y-4">
+            <div className="w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-2xl shadow-inner">
+              <Lock className="w-7 h-7" />
+            </div>
+
+            <div>
+              <h3 className="text-xl font-black text-slate-900">Parent Security Check 🛡️</h3>
+              <p className="text-xs font-bold text-slate-500 mt-1">
+                To protect student stars, please enter the Parent PIN <span className="font-mono font-black text-blue-600">(1234)</span> or solve the challenge below:
+              </p>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-lg font-black text-blue-700">
+              {mathNum1} × {mathNum2} = ?
+            </div>
+
+            <div className="space-y-2">
+              <input
+                type="text"
+                autoFocus
+                value={parentInput}
+                onChange={(e) => {
+                  setParentInput(e.target.value);
+                  setParentError('');
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleVerifyParentAndReset();
+                }}
+                placeholder="Enter answer or 1234..."
+                className="w-full text-center font-black text-base px-4 py-2.5 rounded-xl border-2 border-slate-300 focus:border-blue-600 focus:outline-hidden"
+              />
+              {parentError && <p className="text-xs font-bold text-rose-600">{parentError}</p>}
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowParentGate(false)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-black hover:bg-slate-50 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleVerifyParentAndReset}
+                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-black shadow-md cursor-pointer"
+              >
+                Confirm Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

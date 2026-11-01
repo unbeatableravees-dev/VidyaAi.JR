@@ -1,6 +1,11 @@
+import { recordQuestProgress } from './streakManager';
+
 export interface StudentProgress {
   completedLessonIds: string[];
   discoveredOrganIds: string[];
+  discoveredSpaceIds: string[];
+  discoveredAnimalIds: string[];
+  discoveredPlantIds: string[];
   quizAttempts: number;
   examAttempts: number;
   activityCompletions: number;
@@ -14,6 +19,9 @@ const STORAGE_PREFIX = 'vidya_student_progress_v1:';
 const createEmptyProgress = (): StudentProgress => ({
   completedLessonIds: [],
   discoveredOrganIds: [],
+  discoveredSpaceIds: [],
+  discoveredAnimalIds: [],
+  discoveredPlantIds: [],
   quizAttempts: 0,
   examAttempts: 0,
   activityCompletions: 0,
@@ -72,6 +80,9 @@ export const getStudentProgress = (studentId: string | null | undefined): Studen
     return {
       completedLessonIds: record.completedLessonIds,
       discoveredOrganIds: record.discoveredOrganIds,
+      discoveredSpaceIds: isStringArray(record.discoveredSpaceIds) ? record.discoveredSpaceIds : [],
+      discoveredAnimalIds: isStringArray(record.discoveredAnimalIds) ? record.discoveredAnimalIds : [],
+      discoveredPlantIds: isStringArray(record.discoveredPlantIds) ? record.discoveredPlantIds : [],
       quizAttempts: record.quizAttempts,
       examAttempts: record.examAttempts,
       activityCompletions: record.activityCompletions,
@@ -115,6 +126,9 @@ export const setLessonCompleted = (
       ? [...new Set([...progress.completedLessonIds, lessonId])]
       : progress.completedLessonIds.filter((id) => id !== lessonId),
   }));
+  if (completed) {
+    recordQuestProgress(studentId, 'lesson', 1);
+  }
 };
 
 export const recordQuizCompletion = (
@@ -129,6 +143,7 @@ export const recordQuizCompletion = (
     incorrectAnswers: progress.incorrectAnswers + totalQuestions - correctAnswers,
     starsEarned: progress.starsEarned + correctAnswers * 10,
   }));
+  recordQuestProgress(studentId, 'quiz', 1);
 };
 
 export const recordExamCompletion = (
@@ -143,6 +158,7 @@ export const recordExamCompletion = (
     incorrectAnswers: progress.incorrectAnswers + totalQuestions - correctAnswers,
     starsEarned: progress.starsEarned + correctAnswers,
   }));
+  recordQuestProgress(studentId, 'quiz', 1);
 };
 
 export const recordActivityCompletion = (studentId: string | null | undefined) => {
@@ -151,6 +167,7 @@ export const recordActivityCompletion = (studentId: string | null | undefined) =
     activityCompletions: progress.activityCompletions + 1,
     starsEarned: progress.starsEarned + 10,
   }));
+  recordQuestProgress(studentId, 'practice', 1);
 };
 
 export const recordOrganDiscovery = (
@@ -160,5 +177,69 @@ export const recordOrganDiscovery = (
   updateStudentProgress(studentId, (progress) => ({
     ...progress,
     discoveredOrganIds: [...new Set([...progress.discoveredOrganIds, organId])],
+    starsEarned: progress.starsEarned + 10,
   }));
+  recordQuestProgress(studentId, 'explorer', 1);
+};
+
+export const recordSpaceDiscovery = (
+  studentId: string | null | undefined,
+  spaceId: string,
+) => {
+  updateStudentProgress(studentId, (progress) => ({
+    ...progress,
+    discoveredSpaceIds: [...new Set([...(progress.discoveredSpaceIds || []), spaceId])],
+    starsEarned: progress.starsEarned + 10,
+  }));
+  recordQuestProgress(studentId, 'explorer', 1);
+};
+
+export const recordAnimalDiscovery = (
+  studentId: string | null | undefined,
+  animalId: string,
+) => {
+  updateStudentProgress(studentId, (progress) => ({
+    ...progress,
+    discoveredAnimalIds: [...new Set([...(progress.discoveredAnimalIds || []), animalId])],
+    starsEarned: progress.starsEarned + 10,
+  }));
+  recordQuestProgress(studentId, 'explorer', 1);
+};
+
+export const recordPlantDiscovery = (
+  studentId: string | null | undefined,
+  plantId: string,
+) => {
+  updateStudentProgress(studentId, (progress) => ({
+    ...progress,
+    discoveredPlantIds: [...new Set([...(progress.discoveredPlantIds || []), plantId])],
+    starsEarned: progress.starsEarned + 10,
+  }));
+  recordQuestProgress(studentId, 'explorer', 1);
+};
+
+export const addBonusStars = (
+  studentId: string | null | undefined,
+  stars: number,
+) => {
+  if (!studentId || stars <= 0) return;
+  updateStudentProgress(studentId, (progress) => ({
+    ...progress,
+    starsEarned: progress.starsEarned + stars,
+  }));
+};
+
+export const spendStars = (
+  studentId: string | null | undefined,
+  stars: number,
+): boolean => {
+  if (!studentId || stars <= 0) return false;
+  const current = getStudentProgress(studentId);
+  if (current.starsEarned < stars) return false;
+
+  updateStudentProgress(studentId, (progress) => ({
+    ...progress,
+    starsEarned: Math.max(0, progress.starsEarned - stars),
+  }));
+  return true;
 };
